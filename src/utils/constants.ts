@@ -1,0 +1,1 @@
+export const API_URL = 'http://sumaqao.test/api/pesaje'
