@@ -3,53 +3,33 @@ import { Appbar } from "react-native-paper"
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
 import { useEffect, useState } from "react";
 
+import BleManager from 'react-native-ble-manager'
+
 const Create = ({navigation}: any) => {
-    const [connectedList ,setConnectedList] = useState<any>();
-    const [device, setDevice] = useState<any>();
-    const [data, setData] = useState<any>();
+    const peripherals = new Map()
+ const [connectedDevices, setConnectedDevices] = useState([]);
 
-    useEffect(() => {
-        getConnectedDevices()
-    }, [])
-
-    useEffect(() => {
-        console.log('connectedList', connectedList)
-        if(connectedList.length){
-            connectToDevice(connectedList[0].id)
+  const handleGetConnectedDevices = () => {
+    BleManager.getConnectedPeripherals([]).then(results => {
+      if (results.length === 0) {
+        console.log('No connected bluetooth devices');
+      } else {
+        for (let i = 0; i < results.length; i++) {
+          let peripheral = results[i];
+          peripheral.connected = true;
+          peripherals.set(peripheral.id, peripheral);
+          setConnectedDevices(Array.from(peripherals.values()));
         }
-    }, [connectedList])
-
-    const getConnectedDevices = async () => {
-        try {
-            const connected = await RNBluetoothClassic.getConnectedDevices();
-            console.log('connected', connected)
-            setConnectedList(connected);
-        } catch (err) {
-            // Error if Bluetooth is not enabled
-            // Or there are any issues requesting paired devices
-            console.log("ERORRRRR", err);
-        }
-    }
-
-    const connectToDevice = async ({address}: any) => {
-        const device = await RNBluetoothClassic.getConnectedDevice(address);
-        setDevice(device)
-    }
-
-
-    const onReceivedData = async (event:any) => {
-        console.log('DATA RECEIVED', event)
-        setData({
-            ...event,
-            timestamp: new Date(),  // Add the current date
-            type: 'receive'         // Add a type for UI
-        });
       }
-    useEffect(() => {
-        if(device){
-            device.onDataReceived((data: any) => onReceivedData(data))
-        }
-    }, [device])
+    });
+  };
+
+  useEffect(() => {
+    BleManager.start({showAlert: false}).then(() => {
+      console.log('BleManager initialized');
+      handleGetConnectedDevices();
+    });
+  }, []);
 
     return (
         <ScrollView>
@@ -58,12 +38,7 @@ const Create = ({navigation}: any) => {
                 <Appbar.Content title="BLUETOOTH" />
             </Appbar.Header>
             <View>
-                <Text style={{ color: 'black' }}>
-                    {JSON.stringify(connectedList, null, 2)}
-                </Text>
-                <Text style={{ color: 'black' }}>
-                    {JSON.stringify(data, null, 2)}
-                </Text>
+                <Text>{JSON.stringify(connectedDevices)}</Text>
             </View>
         </ScrollView>
     )
