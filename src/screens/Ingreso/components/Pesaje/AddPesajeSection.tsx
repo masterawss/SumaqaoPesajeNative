@@ -50,6 +50,7 @@ const AddPesajeSection = ({onSaved = (data: number) => {}}) => {
         try {
             const address = '00:08:F4:02:BC:F5';
             const device = await RNBluetoothClassic.getConnectedDevice(address);
+            console.log('DEVICE', device)
             const con = await device.connect({})
             console.log('CON', con)
             // const read = await device.read()
