@@ -23,7 +23,7 @@ function App(): JSX.Element {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName='pesaje.create'
+        initialRouteName='home'
         screenOptions={{
           headerShown: false,
           contentStyle: {

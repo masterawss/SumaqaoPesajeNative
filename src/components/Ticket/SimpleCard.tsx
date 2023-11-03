@@ -1,7 +1,7 @@
 import { Button, Text } from "react-native-paper";
 import { View } from "react-native";
 
-const SimpleCard = () => {
+const SimpleCard = ({ticket}: any) => {
     return (
         <View style={{ padding: 10, backgroundColor: '#f5f5f5', borderRadius: 10 }}>
 

@@ -5,7 +5,7 @@ import SimpleCard from "../../GuiaIngreso/components/SimpleCard";
 
 const GuiaIngreso = ({navigation, ticketId}: any) => {
     const [open, setOpen] = useState(false);
-    const [guiaIngresos, setGuiaIngresos] = useState<any[]>([]);
+    const [guiaIngresos, setGuiaIngresos] = useState<any[]>([{id:1}, {id:2}, {id:3}]);
 
     return <>
         <View style={{ padding: 10 }}>

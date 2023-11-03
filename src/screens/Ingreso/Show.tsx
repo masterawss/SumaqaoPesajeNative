@@ -34,16 +34,16 @@ const ShowScreen = ({ navigation, route }: any) => {
     }, []);
 
     const loadIngreso = async () => {
-      setLoading(true);
-      api.get('/tickets/'+id).then((response) => {
-          console.log(response.data);
-          setIngreso(response.data);
-      }).catch((error) => {
-          console.log(error);
-          setHasError(true);
-      }).finally(() => {
-        setLoading(false);
-      });
+    //   setLoading(true);
+    //   api.get('/tickets/'+id).then((response) => {
+    //       console.log(response.data);
+    //       setIngreso(response.data);
+    //   }).catch((error) => {
+    //       console.log(error);
+    //       setHasError(true);
+    //   }).finally(() => {
+    //     setLoading(false);
+    //   });
     }
 
     const deleteTicket = () => {
@@ -89,9 +89,10 @@ const ShowScreen = ({ navigation, route }: any) => {
                     onRetry={loadIngreso}
                 />
             }
-            {
+            {/* {
               !loading && !hasError && ingreso != null && <TabsSection ticketId={id} navigation={navigation} />
-            }
+            } */}
+            <TabsSection ticketId={id} navigation={navigation} />
         </>
     )
 }

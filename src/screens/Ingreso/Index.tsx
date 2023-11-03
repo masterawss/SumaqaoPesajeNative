@@ -7,7 +7,7 @@ import ErrorSection from "../../components/ErrorSection";
 
 const Index = ({navigation}: any) => {
     const [loading, setLoading] = React.useState(false);
-    const [tickets, setTickets] = React.useState([]);
+    const [tickets, setTickets] = React.useState<any>([]);
     const [hasError, setHasError] = React.useState(false);
 
 
@@ -16,16 +16,17 @@ const Index = ({navigation}: any) => {
     }
 
     const loadTickets = async () => {
-        setLoading(true);
-        api.get('/tickets').then((response) => {
-            console.log(response.data);
-            setTickets(response.data);
-        }
-        ).catch((error) => {
-            setHasError(true);
-        }).finally(() => {
-            setLoading(false);
-        });
+        setTickets([{id: 1}, {id: 2}, {id: 3}])
+        // setLoading(true);
+        // api.get('/tickets').then((response) => {
+        //     console.log(response.data);
+        //     setTickets(response.data);
+        // }
+        // ).catch((error) => {
+        //     setHasError(true);
+        // }).finally(() => {
+        //     setLoading(false);
+        // });
     }
 
     useEffect(() => {
@@ -51,7 +52,7 @@ const Index = ({navigation}: any) => {
                 />
             }
             {
-                tickets.map((ticket: any) => <View style={{ marginVertical: 5 }}><SimpleCard ticket={ticket} /></View> )
+                tickets.map((ticket: any) => <View key={ticket.id}  style={{ marginVertical: 5 }}><SimpleCard ticket={ticket} /></View> )
             }
             <Button style={{ position: 'absolute', bottom:0, right:0, margin: 10 }} mode="contained" onPress={create}>
                 Crear ticket
