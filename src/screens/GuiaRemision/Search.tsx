@@ -53,7 +53,7 @@ const Search = ({navigation, route}:any) => {
         <SafeAreaView>
             <Appbar.Header>
                 <Appbar.BackAction onPress={() => {navigation.goBack()}} />
-                <Appbar.Content title="Buscar guía de ingreso" />
+                <Appbar.Content title="Buscar guía de remisión" />
             </Appbar.Header>
             <View style={{ padding: 10 }}>
                 <View style={{ marginBottom: 10 }}>

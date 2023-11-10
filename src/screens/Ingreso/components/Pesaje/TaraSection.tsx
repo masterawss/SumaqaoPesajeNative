@@ -7,6 +7,7 @@ import { TicketContext } from "../../Show/provider/TicketProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const TaraSection = () => {
+    // TODO: Si ya existe un registro de tara, que no se permita editar, sino sumar o restar kg a ese valor inicial
     const [visible, setVisible] = React.useState(false);
     const [error, setError] = React.useState(false);
     const [taraValue, setTaraValue] = React.useState("0");

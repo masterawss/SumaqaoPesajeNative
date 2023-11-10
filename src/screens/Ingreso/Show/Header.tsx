@@ -42,7 +42,7 @@ const Header = () => {
         <Appbar.BackAction onPress={() => {navigation.goBack()}} />
         <Appbar.Content title="Ticket de pesaje" />
         {
-            !!ticketPesaje.is_saved && <Appbar.Action icon="save" onPress={saveTicket} />
+            !ticketPesaje?.is_saved && <Appbar.Action icon="safe" onPress={saveTicket} />
         }
         <Appbar.Action icon="pencil" onPress={() => {}} />
         <Appbar.Action icon="delete" onPress={deleteTicket} />

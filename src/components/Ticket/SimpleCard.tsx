@@ -140,12 +140,21 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
                         <Text style={{ color: 'grey', fontSize: 14 }}>
                             • {ticketData.guias_remision.length} guías rem.
                         </Text>
-                        <Text style={{ color: 'grey', fontSize: 14 }}>
-                            • {ticketData.nro_sacos} kg bruto
-                        </Text>
+                        {
+                            canEdit ? 
+                            <Text style={{ color: 'grey', fontSize: 14 }}>
+                                • P/S 
+                                {/* TODO: Peso promedio por saco = Peso neto recibido / Cantidad de sacos */}
+                            </Text>
+                            :
+                            <Text style={{ color: 'grey', fontSize: 14 }}>
+                                {/* TODO: MOSTRAR LA PLACA CARRETA */}
+                            </Text>
+                        }
+                        
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Text style={{ color: 'grey', fontSize: 14 }}>
-                                • {ticketData.nro_sacos} sacos recib. ({ticketData.saco_color?.descripcion})
+                                • {ticketData.nro_sacos} sacos recib.
                             </Text>
                             {
                                 canEdit && <IconButton icon="pencil" onPress={() => setVisible(true)} />
