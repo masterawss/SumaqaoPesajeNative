@@ -1,58 +1,37 @@
-import {
-    Tabs,
-    TabScreen,
-    useTabIndex,
-    useTabNavigation,
-    TabsProvider,
-  } from 'react-native-paper-tabs';
-import { View } from 'react-native';
-import GuiaIngreso from '../components/GuiaIngreso';
+import { ScrollView, View } from 'react-native';
+import GuiaRemision from '../components/GuiaRemision';
 import Pesaje from '../components/Pesaje';
+import { Button, Text } from 'react-native-paper';
+import { useState } from 'react';
+import Resumen from '../components/Resumen';
 
-const TabsSection = ({navigation, ticketId}:any) => {
-    return <TabsProvider
-            defaultIndex={0}
-            // onChangeIndex={handleChangeIndex} optional
-        >
-        <Tabs
-            tabLabelStyle={{ fontSize: 11 }} // optional
-            iconPosition="top" // leading, top | default=leading
-            style={{ backgroundColor:'#fff' }} // works the same as AppBar in react-native-paper
-            showLeadingSpace={true} //  (default=true) show leading space in scrollable tabs inside the header
-            // uppercase={false} // true/false | default=true (on material v2) | labels are uppercase
-            // showTextLabel={false} // true/false | default=false (KEEP PROVIDING LABEL WE USE IT AS KEY INTERNALLY + SCREEN READERS)
-            // dark={false} // works the same as AppBar in react-native-paper
-            // theme={} // works the same as AppBar in react-native-paper
-            // mode="scrollable" // fixed, scrollable | default=fixed
-            // disableSwipe={false} // (default=false) disable swipe to left/right gestures
-        >
-            <TabScreen label="Guías I." icon="newspaper">
-                <GuiaIngreso ticketId={ticketId} navigation={navigation} />
-            </TabScreen>
-            <TabScreen label="Pesaje" icon="swap-vertical-circle">
-                <Pesaje ticketId={ticketId} navigation={navigation} />
-            </TabScreen>
-            <TabScreen label="Sacos recib." icon="swap-vertical-circle">
-                <View style={{ backgroundColor: 'black', flex:1 }} />
-            </TabScreen>
-            <TabScreen
-                label="Resúmen"
-                icon="newspaper"
-                // optional props
-                // badge={true} // only show indicator
-                // badge="text"
-                // badge={1}
-                // onPressIn={() => {
-                //   console.log('onPressIn explore');
-                // }}
-                // onPress={() => {
-                //   console.log('onPress explore');
-                // }}
-            >
-                <View style={{ backgroundColor: 'red', flex:1 }} />
-            </TabScreen>
-        </Tabs>
-    </TabsProvider>
+const TabsSection = () => {
+    const [tab, setTab] = useState('guia_remision');
+
+    return <View>
+        <View style={{ paddingHorizontal: 15, marginBottom: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Button style={{ marginRight: 10 }} compact mode={tab === 'guia_remision' ? 'outlined' : 'text'} onPress={() => setTab('guia_remision')}>Guía remisión</Button>
+            <Button style={{ marginRight: 10 }} compact mode={tab === 'pesaje' ? 'outlined' : 'text'} onPress={() => setTab('pesaje')}>Pesaje</Button>
+            {/* <Button style={{ marginRight: 10 }} compact mode={tab === 'sacos_recibidos' ? 'outlined' : 'text'} onPress={() => setTab('sacos_recibidos')}>Sacos recibidos</Button> */}
+            <Button style={{ marginRight: 10 }} compact mode={tab === 'resumen' ? 'outlined' : 'text'} onPress={() => setTab('resumen')}>Resumen</Button>
+        </View>
+        <ScrollView style={{ paddingHorizontal: 15 }}>
+            <Tab tab={tab}/>
+        </ScrollView>
+    </View>
+}
+
+const Tab = ({tab}: {tab: string}) => {
+    switch (tab) {
+        case 'guia_remision':
+            return <GuiaRemision />
+        case 'pesaje':
+            return <Pesaje />
+        // case 'sacos_recibidos':
+        //     return <Sa />
+        default:
+            return <Resumen />
+    }
 }
 
 export default TabsSection;
