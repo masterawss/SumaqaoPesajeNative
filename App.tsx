@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -13,17 +13,35 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './src/screens/Login/Index';
 import HomeScreen from './src/screens/Home/Index';
 import IngresoShowScreen from './src/screens/Ingreso/Show';
-import GuiaIngresoSearchScreen from './src/screens/GuiaIngreso/Search';
+import GuiaRemisionSearchScreen from './src/screens/GuiaRemision/Search';
 import PesajeCreateScreen from './src/screens/Pesaje/Create';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import SplashScreen from 'react-native-splash-screen';
 
 const Stack = createNativeStackNavigator();
 
 function App(): JSX.Element {
+  const [loading, setLoading] = React.useState(true);
+  const [user, setUser] = React.useState(null);
+
+  useEffect(() => {
+    // SplashScreen.show();
+    // AsyncStorage.getItem('user')
+    //   .then((response) => {
+    //     if (response) {
+    //       setUser(JSON.parse(response));
+    //     }
+    //     setLoading(false);
+    //   })
+    //  .finally(() => {
+    //    SplashScreen.hide();
+    //  })
+  }, [])
 
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName='home'
+        initialRouteName='login'
         screenOptions={{
           headerShown: false,
           contentStyle: {
@@ -34,7 +52,7 @@ function App(): JSX.Element {
         <Stack.Screen name="login" component={LoginScreen} />
         <Stack.Screen name="home" component={HomeScreen} />
         <Stack.Screen name="ingreso.show" component={IngresoShowScreen} />
-        <Stack.Screen name="guia_ingreso.search" component={GuiaIngresoSearchScreen} />
+        <Stack.Screen name="guia_remision.search" component={GuiaRemisionSearchScreen} />
         <Stack.Screen name="pesaje.create" component={PesajeCreateScreen} />
       </Stack.Navigator>
     </NavigationContainer>

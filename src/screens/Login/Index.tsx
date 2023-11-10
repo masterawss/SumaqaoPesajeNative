@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, SafeAreaView, Image, ImageBackground, Dimensions } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -19,18 +19,35 @@ const LoginScreen = ({navigation} : any): JSX.Element => {
 
     const [hasError, setHasError] = React.useState(false);
     const [errorMsg, setErrorMsg] = React.useState("");
+    const [loading, setLoading] = React.useState(false);
+
+    useEffect(() => {
+        setLoading(true);
+        AsyncStorage.getItem('user').then((user) => {
+            if(user) {
+                navigation.navigate('home');
+                return
+            }
+            setLoading(false);
+        })
+    }, []);
 
     const login = () => {
         api.post('/login', {
             email: email,
             password: password
         }).then(async (response) => {
-            console.log(response.data);
+            console.log("RESPUESTA", response.data);
+            if(response.data.status === 'error') {
+                setErrorMsg(response.data.message);
+                setHasError(true);
+                return;
+            }
             // Save user data in local storage
             await AsyncStorage.setItem('user', JSON.stringify(response.data));
             navigation.navigate('home');
         }).catch((error) => {
-            console.log(error.response.data);
+            console.log("ERRRROOOORR", error.response.data);
             setErrorMsg(error.response.data.message);
             setHasError(true);
         })
@@ -46,28 +63,31 @@ const LoginScreen = ({navigation} : any): JSX.Element => {
                         <Text style={{ color: 'grey', fontSize: 20, fontWeight: 'bold' }}>Registro de pesaje</Text>
                     </View>
                     <View style={{ padding: 30, marginTop: 50 }}>
-                        <Card>
-                            <Card.Content >
-                                <TextInput
-                                    mode="outlined"
-                                    label="Email"
-                                    keyboardType="email-address"
-                                    value={email}
-                                    onChangeText={val => setEmail(val)}
-                                />
-                                <TextInput
-                                    style={{ marginTop: 15 }}
-                                    mode="outlined"
-                                    label="Contraseña"
-                                    secureTextEntry={true}
-                                    value={password}
-                                    onChangeText={val => setPassword(val)}
-                                />
-                                <Button style={{ marginTop: 10 }} mode="contained" onPress={login}>
-                                    Ingresar
-                                </Button>
-                            </Card.Content>
-                        </Card>
+                        {
+                            loading ? <Text style={{ color: 'grey', textAlign: 'center', fontSize: 20, fontWeight: 'bold' }}>Cargando...</Text> 
+                            : <Card>
+                                <Card.Content >
+                                    <TextInput
+                                        mode="outlined"
+                                        label="Email"
+                                        keyboardType="email-address"
+                                        value={email}
+                                        onChangeText={val => setEmail(val)}
+                                    />
+                                    <TextInput
+                                        style={{ marginTop: 15 }}
+                                        mode="outlined"
+                                        label="Contraseña"
+                                        secureTextEntry={true}
+                                        value={password}
+                                        onChangeText={val => setPassword(val)}
+                                    />
+                                    <Button style={{ marginTop: 10 }} mode="contained" onPress={login}>
+                                        Ingresar
+                                    </Button>
+                                </Card.Content>
+                            </Card>
+                        }
                     </View>
                 </LinearGradient>
             </ImageBackground>
