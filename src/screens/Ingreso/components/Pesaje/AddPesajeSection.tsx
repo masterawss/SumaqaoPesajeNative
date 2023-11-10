@@ -49,18 +49,21 @@ const AddPesajeSection = ({onSaved = (data: number) => {}}) => {
           
         try {
             const address = '00:08:F4:02:BC:F5';
-            const device = await RNBluetoothClassic.getConnectedDevice(address);
+            // const device = await RNBluetoothClassic.getConnectedDevice(address);
+            const paired = await RNBluetoothClassic.getBondedDevices();
+            const device = paired.find(d => d.address === address)
+            console.log('DEVIVE', device)
             const con = await device.connect({})
             console.log('CON', con)
-            // const read = await device.read()
-            // console.log('READ', read)
+            // // const read = await device.read()
+            // // console.log('READ', read)
             device.onDataReceived((data) => {
                 console.log(data)
                 setPeso(data.data as unknown as number)
             })
             setError(false)
         } catch (error) {
-            console.log('ERROR', error)
+            console.log('ERROR EN CONEXION', error)
             setError(true)
         } finally {
             setLoading(false)
