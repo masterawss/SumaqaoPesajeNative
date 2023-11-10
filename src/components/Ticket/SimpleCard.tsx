@@ -1,5 +1,5 @@
-import { ActivityIndicator, Button, IconButton, Modal, Portal, Text, TextInput } from "react-native-paper";
-import { Dimensions, View } from "react-native";
+import { ActivityIndicator, Button, IconButton, Modal, Portal, RadioButton, Text, TextInput } from "react-native-paper";
+import { Dimensions, ScrollView, View } from "react-native";
 import { useContext, useEffect, useState } from "react";
 import api from "../../utils/axios";
 import { TicketContext } from "../../screens/Ingreso/Show/provider/TicketProvider";
@@ -19,18 +19,18 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
 
     const [visible, setVisible] = useState(false);
     const [saveLoading, setSaveLoading] = useState(false);
-    const [nroSacos, setNroSacos] = useState(0);
+    const [nroSacos, setNroSacos] = useState("0");
     const [sacoColorId, setSacoColorId] = useState(0);
     const [sacosColor, setSacosColor] = useState<any[]>([]);
 
     useEffect(() => {
         if(canEdit){
             api.get('/sacos_color').then((response) => {
-                let sacos_color = response.data.sacos_color.map((item: any) => {
-                    item.label = item.descripcion;
-                    item.value = item.id;
-                })
-                setSacosColor(sacos_color);
+                // let sacos_color = response.data.sacos_color.map((item: any) => {
+                //     item.label = item.descripcion;
+                //     item.value = item.id;
+                // })
+                setSacosColor(response.data.sacos_color);
             }).catch((error) => {
                 console.log(error.response);
                 // setHasError(true);
@@ -66,6 +66,20 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
     }, [])
 
     const save = async () => {
+
+        if(nroSacos <= 0 || !sacoColorId){
+            Snackbar.show({
+                text: 'Ingrese los datos correctamente',
+                duration: Snackbar.LENGTH_INDEFINITE,
+                action: {
+                  text: 'Cerrar',
+                  textColor: 'red',
+                  onPress: () => { /* Do something. */ },
+                },
+            });
+            return;
+        }
+
         setSaveLoading(true);
         const user = await AsyncStorage.getItem('user');
         api.post('/ticket_pesaje/update/'+ticketData.id, { 
@@ -131,7 +145,7 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
                         </Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Text style={{ color: 'grey', fontSize: 14 }}>
-                                • {ticketData.nro_sacos} sacos recib. (Rojo)
+                                • {ticketData.nro_sacos} sacos recib. ({ticketData.saco_color?.descripcion})
                             </Text>
                             {
                                 canEdit && <IconButton icon="pencil" onPress={() => setVisible(true)} />
@@ -143,22 +157,31 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
             {
                 canEdit && <Portal>
                     <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={containerStyle}>
-                        <View>
-                            <RNPickerSelect
-                                onValueChange={(value) => setSacoColorId(value)}
-                                items={ sacosColor }
-                            />
+                        <ScrollView>
+                            <View style={{ marginBottom: 20 }}>
+                                {
+                                    sacosColor.map((item) => <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton
+                                            key={item.id}
+                                            value={item.descripcion}
+                                            status={ sacoColorId === item.id ? 'checked' : 'unchecked' }
+                                            onPress={() => setSacoColorId(item.id)}
+                                        />
+                                        <Text>{item.descripcion}</Text>
+                                    </View>)
+                                }
+                            </View>
                             <TextInput
                                 mode="outlined"
                                 label="Cantidad de sacos"
                                 keyboardType="numeric"
-                                value={nroSacos.toString()}
-                                onChangeText={val => setNroSacos(parseInt(val))}
+                                value={nroSacos}
+                                onChangeText={val => setNroSacos(val)}
                             />
                             <Button style={{ marginTop: 10 }} mode="contained" loading={saveLoading} disabled={saveLoading} onPress={save}>
                                 Guardar
                             </Button>
-                        </View>
+                        </ScrollView>
                     </Modal>
                 </Portal>
             }
