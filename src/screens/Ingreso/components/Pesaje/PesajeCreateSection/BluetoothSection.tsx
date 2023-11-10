@@ -51,8 +51,10 @@ const BluetoothSection = () => {
             // const read = await device.read()
             // console.log('READ', read)
             device.onDataReceived((data) => {
+                // Eliminar los caracteres no numericos
+                let peso = data.data.replace(/[^0-9]/g, '')
                 console.log(data)
-                setPeso(data.data as unknown as number)
+                setPeso(peso)
             })
         } catch (error) {
             console.log('ERROR', error)
