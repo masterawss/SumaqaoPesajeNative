@@ -12,12 +12,13 @@ const ManualSection = () => {
 
     const { hasError, loadTicket, ticketPesaje, deleteTicket } = useContext(TicketContext);
 
-    const save = () => {
+    const save = async () => {
         if(peso && peso > 0){
-            saveData(peso, false)
+            await saveData(peso, false)
+            setPeso(null)
         }else{
             Snackbar.show({
-                text: 'Ingrese un valor correctonpm install react-native-date-picker',
+                text: 'Ingrese un valor correcto',
                 duration: Snackbar.LENGTH_SHORT,
                 action: {
                   text: 'Cerrar',

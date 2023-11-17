@@ -1,7 +1,7 @@
 import LottieView from 'lottie-react-native';
 import { Text } from 'react-native-paper';
 import TabsSection from './TabsSection';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import SimpleCard from '../../../components/Ticket/SimpleCard';
 import { useContext } from 'react';
 import { TicketContext } from './provider/TicketProvider';
@@ -11,7 +11,7 @@ const Body = () => {
 
     const { loading, hasError, loadTicket, ticketPesaje } = useContext(TicketContext);
 
-    return <>
+    return <ScrollView>
         {
             loading && <>
                 <LottieView style={{ height: 250 }} source={require("../../../../assets/lottie/loading.json")} autoPlay loop />
@@ -25,12 +25,14 @@ const Body = () => {
         }
         {
             !loading && !hasError && ticketPesaje && <>
-                <View style={{ paddingVertical: 10 }}>
+                <View style={{ paddingBottom: 10 }}>
                     <SimpleCard canEdit={true} />
                 </View>
-                <TabsSection/>
+                <View style={{ marginBottom: 100 }}>
+                    <TabsSection/>
+                </View>
             </>
         }
-    </>
+    </ScrollView>
 }
 export default Body;

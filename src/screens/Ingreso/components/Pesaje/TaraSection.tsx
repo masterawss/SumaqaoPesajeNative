@@ -1,18 +1,32 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import { ActivityIndicator, View } from "react-native"
-import { Button, IconButton, Modal, Portal, Text, TextInput } from "react-native-paper"
+import { Button, IconButton, Modal, Portal, RadioButton, Text, TextInput } from "react-native-paper"
 import api from "../../../../utils/axios";
 import Snackbar from "react-native-snackbar";
 import { TicketContext } from "../../Show/provider/TicketProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const TaraSection = () => {
-    // TODO: Si ya existe un registro de tara, que no se permita editar, sino sumar o restar kg a ese valor inicial
     const [visible, setVisible] = React.useState(false);
     const [error, setError] = React.useState(false);
     const [taraValue, setTaraValue] = React.useState("0");
     const [taraKg, setTaraKg] = React.useState("0");
     const [loadingTara, setLoadingTara] = React.useState(false);
+
+    const [typeChange, setTypeChange] = React.useState('sumar');
+    const [taraKgDif, setTaraKgDif] = React.useState("0");
+
+    const taraFinalCalculated = useMemo(() => {
+        if(typeChange === 'sumar') {
+            return parseInt(taraKgDif) + parseInt(taraKg)
+        } else {
+            return parseInt(taraKgDif) - parseInt(taraKg)
+        }
+    }, [typeChange, taraKgDif, taraKg])
+
+    const isEdit = useMemo(() => {
+        return parseInt(taraValue) > 0
+    }, [taraValue])
 
     const { loading, hasError, loadTicket, ticketPesaje, deleteTicket } = useContext(TicketContext);
 
@@ -27,7 +41,7 @@ const TaraSection = () => {
         setLoadingTara(true)
         const user = await AsyncStorage.getItem('user');
         api.post('/ticket_pesaje/update/'+ticketPesaje.id, { 
-            peso_solo_paletas: taraKg,
+            peso_solo_paletas: isEdit ? taraFinalCalculated : taraKg,
             updated_user_id: JSON.parse(user || "")?.id
         })
         .then((response) => {
@@ -103,14 +117,48 @@ const TaraSection = () => {
             </View>
 
             <Portal>
-                <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{backgroundColor: 'white', padding: 20}}>
-                    <TextInput
-                        mode="outlined"
-                        label="Peso (Kg)"
-                        keyboardType="numeric"
-                        value={taraKg}
-                        onChangeText={val => setTaraKg(val)}
-                    />
+                <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{backgroundColor: 'white', padding: 20, marginHorizontal: 10}}>
+                    {
+                        !isEdit ?
+                        <>
+                            <TextInput
+                                mode="outlined"
+                                label="Peso (Kg)"
+                                keyboardType="numeric"
+                                value={taraKg}
+                                onChangeText={val => setTaraKg(val)}
+                            />
+                        </> :
+                        <>
+                            <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Tara actual: {taraValue} Kg</Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5, marginTop: 25 }}>
+                                <RadioButton
+                                    value="first"
+                                    status={ typeChange === 'sumar' ? 'checked' : 'unchecked' }
+                                    onPress={() => setTypeChange('sumar')}
+                                />
+                                <Text style={{ fontSize: 18 }}>Sumar</Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5, marginBottom: 25 }}>
+                                <RadioButton
+                                    value="first"
+                                    status={ typeChange === 'restar' ? 'checked' : 'unchecked' }
+                                    onPress={() => setTypeChange('restar')}
+                                />
+                                <Text style={{ fontSize: 18 }}>Restar</Text>
+                            </View>
+                            <TextInput
+                                mode="outlined"
+                                label="Peso (Kg)"
+                                keyboardType="numeric"
+                                value={taraKgDif}
+                                onChangeText={val => setTaraKgDif(val)}
+                            />
+
+                            <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Nuevo valor de tara al guardar: {taraFinalCalculated} Kg</Text>
+
+                        </>
+                    }
                     <Button loading={loading} disabled={loading} style={{ marginTop: 10 }} mode="contained" onPress={save}>
                         Guardar
                     </Button>

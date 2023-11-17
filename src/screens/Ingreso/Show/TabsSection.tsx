@@ -1,4 +1,4 @@
-import { ScrollView, View } from 'react-native';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
 import GuiaRemision from '../components/GuiaRemision';
 import Pesaje from '../components/Pesaje';
 import { Button, Text } from 'react-native-paper';
@@ -9,11 +9,19 @@ const TabsSection = () => {
     const [tab, setTab] = useState('guia_remision');
 
     return <View>
-        <View style={{ paddingHorizontal: 15, marginBottom: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Button style={{ marginRight: 10 }} compact mode={tab === 'guia_remision' ? 'outlined' : 'text'} onPress={() => setTab('guia_remision')}>Guía remisión</Button>
-            <Button style={{ marginRight: 10 }} compact mode={tab === 'pesaje' ? 'outlined' : 'text'} onPress={() => setTab('pesaje')}>Pesaje</Button>
-            {/* <Button style={{ marginRight: 10 }} compact mode={tab === 'sacos_recibidos' ? 'outlined' : 'text'} onPress={() => setTab('sacos_recibidos')}>Sacos recibidos</Button> */}
-            <Button style={{ marginRight: 10 }} compact mode={tab === 'resumen' ? 'outlined' : 'text'} onPress={() => setTab('resumen')}>Resumen</Button>
+        <View style={{ paddingHorizontal: 15, marginTop: 15, marginBottom: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <TouchableOpacity onPress={() => setTab('guia_remision')} style={{ alignItems: 'center' }}>
+                <Text style={{ fontWeight: tab === 'guia_remision' ? 'bold' : 'normal', color: tab === 'guia_remision' ? 'orange' : 'black' }}>Guía de remisión</Text>
+                <View style={{ height: 3, marginTop: 5, borderRadius: 10, backgroundColor: tab === 'guia_remision' ? 'orange' : 'grey', width: tab === 'guia_remision' ? 50 : 5 }}></View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setTab('pesaje')} style={{ alignItems: 'center' }}>
+                <Text style={{ fontWeight: tab === 'pesaje' ? 'bold' : 'normal', color: tab === 'pesaje' ? 'orange' : 'black' }}>Pesaje</Text>
+                <View style={{ height: 3, marginTop: 5, borderRadius: 10, backgroundColor: tab === 'pesaje' ? 'orange' : 'grey', width: tab === 'pesaje' ? 50 : 5 }}></View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setTab('resumen')} style={{ alignItems: 'center' }}>
+                <Text style={{ fontWeight: tab === 'resumen' ? 'bold' : 'normal', color: tab === 'resumen' ? 'orange' : 'black' }}>Resúmen</Text>
+                <View style={{ height: 3, marginTop: 5, borderRadius: 10, backgroundColor: tab === 'resumen' ? 'orange' : 'grey', width: tab === 'resumen' ? 50 : 5 }}></View>
+            </TouchableOpacity>
         </View>
         <ScrollView style={{ paddingHorizontal: 15 }}>
             <Tab tab={tab}/>

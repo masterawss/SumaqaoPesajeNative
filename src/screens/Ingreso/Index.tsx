@@ -49,24 +49,24 @@ const Index = ({navigation}: any) => {
 
     return (
         <SafeAreaView style={{ padding: 10, minHeight: '100%' }}>
-            <Appbar.Header>
-                <Appbar.Content title="Tickets de pesaje" />
-                {/* <Appbar.Action icon="reload" onPress={loadTickets} /> */}
-                <BtnCreate/>
-            </Appbar.Header>
-            <TouchableOpacity onPress={() => setOpen(true)} style={{ borderRadius: 100, backgroundColor: '#F1f1f1', paddingHorizontal: 20, paddingVertical: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text style={{ textAlign: 'center', color: 'black' }}>Fecha: {dateStr}</Text>
-                    <Button onPress={loadTickets} mode="contained" > Buscar</Button>
-                </TouchableOpacity>
-                <DatePicker modal open={open} mode="date" date={date}
-                    onConfirm={(date) => {
-                        setOpen(false)
-                        setDate(date)
-                    }}
-                    onCancel={() => {
-                        setOpen(false)
-                    }}
-                />
+                <Appbar.Header>
+                    <Appbar.Content title="Tickets de pesaje" />
+                    {/* <Appbar.Action icon="reload" onPress={loadTickets} /> */}
+                    <BtnCreate/>
+                </Appbar.Header>
+                <TouchableOpacity onPress={() => setOpen(true)} style={{ borderRadius: 100, backgroundColor: '#F1f1f1', paddingHorizontal: 20, paddingVertical: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Text style={{ textAlign: 'center', color: 'black' }}>Fecha: {dateStr}</Text>
+                        <Button onPress={loadTickets} mode="contained" > Buscar</Button>
+                    </TouchableOpacity>
+                    <DatePicker modal open={open} mode="date" date={date}
+                        onConfirm={(date) => {
+                            setOpen(false)
+                            setDate(date)
+                        }}
+                        onCancel={() => {
+                            setOpen(false)
+                        }}
+                    />
 
             {
                 loading && <View><Text style={{ textAlign: 'center', marginTop: 150 }}><ActivityIndicator size="large" /></Text></View>

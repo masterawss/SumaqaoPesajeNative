@@ -33,16 +33,25 @@ const BluetoothSection = () => {
         await PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
             {
-              title: 'Access fine location required for discovery',
+              title: 'Se requiere permiso de acceso a la ubicación',
               message:
-                'In order to perform discovery, you must enable/allow ' +
-                'fine location access.',
-              buttonNeutral: 'Ask Me Later"',
-              buttonNegative: 'Cancel',
+                'Debemos permitir el acceso para conectarnos con la balanza ',
+              buttonNeutral: 'Preguntarme luego',
+              buttonNegative: 'Cancelar',
               buttonPositive: 'OK'
             }
           );
-
+        await PermissionsAndroid.request(
+             PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+             {
+                title: 'Se requiere permiso de acceso a la ubicación',
+                message:
+                  'Debemos permitir el acceso para conectarnos con la balanza ',
+                buttonNeutral: 'Preguntarme luego',
+                buttonNegative: 'Cancelar',
+                buttonPositive: 'OK'
+              }
+        );
           
         try {
             const address = '00:08:F4:02:BC:F5';
@@ -62,8 +71,8 @@ const BluetoothSection = () => {
         } catch (error) {
             console.log('ERROR', error)
             Snackbar.show({
-                // text: 'No se pudo conectar con la balanza',
-                text: JSON.stringify(error),
+                text: 'No se pudo conectar con la balanza',
+                // text: JSON.stringify(error),
                 duration: Snackbar.LENGTH_INDEFINITE,
                 action: {
                   text: 'Cerrar',

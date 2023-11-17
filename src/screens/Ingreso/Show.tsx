@@ -2,7 +2,7 @@
 import TicketProvider from './Show/provider/TicketProvider';
 import Header from './Show/Header';
 import Body from './Show/Body';
-import { View } from 'react-native';
+import { SafeAreaView, View } from 'react-native';
 
 interface IIngreso {
     id: number;
@@ -19,12 +19,12 @@ interface IIngreso {
 const ShowScreen = ({ navigation, route }: any) => {
     const { id } = route.params || { id: null };
 
-    return <View>
+    return <SafeAreaView>
         <TicketProvider ticketId={id}>
             <Header />
             <Body />
         </TicketProvider>
-    </View>
+    </SafeAreaView>
 }
 
 export default ShowScreen;

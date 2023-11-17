@@ -1,4 +1,4 @@
-import { ActivityIndicator, Button, IconButton, Modal, Portal, RadioButton, Text, TextInput } from "react-native-paper";
+import { ActivityIndicator, Button, Icon, IconButton, MD3Colors, Modal, Portal, RadioButton, Text, TextInput } from "react-native-paper";
 import { Dimensions, ScrollView, View } from "react-native";
 import { useContext, useEffect, useState } from "react";
 import api from "../../utils/axios";
@@ -15,11 +15,9 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
     const [hasError, setHasError] = useState(false);
     const [loading, setLoading] = useState(false);
 
-
-
     const [visible, setVisible] = useState(false);
     const [saveLoading, setSaveLoading] = useState(false);
-    const [nroSacos, setNroSacos] = useState("0");
+    const [nroSacos, setNroSacos] = useState<string|null>(null);
     const [sacoColorId, setSacoColorId] = useState(0);
     const [sacosColor, setSacosColor] = useState<any[]>([]);
 
@@ -39,6 +37,17 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
             });
         }
     }, [])
+
+    useEffect(() => {
+        if(ticketContext.ticketPesaje){
+            if(ticketContext.ticketPesaje.nro_sacos > 0){
+                setNroSacos(ticketContext.ticketPesaje.nro_sacos.toString())
+                setSacoColorId(ticketContext.ticketPesaje.saco_color_id)
+            }else{
+                setNroSacos(null)
+            }
+        }
+    }, [ticketContext.ticketPesaje])
 
     const containerStyle = {
         height: deviceHeight - (deviceHeight * 0.3),
@@ -63,7 +72,7 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
         }else{
             setTicketData(ticketContext.ticketPesaje)
         }
-    }, [])
+    }, [ticketContext.ticketPesaje])
 
     const save = async () => {
 
@@ -109,7 +118,7 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
         })
     }
 
-    return <View style={{ paddingHorizontal: 20, paddingVertical: 30, backgroundColor: '#f5f5f5', borderRadius: 10 }}>
+    return <View style={{  paddingVertical: 10, backgroundColor: '#f5f5f5', borderRadius: 10 }}>
             {
                 loading && !hasError && <Text style={{ textAlign: 'center', color: 'grey', fontWeight: 'bold', marginTop: 20 }}>
                     <ActivityIndicator size="small" />
@@ -125,41 +134,25 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
             }
             {
                 !ticketContext.loading && !ticketContext.hasError && ticketData && <>
-                    <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ paddingHorizontal: 20, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View >
                             <Text variant="titleMedium">{ticketData.codigo}</Text>
+                            <Text style={{ color: 'silver', fontSize: 14, fontWeight: 'bold' }}>{ticketData.fecha_desc}</Text>
+                        </View>
+                        <View >
                             <View style={{ borderRadius: 40, backgroundColor: ticketData.is_saved ? 'teal' : 'orange', paddingHorizontal: 8, marginLeft: 8 }}>
                                 <Text style={{ color: 'white', fontSize: 12 }}>{ticketData.is_saved ? 'Finalizado' : 'Pendiente'}</Text>
                             </View>
                         </View>
-                        <View >
-                            <Text style={{ color: 'silver', fontSize: 12 }}>{ticketData.fecha_desc}</Text>
-                        </View>
                     </View>
-                    <View style={{ display: 'flex', marginTop: 13, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Text style={{ color: 'grey', fontSize: 14 }}>
-                            • {ticketData.guias_remision.length} guías rem.
-                        </Text>
-                        {
-                            canEdit ? 
-                            <Text style={{ color: 'grey', fontSize: 14 }}>
-                                • P/S 
-                                {/* TODO: Peso promedio por saco = Peso neto recibido / Cantidad de sacos */}
-                            </Text>
-                            :
-                            <Text style={{ color: 'grey', fontSize: 14 }}>
-                                {/* TODO: MOSTRAR LA PLACA CARRETA */}
-                            </Text>
-                        }
-                        
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={{ color: 'grey', fontSize: 14 }}>
-                                • {ticketData.nro_sacos} sacos recib.
-                            </Text>
+                    <View showsHorizontalScrollIndicator={false} style={{ display: 'flex', flexDirection: 'row', marginTop: 20 ,justifyContent: 'space-between' }}>
+                        <Item icon="file" styles={{ marginRight: 10, marginLeft: 10 }} title={ticketData.guias_remision.length} subtitle="# G.R.R" />
+                        <Item styles={{ marginRight: 10 }} icon="dots-grid" title={ticketData.nro_sacos} subtitle="Sacos">
                             {
-                                canEdit && <IconButton icon="pencil" onPress={() => setVisible(true)} />
+                                canEdit && <IconButton style={{ marginTop: -10, marginBottom: -10 }} size={18} icon="pencil" onPress={() => setVisible(true)} />
                             }
-                        </View>
+                        </Item>
+                        <Item styles={{ marginRight: 10 }} icon="toaster" title={ticketData.placa_tracto} subtitle="Placa" />
                     </View>
                 </>
             }
@@ -169,9 +162,8 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
                         <ScrollView>
                             <View style={{ marginBottom: 20 }}>
                                 {
-                                    sacosColor.map((item) => <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    sacosColor.map((item) => <View key={item.id} style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <RadioButton
-                                            key={item.id}
                                             value={item.descripcion}
                                             status={ sacoColorId === item.id ? 'checked' : 'unchecked' }
                                             onPress={() => setSacoColorId(item.id)}
@@ -186,6 +178,7 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
                                 keyboardType="numeric"
                                 value={nroSacos}
                                 onChangeText={val => setNroSacos(val)}
+                                placeholder={!nroSacos ? '0' : ''}
                             />
                             <Button style={{ marginTop: 10 }} mode="contained" loading={saveLoading} disabled={saveLoading} onPress={save}>
                                 Guardar
@@ -196,4 +189,25 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
             }
         </View>
 }
+
+const Item = ({title = '', subtitle = '', icon= "", styles={}, children = null}) => {
+    return (
+        <View style={{ flexDirection: 'row', alignItems: 'center', ...styles }}>
+            <View >
+                <Icon
+                    source={icon}
+                    size={20}
+                />
+            </View>
+            <View style={{ marginLeft: 10 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={{ fontWeight: 'bold' }}>{title}</Text>
+                    {children}
+                </View>
+                <Text>{subtitle}</Text>
+            </View>
+        </View>
+    )
+}
+
 export default SimpleCard;

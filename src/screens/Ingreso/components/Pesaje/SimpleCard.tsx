@@ -6,7 +6,7 @@ import api from "../../../../utils/axios";
 import Snackbar from "react-native-snackbar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const SimpleCard = ({detalle}: any) => {
+const SimpleCard = ({detalle, nro}: any) => {
     const { loading, hasError, loadTicket, ticketPesaje, deleteTicket } = useContext(TicketContext);
     const [loadingDelete, setLoadingDelete] = React.useState(false);
 
@@ -50,24 +50,28 @@ const SimpleCard = ({detalle}: any) => {
 
     return (
         <View style={{
-            padding: 10, borderRadius: 10, marginVertical: 4,
-            display: 'flex', flexDirection: 'row', justifyContent: 'space-between',
+            borderRadius: 10, marginVertical: 4,
+            display: 'flex', flexDirection: 'row',
             backgroundColor: "#f5f5f5",
         }}>
-            <View>
-                <Text style={{ fontWeight: 'bold' }}>{detalle.peso_bruto} kg</Text>
-                {/* <Text>Peso bruto + paleta</Text> */}
+            <View style={{ backgroundColor: '#7da82c', padding: 15, borderTopLeftRadius: 10, borderBottomLeftRadius: 10 }}>
+                <Text style={{ color: 'white', fontSize: 15 }}>{nro}</Text>
             </View>
-            {
-                loadingDelete ? <Text><ActivityIndicator color="grey" /></Text>
-                : <IconButton
-                    disabled={loadingDelete}
-                    icon="delete"
-                    iconColor='grey'
-                    size={20}
-                    onPress={deleteData}
-                />
-            }
+            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '85%' }}>
+                <View>
+                    <Text style={{ fontWeight: 'bold', marginLeft: 20, fontSize: 16 }}>{detalle.peso_bruto} kg</Text>
+                </View>
+                {
+                    loadingDelete ? <Text><ActivityIndicator color="grey" /></Text>
+                    : <IconButton
+                        disabled={loadingDelete}
+                        icon="delete"
+                        iconColor='grey'
+                        size={20}
+                        onPress={deleteData}
+                    />
+                }
+            </View>
         </View>
     )
 }

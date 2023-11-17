@@ -3,14 +3,18 @@ import api from '../../../../utils/axios';
 import {View, Alert} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Text } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Snackbar from 'react-native-snackbar';
 
 export const TicketContext = createContext({
     ticketId: null,
     ticketPesaje: null,
+    loadingSimple: false,
     loading: false,
     hasError: false,
     loadTicket: () => {},
     deleteTicket: () => {},
+    saveTicket: () => {}
 });
 
 export default ({ticketId, children}:any) => {
@@ -18,16 +22,21 @@ export default ({ticketId, children}:any) => {
     const [ticketPesaje, setTicketPesaje] = React.useState<any>(null)
     const [loading, setLoading] = React.useState(false);
     const [hasError, setHasError] = React.useState(false);
+    const [loadingSimple, setLoadingSimple] = React.useState(false);
 
     const navigation = useNavigation();
 
     useEffect(() => {
         if(ticketId)
-            loadTicket()
+            loadTicket(true)
     }, [ticketId])
 
-    const loadTicket = () => {
-        setLoading(true);
+    const loadTicket = (withLoader = false) => {
+        if(withLoader){
+            setLoading(true);
+        }else{
+            setLoadingSimple(true);
+        }
         setHasError(false);
         api.get('/ticket_pesaje/'+ticketId).then((response) => {
             console.log(response.data);
@@ -36,6 +45,7 @@ export default ({ticketId, children}:any) => {
             console.log(error.response);
             setHasError(true);
         }).finally(() => {
+            setLoadingSimple(false);
             setLoading(false);
         });
     }
@@ -62,13 +72,42 @@ export default ({ticketId, children}:any) => {
       });
     }
 
+    const saveTicket = async () => {
+        const user = await AsyncStorage.getItem('user');
+        api.post('/ticket_pesaje/update/'+id, { 
+            is_saved: 1,
+            updated_user_id: JSON.parse(user || "")?.id
+        })
+        .then((response) => {
+            console.log(response.data)
+            loadTicket()
+        })
+        .catch((error) => {
+            console.log(error.response)
+            Snackbar.show({
+                text: 'No se pudo registrar la tara',
+                duration: Snackbar.LENGTH_INDEFINITE,
+                action: {
+                  text: 'Cerrar',
+                  textColor: 'red',
+                  onPress: () => { /* Do something. */ },
+                },
+            });
+        })
+        .finally(() => {
+            // setLoadingTara(false)
+        })
+    }
+
     return <TicketContext.Provider value={{ 
         ticketId,
         ticketPesaje,
         loading,
+        loadingSimple,
         hasError,
         loadTicket,
-        deleteTicket
+        deleteTicket,
+        saveTicket
      }}>
         {children}
     </TicketContext.Provider>

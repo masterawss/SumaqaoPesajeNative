@@ -3,8 +3,10 @@ import { View } from "react-native";
 
 const Index = () => {
     return (
-        <View>
-            <Text>Index</Text>
+        <View >
+            <Text style={{ textAlign: 'center', fontWeight: 'bold', marginTop: 50 }}>
+                En desarrollo
+            </Text>
         </View>
     )
 }

@@ -72,23 +72,25 @@ const Search = ({navigation, route}:any) => {
                 </View>
 
                 <ScrollView>
-                    {
-                        guiasRemision.map((guia: any) => <SimpleCardGuiaRemision key={guia.id} ticketId={ticketId} guiaRemision={guia} />)
-                        
-                        // <View style={{ padding: 10, borderRadius: 10, backgroundColor: '#f5f5f5' }}>
-                        //         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        //             <Text>CODIGO: {guia.codigo}</Text>
-                        //             {
-                        //                 guia.ticket_pesaje_id === ticketId 
-                        //                 ? <IconButton icon="delete" onPress={deleteGuia} />
-                        //                 : <IconButton icon="add" onPress={addGuia} />
-                        //             }
-                        //         </View>
-                        //         <Text>Tracto: {guia.tracto.placa}</Text>
-                        //         <Text>Placa: {guia.carreta.placa}</Text>
-                        //     </View>
-                        // )
-                    }
+                    <View style={{ paddingHorizontal: 10,paddingVertical:10 }}>
+                        {
+                            guiasRemision.map((guia: any) => <SimpleCardGuiaRemision key={guia.id} ticketId={ticketId} guiaRemision={guia} />)
+                            
+                            // <View style={{ padding: 10, borderRadius: 10, backgroundColor: '#f5f5f5' }}>
+                            //         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            //             <Text>CODIGO: {guia.codigo}</Text>
+                            //             {
+                            //                 guia.ticket_pesaje_id === ticketId 
+                            //                 ? <IconButton icon="delete" onPress={deleteGuia} />
+                            //                 : <IconButton icon="add" onPress={addGuia} />
+                            //             }
+                            //         </View>
+                            //         <Text>Tracto: {guia.tracto.placa}</Text>
+                            //         <Text>Placa: {guia.carreta.placa}</Text>
+                            //     </View>
+                            // )
+                        }
+                    </View>
                 </ScrollView>
             </View>
         </SafeAreaView>

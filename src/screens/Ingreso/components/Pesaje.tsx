@@ -1,4 +1,4 @@
-import { View } from "react-native"
+import { ScrollView, View } from "react-native"
 import { Text } from "react-native-paper"
 import TaraSection from "./Pesaje/TaraSection";
 import SimpleCard from "./Pesaje/SimpleCard";
@@ -19,19 +19,19 @@ const Pesaje = () => {
         console.log('saveData', data)
         setItems([...items, {id: items.length + 1, peso: data, fecha: '2021-09-01'}])
     }
-    return (<View>
-        <View style={{ padding: 10 }}>
+    return (<>
+        <View style={{ padding: 10, paddingTop: 0 }}>
             <TaraSection />
             <PesajeCreateSection />
             <Text style={{ marginVertical: 10, fontWeight: 'bold', color: 'grey' }}>Lista de pesaje</Text>
             {
-                ticketPesaje.detalle.map((item) => (
-                    <SimpleCard key={item.id} detalle={item} />
+                ticketPesaje.detalle.map((item, index) => (
+                    <SimpleCard key={item.id} nro={index+1} detalle={item} />
                 ))
             }
         </View>
         {/* <AddPesajeSection onSaved={saveData} /> */}
-    </View>)
+    </>)
 }
 
 export default Pesaje;

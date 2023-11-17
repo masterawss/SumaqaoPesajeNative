@@ -18,7 +18,7 @@ const Index = () => {
                 ),
             }}
         />
-        <Tab.Screen name="proceso_mp.index" component={ExportacionScreen}
+        <Tab.Screen name="proceso_mp.index" component={ProcesoMPScreen}
             options={{
                 tabBarLabel: 'ProcesoMP',
                 tabBarIcon: ({ color }) => (
@@ -26,7 +26,7 @@ const Index = () => {
                 ),
             }}
         />
-        <Tab.Screen name="exportacion.index" component={ProcesoMPScreen}
+        <Tab.Screen name="exportacion.index" component={ExportacionScreen}
             options={{
                 tabBarLabel: 'Exportación',
                 tabBarIcon: ({ color }) => (
