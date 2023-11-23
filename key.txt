@@ -1,0 +1,5 @@
+Key store path : keystore
+Pass: SmqPesaje
+
+Alias : SmqPesajeAlias
+Pass: SmqPesajeAlias

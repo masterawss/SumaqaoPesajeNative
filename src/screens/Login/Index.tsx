@@ -21,16 +21,16 @@ const LoginScreen = ({navigation} : any): JSX.Element => {
     const [errorMsg, setErrorMsg] = React.useState("");
     const [loading, setLoading] = React.useState(false);
 
-    useEffect(() => {
-        setLoading(true);
-        AsyncStorage.getItem('user').then((user) => {
-            if(user) {
-                navigation.navigate('home');
-                return
-            }
-            setLoading(false);
-        })
-    }, []);
+    // useEffect(() => {
+    //     setLoading(true);
+    //     AsyncStorage.getItem('user').then((user) => {
+    //         if(user) {
+    //             navigation.navigate('home');
+    //             return
+    //         }
+    //         setLoading(false);
+    //     })
+    // }, []);
 
     const login = () => {
         api.post('/login', {
@@ -64,8 +64,7 @@ const LoginScreen = ({navigation} : any): JSX.Element => {
                     </View>
                     <View style={{ padding: 30, marginTop: 50 }}>
                         {
-                            loading ? <Text style={{ color: 'grey', textAlign: 'center', fontSize: 20, fontWeight: 'bold' }}>Cargando...</Text> 
-                            : <Card>
+                            <Card>
                                 <Card.Content >
                                     <TextInput
                                         mode="outlined"

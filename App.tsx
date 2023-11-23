@@ -17,6 +17,7 @@ import GuiaRemisionSearchScreen from './src/screens/GuiaRemision/Search';
 import PesajeCreateScreen from './src/screens/Pesaje/Create';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SplashScreen from 'react-native-splash-screen';
+import TicketProvider from './src/screens/Ingreso/Show/provider/TicketProvider';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,36 +26,40 @@ function App(): JSX.Element {
   const [user, setUser] = React.useState(null);
 
   useEffect(() => {
-    // SplashScreen.show();
-    // AsyncStorage.getItem('user')
-    //   .then((response) => {
-    //     if (response) {
-    //       setUser(JSON.parse(response));
-    //     }
-    //     setLoading(false);
-    //   })
-    //  .finally(() => {
-    //    SplashScreen.hide();
-    //  })
+    AsyncStorage.getItem('user')
+      .then((response) => {
+        if (response) {
+          setUser(JSON.parse(response));
+        }
+        setLoading(false);
+      })
+     .finally(() => {
+     })
   }, [])
 
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName='login'
-        screenOptions={{
-          headerShown: false,
-          contentStyle: {
-            backgroundColor: 'white',
+      <TicketProvider>
+        <Stack.Navigator
+          initialRouteName='login'
+          screenOptions={{
+            headerShown: false,
+            contentStyle: {
+              backgroundColor: 'white',
+            }
+          }}
+        >
+          {
+            !user ? <Stack.Screen name="login" component={LoginScreen} />
+            : <>
+              <Stack.Screen name="home" component={HomeScreen} />
+              <Stack.Screen name="ingreso.show" component={IngresoShowScreen} />
+              <Stack.Screen name="guia_remision.search" component={GuiaRemisionSearchScreen} />
+              <Stack.Screen name="pesaje.create" component={PesajeCreateScreen} />
+            </>
           }
-        }}
-      >
-        <Stack.Screen name="login" component={LoginScreen} />
-        <Stack.Screen name="home" component={HomeScreen} />
-        <Stack.Screen name="ingreso.show" component={IngresoShowScreen} />
-        <Stack.Screen name="guia_remision.search" component={GuiaRemisionSearchScreen} />
-        <Stack.Screen name="pesaje.create" component={PesajeCreateScreen} />
-      </Stack.Navigator>
+        </Stack.Navigator>
+      </TicketProvider>
     </NavigationContainer>
   )
 

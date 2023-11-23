@@ -1,5 +1,5 @@
-import {Appbar, Button, Text } from "react-native-paper";
-import { View, ActivityIndicator, SafeAreaView, TouchableOpacity, ScrollView } from "react-native";
+import {Appbar, Button, IconButton, Menu, Text } from "react-native-paper";
+import { View, ActivityIndicator, SafeAreaView, TouchableOpacity, ScrollView, Image } from "react-native";
 import SimpleCard from "../../components/Ticket/SimpleCard";
 import api from "../../utils/axios";
 import React, { useCallback, useEffect, useMemo } from "react";
@@ -7,12 +7,18 @@ import ErrorSection from "../../components/ErrorSection";
 import BtnCreate from "./components/BtnCreate";
 import DatePicker from "react-native-date-picker";
 
+import LogoImg from '../../../assets/img/logo.png';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
 const Index = ({navigation}: any) => {
     const [loading, setLoading] = React.useState(false);
     const [tickets, setTickets] = React.useState<any>([]);
     const [hasError, setHasError] = React.useState(false);
     const [date, setDate] = React.useState(new Date());
     const [open, setOpen] = React.useState(false);
+
+    const [visibleMenu, setVisibleMenu] = React.useState(false);
     
     const dateStr = useMemo(() => {
         let d = date.toLocaleString().split(',')[0];
@@ -20,6 +26,11 @@ const Index = ({navigation}: any) => {
         let [day, month, year] = d.split('/');
         return `${year}-${month}-${day}`;
     }, [date]);
+
+    const logout = useCallback(async () => {
+        await AsyncStorage.removeItem('user');
+        navigation.navigate('login');
+    }, []);
 
     const loadTickets = async () => {
         setLoading(true);
@@ -49,10 +60,21 @@ const Index = ({navigation}: any) => {
 
     return (
         <SafeAreaView style={{ padding: 10, minHeight: '100%' }}>
+
+                <Appbar.Header>
+                    <Appbar.Content title={<Image source={LogoImg} style={{ width: 50 }} resizeMode="contain" />} />
+                    {/* <Appbar.Action icon="reload" onPress={loadTickets} /> */}
+                    <BtnCreate/>
+                    <Menu
+                        visible={visibleMenu}
+                        onDismiss={() => setVisibleMenu(false)}
+                        anchor={<IconButton icon="dots-vertical" onPress={() => setVisibleMenu(true)} />}>
+                        <Menu.Item onPress={logout} title="Cerrar sesión" />
+                    </Menu>
+                </Appbar.Header>
                 <Appbar.Header>
                     <Appbar.Content title="Tickets de pesaje" />
                     {/* <Appbar.Action icon="reload" onPress={loadTickets} /> */}
-                    <BtnCreate/>
                 </Appbar.Header>
                 <TouchableOpacity onPress={() => setOpen(true)} style={{ borderRadius: 100, backgroundColor: '#F1f1f1', paddingHorizontal: 20, paddingVertical: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Text style={{ textAlign: 'center', color: 'black' }}>Fecha: {dateStr}</Text>

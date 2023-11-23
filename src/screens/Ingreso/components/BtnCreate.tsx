@@ -34,7 +34,7 @@ const BtnCreate = () => {
         })
     }
 
-    return <Button style={{ position: 'absolute', bottom:0, right:0, margin: 10 }} loading={loading} disabled={loading} mode="outlined" onPress={create}>
+    return <Button style={{ margin: 10 }} labelStyle={{ color: 'grey' }} loading={loading} disabled={loading} mode="outlined" onPress={create}>
             Crear ticket
         </Button>
 

@@ -1,7 +1,8 @@
 import { useNavigation } from "@react-navigation/native";
 import { Appbar, Button, Divider, IconButton, Menu, Text } from "react-native-paper"
 import { TicketContext } from "./provider/TicketProvider";
-import React, { useContext } from "react";
+import {Alert} from 'react-native';
+import React, { useContext, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../../../utils/axios";
 import Snackbar from "react-native-snackbar";
@@ -11,6 +12,18 @@ const Header = () => {
     const navigation = useNavigation();
     const { loading, loadingSimple, hasError, loadTicket, ticketPesaje, deleteTicket, saveTicket } = useContext(TicketContext);
     const [visibleMenu, setVisibleMenu] = React.useState(false);
+
+    const haveToResetTicket = async () => {
+        const resetTicket = await AsyncStorage.getItem('resetTicket');
+        if(resetTicket == "1"){
+            loadTicket();
+            await AsyncStorage.setItem('resetTicket', "0");
+        }
+    }
+
+    useEffect(() => {
+        haveToResetTicket();
+    },[])
 
     return <>
         <Appbar.Header>

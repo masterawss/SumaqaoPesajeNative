@@ -1,12 +1,15 @@
 import { Appbar, Text, Searchbar, Button, Icon, IconButton } from "react-native-paper"
 import { SafeAreaView, ScrollView, View } from "react-native"
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import SimpleCard from "../../components/Ticket/SimpleCard";
 import SimpleCardGuiaRemision from "./components/SimpleCard";
 import api from "../../utils/axios";
 import Snackbar from "react-native-snackbar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { TicketContext } from "../Ingreso/Show/provider/TicketProvider";
 const Search = ({navigation, route}:any) => {
     const { ticketId } = route.params || { id: null };
+    const {assignReload} = useContext(TicketContext);
     
     const [searchQuery, setSearchQuery] = React.useState('');
 
@@ -21,6 +24,10 @@ const Search = ({navigation, route}:any) => {
             search()
         }
     }, [searchQuery])
+
+    useEffect(() => {
+        return () => assignReload(true);
+    }, [])
 
     const search = () => {
         setLoading(true);
@@ -75,7 +82,6 @@ const Search = ({navigation, route}:any) => {
                     <View style={{ paddingHorizontal: 10,paddingVertical:10 }}>
                         {
                             guiasRemision.map((guia: any) => <SimpleCardGuiaRemision key={guia.id} ticketId={ticketId} guiaRemision={guia} />)
-                            
                             // <View style={{ padding: 10, borderRadius: 10, backgroundColor: '#f5f5f5' }}>
                             //         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             //             <Text>CODIGO: {guia.codigo}</Text>

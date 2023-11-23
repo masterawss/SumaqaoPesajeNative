@@ -6,6 +6,7 @@ import AddPesajeSection from "./Pesaje/AddPesajeSection";
 import React, { useContext } from "react";
 import PesajeCreateSection from "./Pesaje/PesajeCreateSection";
 import { TicketContext } from "../Show/provider/TicketProvider";
+import BalanzaBluetoothProvider from "../context/BalanzaBluetoothProvider";
 
 const Pesaje = () => {
     const { loading, hasError, loadTicket, ticketPesaje, deleteTicket } = useContext(TicketContext);
@@ -19,7 +20,7 @@ const Pesaje = () => {
         console.log('saveData', data)
         setItems([...items, {id: items.length + 1, peso: data, fecha: '2021-09-01'}])
     }
-    return (<>
+    return (<BalanzaBluetoothProvider>
         <View style={{ padding: 10, paddingTop: 0 }}>
             <TaraSection />
             <PesajeCreateSection />
@@ -31,7 +32,7 @@ const Pesaje = () => {
             }
         </View>
         {/* <AddPesajeSection onSaved={saveData} /> */}
-    </>)
+    </BalanzaBluetoothProvider>)
 }
 
 export default Pesaje;

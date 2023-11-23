@@ -8,17 +8,21 @@ import Snackbar from 'react-native-snackbar';
 
 export const TicketContext = createContext({
     ticketId: null,
+    setId: (id: any) => {},
     ticketPesaje: null,
     loadingSimple: false,
     loading: false,
     hasError: false,
+    reload: false,
     loadTicket: () => {},
     deleteTicket: () => {},
-    saveTicket: () => {}
+    saveTicket: () => {},
+    assignReload: (v:boolean) => {}
 });
 
-export default ({ticketId, children}:any) => {
-    // const [ticketId, setTicketId] = React.useState<any>(null)
+export default ({children}:any) => {
+    const [reload, setReload] = React.useState(false);
+    const [ticketId, setTicketId] = React.useState<any>(null)
     const [ticketPesaje, setTicketPesaje] = React.useState<any>(null)
     const [loading, setLoading] = React.useState(false);
     const [hasError, setHasError] = React.useState(false);
@@ -26,9 +30,13 @@ export default ({ticketId, children}:any) => {
 
     const navigation = useNavigation();
 
+    const setId = (id: any) => setTicketId(id);
+    const assignReload = (val:boolean) => setReload(val);
+
     useEffect(() => {
-        if(ticketId)
+        if(ticketId){
             loadTicket(true)
+        }
     }, [ticketId])
 
     const loadTicket = (withLoader = false) => {
@@ -63,11 +71,35 @@ export default ({ticketId, children}:any) => {
     }
 
     const deleteTicketConfirmed = async () => {
-      api.delete('/ticket_pesaje/'+id).then((response) => {
+        const user = await AsyncStorage.getItem('user');
+
+      api.delete('/ticket_pesaje/'+id, {
+        params: {
+            deleted_user_id: JSON.parse(user || "{}")?.id
+        }
+      }).then((response) => {
           console.log(response.data);
+          Snackbar.show({
+                text: 'Se eliminó correctamente',
+                duration: Snackbar.LENGTH_SHORT,
+                action: {
+                text: 'Cerrar',
+                textColor: 'green',
+                onPress: () => { /* Do something. */ },
+                },
+            });
           navigation.navigate('home');
       }).catch((error) => {
-          console.log(error);
+        Snackbar.show({
+            text: 'No se pudo eliminar el ticket',
+            duration: Snackbar.LENGTH_INDEFINITE,
+            action: {
+              text: 'Cerrar',
+              textColor: 'red',
+              onPress: () => { /* Do something. */ },
+            },
+        });
+        return;
       }).finally(() => {
       });
     }
@@ -101,13 +133,16 @@ export default ({ticketId, children}:any) => {
 
     return <TicketContext.Provider value={{ 
         ticketId,
+        setId,
         ticketPesaje,
         loading,
         loadingSimple,
         hasError,
         loadTicket,
         deleteTicket,
-        saveTicket
+        saveTicket,
+        assignReload,
+        reload
      }}>
         {children}
     </TicketContext.Provider>

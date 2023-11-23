@@ -10,7 +10,7 @@ const ManualSection = () => {
     const [peso, setPeso] = React.useState<any>(null)
     const {loading: loadingSave, error, saveData} = savePesoHook()
 
-    const { hasError, loadTicket, ticketPesaje, deleteTicket } = useContext(TicketContext);
+    // const { hasError, loadTicket, ticketPesaje, deleteTicket } = useContext(TicketContext);
 
     const save = async () => {
         if(peso && peso > 0){
