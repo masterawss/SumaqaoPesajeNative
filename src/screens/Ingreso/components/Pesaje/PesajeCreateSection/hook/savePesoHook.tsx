@@ -10,7 +10,7 @@ export default () => {
 
     const { hasError, loadTicket, ticketPesaje, deleteTicket } = useContext(TicketContext);
 
-    const saveData = async (peso: any, by_bluetooth = false) => {
+    const saveData = async (peso: any, by_bluetooth = false, cb = () => {}) => {
         setLoading(true);
         setError(false);
         const user = await AsyncStorage.getItem('user');
@@ -32,6 +32,7 @@ export default () => {
                 },
             });
             loadTicket();
+            cb();
         }).catch((error) => {
             console.log(error.response);
             setLoading(false);

@@ -12,6 +12,9 @@ const TaraSection = () => {
     const [isBluetooth, setIsBluetooth] = React.useState(false);
     const {bluetoothEnabled, loading: loadingBluetooh, device, peso, connectToDevice, checkBluetoothEnabled} = useContext(BalanzaBluetoothContext);
 
+    const isEdit = useMemo(() => {
+        return parseFloat(ticketPesaje?.peso_solo_paletas) > 0
+    }, [ticketPesaje?.peso_solo_paletas])
     return (
         <>
             <View style={{
@@ -81,8 +84,9 @@ const TaraSection = () => {
                                 peso={peso}
                                 connectToDevice={connectToDevice}
                                 checkBluetoothEnabled={checkBluetoothEnabled}
+                                isEdit={isEdit}
                             />
-                            : <ManualSection setVisible={setVisible} ticketPesaje={ticketPesaje} loadTicket={loadTicket} />
+                            : <ManualSection isEdit={isEdit} setVisible={setVisible} ticketPesaje={ticketPesaje} loadTicket={loadTicket} />
                     }
                 </Modal>
             </Portal>

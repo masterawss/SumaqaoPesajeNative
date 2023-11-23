@@ -1,10 +1,11 @@
-import { useContext, useState } from "react";
-import { ActivityIndicator, Text } from "react-native-paper"
+import { useContext, useMemo, useState } from "react";
+import { ActivityIndicator, RadioButton, Text } from "react-native-paper"
 import { BalanzaBluetoothContext } from "../../../context/BalanzaBluetoothProvider";
 import DesactivadoSection from "../../../../../components/Bluetooth/DesactivadoSection";
 import NotFoundSection from "../../../../../components/Bluetooth/NotFoundSection";
 import { Button, Icon, IconButton, TextInput } from "react-native-paper";
 import { View } from "react-native";
+import savePesoHook from "../PesajeCreateSection/hook/savePesoHook";
 
 const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
     bluetoothEnabled,
@@ -13,13 +14,23 @@ const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
     peso,
     connectToDevice,
     checkBluetoothEnabled,
+    isEdit,
 }: any) => {
+    const {loading: loadingSave, error, saveData} = savePesoHook()
 
-    const [loadingSave, setLoadingSave] = useState(false);
+    const [typeChange, setTypeChange] = useState('sumar')
 
     const onPress = () => {
-        setVisible(false);
+        saveData(isEdit ? taraFinalCalculated : peso, true, () => setVisible(false))
     }
+
+    const taraFinalCalculated = useMemo(() => {
+        if(typeChange === 'sumar') {
+            return parseInt(peso) + parseInt(ticketPesaje.peso_solo_paletas)
+        } else {
+            return parseInt(peso) - parseInt(ticketPesaje.peso_solo_paletas)
+        }
+    }, [typeChange, peso, ticketPesaje.peso_solo_paletas])
 
     return <>
         {
@@ -37,6 +48,27 @@ const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
                     <Icon source="bluetooth" size={30} />
                     <Text style={{ marginLeft: 10, fontWeight: 'bold', fontSize: 20 }}>{peso} Kg</Text>
                 </View>
+                {
+                    isEdit && <>
+                        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Tara actual: {ticketPesaje.peso_solo_paletas} Kg</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5, marginTop: 25 }}>
+                            <RadioButton
+                                value="first"
+                                status={ typeChange === 'sumar' ? 'checked' : 'unchecked' }
+                                onPress={() => setTypeChange('sumar')}
+                            />
+                            <Text style={{ fontSize: 18 }}>Sumar</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5, marginBottom: 25 }}>
+                            <RadioButton
+                                value="first"
+                                status={ typeChange === 'restar' ? 'checked' : 'unchecked' }
+                                onPress={() => setTypeChange('restar')}
+                            />
+                            <Text style={{ fontSize: 18 }}>Restar</Text>
+                        </View>
+                    </>
+                }
                 <Button mode="contained" onPress={onPress} loading={loadingSave}>
                     Guardar
                 </Button>
