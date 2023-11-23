@@ -9,8 +9,8 @@ const saveHook = ({setLoadingTara, setVisible, ticketPesaje, loadTicket}: any) =
     // const { loadTicket, ticketPesaje } = useContext(TicketContext);
 
     const save = async (tara:number, cb = () => {}) => {
+        console.log('SAVEEE', tara, ticketPesaje.id)
         setLoadingTara(true)
-        // console.log('TICKET', ticketPesajeId)
         const user = await AsyncStorage.getItem('user');
         api.post('/ticket_pesaje/update/'+ticketPesaje.id, { 
             peso_solo_paletas: tara,
