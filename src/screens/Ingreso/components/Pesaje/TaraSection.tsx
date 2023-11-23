@@ -78,6 +78,7 @@ const TaraSection = () => {
                         isBluetooth
                             ? <BluetoothSection 
                                 ticketPesaje={ticketPesaje}
+                                loadTicket={loadTicket}
                                 setVisible={setVisible}
                                 bluetoothEnabled={bluetoothEnabled}
                                 loading={loadingBluetooh}
