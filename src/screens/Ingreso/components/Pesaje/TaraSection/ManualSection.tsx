@@ -8,12 +8,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Edit } from "./ManualSection/Edit";
 import saveHook from "./ManualSection/saveHook";
 
-const ManualSection = ({ticketPesaje, setVisible} : any ) => {
+const ManualSection = ({ticketPesaje, setVisible, loadTicket} : any ) => {
     const [taraValue, setTaraValue] = React.useState("0");
     const [taraKg, setTaraKg] = React.useState("0");
     const [loadingTara, setLoadingTara] = React.useState(false);
+    // const { loadTicket, ticketPesaje } = useContext(TicketContext);
 
-    const {save} = saveHook({setLoadingTara, setVisible})
+    const {save} = saveHook({setLoadingTara, setVisible, ticketPesaje, loadTicket})
 
     const isEdit = useMemo(() => {
         return parseInt(taraValue) > 0
@@ -32,7 +33,10 @@ const ManualSection = ({ticketPesaje, setVisible} : any ) => {
             {
                 !isEdit ? <View>
                     <TextInput mode="outlined" label="Peso (Kg)" keyboardType="numeric" value={taraKg} onChangeText={val => setTaraKg(val)} />
-                    <Button loading={loadingTara} disabled={loadingTara} style={{ marginTop: 10 }} mode="contained" onPress={() => save(parseFloat(taraKg))}>
+                    <Button loading={loadingTara} disabled={loadingTara} style={{ marginTop: 10 }} mode="contained" 
+                        onPress={() => save(parseFloat(taraKg))}
+                        // onPress={() => console.log('asdadadasdadasd')}
+                    >
                         Guardar
                     </Button>
                 </View>

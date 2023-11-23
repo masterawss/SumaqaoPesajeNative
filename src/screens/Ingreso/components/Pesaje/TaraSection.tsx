@@ -4,11 +4,14 @@ import { Button, IconButton, Modal, Portal, RadioButton, Switch, Text, TextInput
 import { TicketContext } from "../../Show/provider/TicketProvider";
 import ManualSection from "./TaraSection/ManualSection";
 import BluetoothSection from "./TaraSection/BluetoothSection";
+import { BalanzaBluetoothContext } from "../../context/BalanzaBluetoothProvider";
 
 const TaraSection = () => {
     const [visible, setVisible] = React.useState(false);
     const { loading, loadTicket, ticketPesaje, hasError } = useContext(TicketContext);
     const [isBluetooth, setIsBluetooth] = React.useState(false);
+    const {bluetoothEnabled, loading: loadingBluetooh, device, peso, connectToDevice, checkBluetoothEnabled} = useContext(BalanzaBluetoothContext);
+
     return (
         <>
             <View style={{
@@ -61,7 +64,7 @@ const TaraSection = () => {
 
             <Portal>
                 <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{backgroundColor: 'white', padding: 20, marginHorizontal: 10}}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 25 }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Tara en paletas</Text>
                         <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
                             <Text style={{ color: 'grey', marginRight: 10 }}>{isBluetooth ? 'Bluetooth' : 'Manual'}</Text>
@@ -70,8 +73,16 @@ const TaraSection = () => {
                     </View>
                     {
                         isBluetooth
-                            ? <BluetoothSection setVisible={setVisible} />
-                            : <ManualSection setVisible={setVisible} />
+                            ? <BluetoothSection 
+                                setVisible={setVisible}
+                                bluetoothEnabled={bluetoothEnabled}
+                                loading={loadingBluetooh}
+                                device={device}
+                                peso={peso}
+                                connectToDevice={connectToDevice}
+                                checkBluetoothEnabled={checkBluetoothEnabled}
+                            />
+                            : <ManualSection setVisible={setVisible} ticketPesaje={ticketPesaje} loadTicket={loadTicket} />
                     }
                 </Modal>
             </Portal>
