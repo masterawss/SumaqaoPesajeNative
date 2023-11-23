@@ -43,12 +43,15 @@ const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
             bluetoothEnabled && !device && <NotFoundSection connectToDevice={connectToDevice} />
         }
         {
-            !!device && <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            !!device && <>
+            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <View style={{ display: 'flex', flexDirection: 'row' }}>
                     <Icon source="bluetooth" size={30} />
                     <Text style={{ marginLeft: 10, fontWeight: 'bold', fontSize: 20 }}>{peso} Kg</Text>
                 </View>
-                {
+                
+            </View>
+            {
                     isEdit && <>
                         <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Tara actual: {ticketPesaje.peso_solo_paletas} Kg</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5, marginTop: 25 }}>
@@ -72,7 +75,8 @@ const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
                 <Button mode="contained" onPress={onPress} loading={loadingSave}>
                     Guardar
                 </Button>
-            </View>
+            </>
+            
         }
     </>
 }
