@@ -5,7 +5,7 @@ import DesactivadoSection from "../../../../../components/Bluetooth/DesactivadoS
 import NotFoundSection from "../../../../../components/Bluetooth/NotFoundSection";
 import { Button, Icon, IconButton, TextInput } from "react-native-paper";
 import { View } from "react-native";
-import savePesoHook from "../PesajeCreateSection/hook/savePesoHook";
+import saveHook from "./ManualSection/saveHook";
 
 const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
     bluetoothEnabled,
@@ -16,12 +16,14 @@ const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
     checkBluetoothEnabled,
     isEdit,
 }: any) => {
-    const {loading: loadingSave, error, saveData} = savePesoHook()
+    const [loadingTara, setLoadingTara] = useState(false)
+    const {save} = saveHook({setLoadingTara, setVisible, ticketPesaje, loadTicket})
+
 
     const [typeChange, setTypeChange] = useState('sumar')
 
     const onPress = () => {
-        saveData(isEdit ? taraFinalCalculated : peso, true, () => setVisible(false))
+        save(isEdit ? taraFinalCalculated : peso, () => setVisible(false))
     }
 
     const taraFinalCalculated = useMemo(() => {
@@ -69,7 +71,7 @@ const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
                         </View>
                     </>
                 }
-                <Button mode="contained" onPress={onPress} loading={loadingSave}>
+                <Button mode="contained" onPress={onPress} loading={loadingTara}>
                     Guardar
                 </Button>
             </View>

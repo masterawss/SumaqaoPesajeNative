@@ -8,7 +8,7 @@ const saveHook = ({setLoadingTara, setVisible, ticketPesaje, loadTicket}: any) =
 
     // const { loadTicket, ticketPesaje } = useContext(TicketContext);
 
-    const save = async (tara:number) => {
+    const save = async (tara:number, cb = () => {}) => {
         setLoadingTara(true)
         // console.log('TICKET', ticketPesajeId)
         const user = await AsyncStorage.getItem('user');
@@ -20,6 +20,7 @@ const saveHook = ({setLoadingTara, setVisible, ticketPesaje, loadTicket}: any) =
             console.log(response.data)
             setVisible(false)
             loadTicket()
+            cb()
         })
         .catch((error) => {
             console.log(error.response)
