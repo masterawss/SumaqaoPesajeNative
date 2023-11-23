@@ -56,6 +56,7 @@ const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
             {
                     isEdit && <>
                         <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Tara actual: {ticketPesaje.peso_solo_paletas} Kg</Text>
+                        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Tara final: {taraFinalCalculated} Kg</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5, marginTop: 25 }}>
                             <RadioButton
                                 value="first"
