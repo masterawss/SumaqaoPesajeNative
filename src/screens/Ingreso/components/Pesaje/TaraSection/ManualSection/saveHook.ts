@@ -21,6 +21,15 @@ const saveHook = ({setLoadingTara, setVisible, ticketPesaje, loadTicket}: any) =
             setVisible(false)
             loadTicket()
             cb()
+            Snackbar.show({
+                text: 'Se registró la tara correctamente',
+                duration: Snackbar.LENGTH_SHORT,
+                action: {
+                  text: 'Cerrar',
+                  textColor: 'green',
+                  onPress: () => { /* Do something. */ },
+                },
+            });
         })
         .catch((error) => {
             console.log("ERROR", error.response)
