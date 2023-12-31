@@ -78,8 +78,8 @@ android {
         applicationId "com.smqpesajenative"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 10004
-        versionName "1.0.4"
+        versionCode 10007
+        versionName "1.0.7"
     }
     signingConfigs {
         debug {

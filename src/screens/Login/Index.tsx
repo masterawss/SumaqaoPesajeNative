@@ -21,18 +21,19 @@ const LoginScreen = ({navigation} : any): JSX.Element => {
     const [errorMsg, setErrorMsg] = React.useState("");
     const [loading, setLoading] = React.useState(false);
 
-    // useEffect(() => {
-    //     setLoading(true);
-    //     AsyncStorage.getItem('user').then((user) => {
-    //         if(user) {
-    //             navigation.navigate('home');
-    //             return
-    //         }
-    //         setLoading(false);
-    //     })
-    // }, []);
+    useEffect(() => {
+        setLoading(true);
+        AsyncStorage.getItem('user').then((user) => {
+            if(user) {
+                navigation.navigate('home');
+                return
+            }
+            setLoading(false);
+        })
+    }, []);
 
     const login = () => {
+        setLoading(true);
         api.post('/login', {
             email: email,
             password: password
@@ -50,6 +51,9 @@ const LoginScreen = ({navigation} : any): JSX.Element => {
             console.log("ERRRROOOORR", error.response.data);
             setErrorMsg(error.response.data.message);
             setHasError(true);
+        })
+        .finally(() => {
+            setLoading(false);
         })
     }
     return (
@@ -81,7 +85,7 @@ const LoginScreen = ({navigation} : any): JSX.Element => {
                                         value={password}
                                         onChangeText={val => setPassword(val)}
                                     />
-                                    <Button style={{ marginTop: 10 }} mode="contained" onPress={login}>
+                                    <Button loading={loading} disabled={loading} style={{ marginTop: 10 }} mode="contained" onPress={login}>
                                         Ingresar
                                     </Button>
                                 </Card.Content>

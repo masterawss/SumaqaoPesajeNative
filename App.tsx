@@ -49,15 +49,11 @@ function App(): JSX.Element {
             }
           }}
         >
-          {
-            !user ? <Stack.Screen name="login" component={LoginScreen} />
-            : <>
-              <Stack.Screen name="home" component={HomeScreen} />
-              <Stack.Screen name="ingreso.show" component={IngresoShowScreen} />
-              <Stack.Screen name="guia_remision.search" component={GuiaRemisionSearchScreen} />
-              <Stack.Screen name="pesaje.create" component={PesajeCreateScreen} />
-            </>
-          }
+          <Stack.Screen name="login" component={LoginScreen} />
+          <Stack.Screen name="home" component={HomeScreen} />
+          <Stack.Screen name="ingreso.show" component={IngresoShowScreen} />
+          <Stack.Screen name="pesaje.create" component={PesajeCreateScreen} />
+          <Stack.Screen name="guia_remision.search" component={GuiaRemisionSearchScreen} />
         </Stack.Navigator>
       </TicketProvider>
     </NavigationContainer>

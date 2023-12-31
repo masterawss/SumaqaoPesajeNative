@@ -73,7 +73,7 @@ export default ({children}:any) => {
     const deleteTicketConfirmed = async () => {
         const user = await AsyncStorage.getItem('user');
 
-      api.delete('/ticket_pesaje/'+id, {
+      api.delete('/ticket_pesaje/'+ticketId, {
         params: {
             deleted_user_id: JSON.parse(user || "{}")?.id
         }
@@ -106,7 +106,7 @@ export default ({children}:any) => {
 
     const saveTicket = async () => {
         const user = await AsyncStorage.getItem('user');
-        api.post('/ticket_pesaje/update/'+id, { 
+        api.post('/ticket_pesaje/update/'+ticketId, { 
             is_saved: 1,
             updated_user_id: JSON.parse(user || "")?.id
         })
@@ -117,7 +117,7 @@ export default ({children}:any) => {
         .catch((error) => {
             console.log(error.response)
             Snackbar.show({
-                text: 'No se pudo registrar la tara',
+                text: 'No se pudo guardar los datos',
                 duration: Snackbar.LENGTH_INDEFINITE,
                 action: {
                   text: 'Cerrar',

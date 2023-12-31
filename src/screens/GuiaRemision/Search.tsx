@@ -62,6 +62,8 @@ const Search = ({navigation, route}:any) => {
                 <Appbar.BackAction onPress={() => {navigation.goBack()}} />
                 <Appbar.Content title="Buscar guía de remisión" />
             </Appbar.Header>
+            <ScrollView>
+
             <View style={{ padding: 10 }}>
                 <View style={{ marginBottom: 10 }}>
                     <SimpleCard id={ticketId} />
@@ -78,7 +80,6 @@ const Search = ({navigation, route}:any) => {
                     />
                 </View>
 
-                <ScrollView>
                     <View style={{ paddingHorizontal: 10,paddingVertical:10 }}>
                         {
                             guiasRemision.map((guia: any) => <SimpleCardGuiaRemision key={guia.id} ticketId={ticketId} guiaRemision={guia} />)
@@ -97,8 +98,8 @@ const Search = ({navigation, route}:any) => {
                             // )
                         }
                     </View>
-                </ScrollView>
-            </View>
+                </View>
+            </ScrollView>
         </SafeAreaView>
 
     )
