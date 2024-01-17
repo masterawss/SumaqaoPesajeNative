@@ -13,10 +13,47 @@ const BluetoothSection = () => {
     const {bluetoothEnabled, loading, device, peso, connectToDevice, checkBluetoothEnabled} = useContext(BalanzaBluetoothContext);
 
     const {loading: loadingSave, error, saveData} = savePesoHook()
+    const [pesoEstable, setPesoEstable] = React.useState<number | null>(null);
 
     const save = () => {
         saveData(peso, true)
     }
+
+    useEffect(() => {
+        // Verifica si el peso se ha mantenido sin cambios durante 10 segundos
+        const timeoutId = setTimeout(() => {
+          if (peso !== null && peso === pesoEstable) {
+            console.log(`El peso se ha mantenido estable durante 10 segundos: ${peso}`);
+            // Agrega aquí la lógica que deseas ejecutar cuando el peso se estabiliza
+          }
+        }, 10000); // 10 segundos en milisegundos
+        return () => clearTimeout(timeoutId);
+    }, [peso, pesoEstable]);
+
+    useEffect(() => {
+        // Actualiza el valor de pesoEstable cuando el peso cambia
+        setPesoEstable(peso);
+    }, [peso]);
+
+    const [cronometro, setCronometro] = React.useState(10);
+    useEffect(() => {
+        const cronometroInterval = setInterval(() => {
+          setCronometro((prevCronometro) => prevCronometro - 1);
+        }, 1000);
+
+        // Reinicia el cronómetro cuando el peso cambia
+        if (peso !== pesoEstable) {
+          setCronometro(10);
+        }
+
+        return () => clearInterval(cronometroInterval);
+    }, [peso, pesoEstable]);
+
+    useEffect(() => {
+        if (cronometro === 0) {
+            save()
+        }
+    }, [cronometro]);
 
     return <>
         {

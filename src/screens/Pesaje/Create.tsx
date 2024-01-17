@@ -29,7 +29,6 @@ const Create = () => {
             // const read = await unpaired[0].read()
             // console.log('READ', read)
 
-                    
             } catch (err) {
                 console.error(err?.message)
             }
@@ -72,7 +71,6 @@ const Create = () => {
             <Button icon="camera" mode="contained" onPress={startDiscovery}>
                 Buscar
             </Button>
-
             {
                 devices.map(
                     (device : any, id: any) => {
@@ -89,9 +87,6 @@ const Create = () => {
 
             <Text style={{marginBottom: 20, fontWeight: 'bold'}}>DATA</Text>
             <Text>-{data.data}-</Text>
-
-
-
         </SafeAreaView>
 }
 export default Create

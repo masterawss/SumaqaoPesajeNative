@@ -5,12 +5,12 @@ import SimpleCard from "../../components/Ticket/SimpleCard";
 import SimpleCardGuiaRemision from "./components/SimpleCard";
 import api from "../../utils/axios";
 import Snackbar from "react-native-snackbar";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TicketContext } from "../Ingreso/Show/provider/TicketProvider";
+
 const Search = ({navigation, route}:any) => {
     const { ticketId } = route.params || { id: null };
     const {assignReload} = useContext(TicketContext);
-    
+
     const [searchQuery, setSearchQuery] = React.useState('');
 
     const onChangeSearch = (query: any) => setSearchQuery(query);
@@ -74,7 +74,7 @@ const Search = ({navigation, route}:any) => {
                 <View style={{ display: 'flex' }}>
                     <Searchbar
                         loading={loading}
-                        placeholder="Search"
+                        placeholder="Buscar por código o placa"
                         onChangeText={onChangeSearch}
                         value={searchQuery}
                     />
@@ -83,19 +83,6 @@ const Search = ({navigation, route}:any) => {
                     <View style={{ paddingHorizontal: 10,paddingVertical:10 }}>
                         {
                             guiasRemision.map((guia: any) => <SimpleCardGuiaRemision key={guia.id} ticketId={ticketId} guiaRemision={guia} />)
-                            // <View style={{ padding: 10, borderRadius: 10, backgroundColor: '#f5f5f5' }}>
-                            //         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            //             <Text>CODIGO: {guia.codigo}</Text>
-                            //             {
-                            //                 guia.ticket_pesaje_id === ticketId 
-                            //                 ? <IconButton icon="delete" onPress={deleteGuia} />
-                            //                 : <IconButton icon="add" onPress={addGuia} />
-                            //             }
-                            //         </View>
-                            //         <Text>Tracto: {guia.tracto.placa}</Text>
-                            //         <Text>Placa: {guia.carreta.placa}</Text>
-                            //     </View>
-                            // )
                         }
                     </View>
                 </View>

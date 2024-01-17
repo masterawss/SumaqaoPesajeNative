@@ -73,9 +73,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.smqpesajenative"
+    namespace "com.sumaqao.pesaje"
     defaultConfig {
-        applicationId "com.smqpesajenative"
+        applicationId "com.sumaqao.pesaje"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 10007
