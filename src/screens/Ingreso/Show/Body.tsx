@@ -8,9 +8,7 @@ import { TicketContext } from './provider/TicketProvider';
 import ErrorSection from '../../../components/ErrorSection';
 
 const Body = () => {
-
     const { loading, hasError, loadTicket, ticketPesaje } = useContext(TicketContext);
-
     return <ScrollView>
         {
             loading && <>

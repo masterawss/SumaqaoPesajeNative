@@ -52,7 +52,7 @@ const BalanzaBluetoothProvider = ({children}: {children: ReactNode}) => {
                 buttonPositive: 'OK'
               }
         );
-          
+
         try {
             const address = '00:08:F4:02:BC:F5';
             // const device = await RNBluetoothClassic.getConnectedDevice(address);

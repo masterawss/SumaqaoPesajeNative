@@ -4,6 +4,7 @@ import Pesaje from '../components/Pesaje';
 import { Button, Text } from 'react-native-paper';
 import { useState } from 'react';
 import Resumen from '../components/Resumen';
+import Saco from '../components/Saco';
 
 const TabsSection = () => {
     const [tab, setTab] = useState('guia_remision');
@@ -13,6 +14,10 @@ const TabsSection = () => {
             <TouchableOpacity onPress={() => setTab('guia_remision')} style={{ alignItems: 'center' }}>
                 <Text style={{ fontWeight: tab === 'guia_remision' ? 'bold' : 'normal', color: tab === 'guia_remision' ? 'orange' : 'black' }}>Guía de remisión</Text>
                 <View style={{ height: 3, marginTop: 5, borderRadius: 10, backgroundColor: tab === 'guia_remision' ? 'orange' : 'grey', width: tab === 'guia_remision' ? 50 : 5 }}></View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setTab('saco')} style={{ alignItems: 'center' }}>
+                <Text style={{ fontWeight: tab === 'saco' ? 'bold' : 'normal', color: tab === 'saco' ? 'orange' : 'black' }}>Sacos</Text>
+                <View style={{ height: 3, marginTop: 5, borderRadius: 10, backgroundColor: tab === 'saco' ? 'orange' : 'grey', width: tab === 'saco' ? 50 : 5 }}></View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setTab('pesaje')} style={{ alignItems: 'center' }}>
                 <Text style={{ fontWeight: tab === 'pesaje' ? 'bold' : 'normal', color: tab === 'pesaje' ? 'orange' : 'black' }}>Pesaje</Text>
@@ -35,6 +40,8 @@ const Tab = ({tab}: {tab: string}) => {
             return <GuiaRemision />
         case 'pesaje':
             return <Pesaje />
+        case 'saco':
+            return <Saco />
         // case 'sacos_recibidos':
         //     return <Sa />
         default:

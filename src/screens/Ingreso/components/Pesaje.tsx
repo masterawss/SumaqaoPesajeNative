@@ -2,7 +2,6 @@ import { ScrollView, View } from "react-native"
 import { Text } from "react-native-paper"
 import TaraSection from "./Pesaje/TaraSection";
 import SimpleCard from "./Pesaje/SimpleCard";
-import AddPesajeSection from "./Pesaje/AddPesajeSection";
 import React, { useContext } from "react";
 import PesajeCreateSection from "./Pesaje/PesajeCreateSection";
 import { TicketContext } from "../Show/provider/TicketProvider";

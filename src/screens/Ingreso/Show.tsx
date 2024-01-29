@@ -1,5 +1,5 @@
 
-import TicketProvider, { TicketContext } from './Show/provider/TicketProvider';
+import { TicketContext } from './Show/provider/TicketProvider';
 import Header from './Show/Header';
 import Body from './Show/Body';
 import { SafeAreaView, View } from 'react-native';

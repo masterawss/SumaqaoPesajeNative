@@ -1,10 +1,22 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import {View} from 'react-native'
 import { Button, Divider, Text } from 'react-native-paper';
 import { TicketContext } from '../Show/provider/TicketProvider';
 import { numberFormat } from '../../../utils/numberFormat';
 const Resumen = () => {
     const { loading, hasError, loadTicket, ticketPesaje, deleteTicket, saveTicket } = useContext(TicketContext);
+
+    const haveToResetTicket = async () => {
+        const resetTicket = await AsyncStorage.getItem('resetTicket');
+        if(resetTicket == "1"){
+            loadTicket();
+            await AsyncStorage.setItem('resetTicket', "0");
+        }
+    }
+
+    useEffect(() => {
+        haveToResetTicket();
+    },[])
 
     return <View style={{
         marginHorizontal: 10,
@@ -49,7 +61,7 @@ const Resumen = () => {
         */}
         {
             !ticketPesaje.is_saved && 
-                <Button loading={loading} style={{ width: '100%', marginTop: 20 }} mode='contained'>Guardar</Button>
+                <Button onPress={saveTicket} loading={loading} style={{ width: '100%', marginTop: 20 }} mode='contained'>Guardar</Button>
         }
     </View>
 }

@@ -148,11 +148,7 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
                     </View>
                     <View showsHorizontalScrollIndicator={false} style={{ display: 'flex', flexDirection: 'row', marginTop: 20 ,justifyContent: 'space-between' }}>
                         <Item icon="file" styles={{ marginRight: 10, marginLeft: 10 }} title={ticketData.guias_remision.length} subtitle="# G.R.R" />
-                        <Item styles={{ marginRight: 10 }} icon="dots-grid" title={numberFormat(ticketData.nro_sacos)} subtitle="Sacos">
-                            {
-                                canEdit && <IconButton style={{ marginTop: -10, marginBottom: -10 }} size={18} icon="pencil" iconColor="orange" onPress={() => setVisible(true)} />
-                            }
-                        </Item>
+                        <Item styles={{ marginRight: 10 }} icon="dots-grid" title={numberFormat(ticketData.total_nro_sacos)} subtitle="Sacos" />
                         <Item styles={{ marginRight: 10 }} icon="toaster" title={ticketData.placa_tracto} subtitle="Placa" />
                     </View>
                 </>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
 import { Button, Icon, IconButton, Text } from "react-native-paper";
 import { ActivityIndicator, PermissionsAndroid, View } from "react-native";
@@ -7,53 +7,110 @@ import savePesoHook from "./hook/savePesoHook";
 import { BalanzaBluetoothContext } from "../../../context/BalanzaBluetoothProvider";
 import DesactivadoSection from "../../../../../components/Bluetooth/DesactivadoSection";
 import NotFoundSection from "../../../../../components/Bluetooth/NotFoundSection";
+import Sound from 'react-native-sound';
+
+const tiempoEstable = 3;
 
 const BluetoothSection = () => {
-
+    const [isSaved, setIsSaved] = React.useState(false);
+    const [canSave, setCanSave] = React.useState(false);
+    // const [peso, setPeso] = React.useState<number>(0);
+    // const randomPeso = () => {
+    //     setPeso(Math.random() * 100);
+    // }
+    // const {bluetoothEnabled, loading, device, connectToDevice, checkBluetoothEnabled} = useContext(BalanzaBluetoothContext);
     const {bluetoothEnabled, loading, device, peso, connectToDevice, checkBluetoothEnabled} = useContext(BalanzaBluetoothContext);
 
     const {loading: loadingSave, error, saveData} = savePesoHook()
-    const [pesoEstable, setPesoEstable] = React.useState<number | null>(null);
+    const [pesoEstable, setPesoEstable] = React.useState<number>(0);
 
-    const save = () => {
+    const save = () => { 
+        setCronometro(-1);
+        console.log('save');
         saveData(peso, true)
     }
 
     useEffect(() => {
-        // Verifica si el peso se ha mantenido sin cambios durante 10 segundos
-        const timeoutId = setTimeout(() => {
-          if (peso !== null && peso === pesoEstable) {
-            console.log(`El peso se ha mantenido estable durante 10 segundos: ${peso}`);
-            // Agrega aquí la lógica que deseas ejecutar cuando el peso se estabiliza
-          }
-        }, 10000); // 10 segundos en milisegundos
-        return () => clearTimeout(timeoutId);
-    }, [peso, pesoEstable]);
-
-    useEffect(() => {
-        // Actualiza el valor de pesoEstable cuando el peso cambia
-        setPesoEstable(peso);
+        setPesoEstable(peso); // Actualiza el valor de pesoEstable cuando el peso cambia
     }, [peso]);
 
-    const [cronometro, setCronometro] = React.useState(10);
+    const [cronometro, setCronometro] = React.useState(-1);
     useEffect(() => {
         const cronometroInterval = setInterval(() => {
           setCronometro((prevCronometro) => prevCronometro - 1);
         }, 1000);
 
         // Reinicia el cronómetro cuando el peso cambia
-        if (peso !== pesoEstable) {
-          setCronometro(10);
+        if (pesoEstable < peso-0.2 || pesoEstable > peso+0.2) {
+          setCronometro(tiempoEstable);
+          setIsSaved(false);
+          setCanSave(false);
+        }
+
+        if(pesoEstable === 0 && peso == 0){
+            setCronometro(-1);
         }
 
         return () => clearInterval(cronometroInterval);
     }, [peso, pesoEstable]);
 
     useEffect(() => {
-        if (cronometro === 0) {
-            save()
+        if(cronometro === 0){
+            setCanSave(true);
+        }else{
+            setCanSave(false);
         }
+        if(cronometro < 0){
+            setCronometro(-1);
+        }
+
+        if(cronometro < tiempoEstable && cronometro > 0){
+          playSound()
+        }
+
     }, [cronometro]);
+
+    useEffect(() => {
+        if(canSave){
+            // save();
+            console.log('save');
+            setCanSave(false);
+            setIsSaved(true);
+            playSound('finish')
+        }
+    }, [canSave]);
+
+
+    const [sound, setSound] = React.useState();
+    useEffect(() => {
+        return () => {
+          if (sound) sound.release(); // Limpia el sonido al desmontar el componente
+        };
+    }, [sound]);
+    const playSound = (type = '') => {
+        const soundPath = type === 'finish' ? 'beep_finish.mp3' : 'beep.mp3';
+        // const sound = '../../../../../../assets/sound/beep-finish.mp3'
+        Sound.setCategory('Playback');
+        const s = new Sound(soundPath, Sound.MAIN_BUNDLE, (e) => {
+            if (e) {
+                console.log('error sloading track:', e)
+            } else {
+                s.play(() => s.release())
+            }
+        })
+    }
+
+    const text = useMemo(() => {
+        let text = ''
+        if(isSaved){
+            text = 'Guardado'
+        }else if(cronometro < tiempoEstable && cronometro >= 0){
+            text = `Guardar en ${cronometro}`
+        }else{
+            text = 'Guardar'
+        }
+        return text;
+    }, [isSaved, cronometro, tiempoEstable])
 
     return <>
         {
@@ -66,15 +123,24 @@ const BluetoothSection = () => {
             bluetoothEnabled && !device && <NotFoundSection connectToDevice={connectToDevice} />
         }
         {
-            !!device && <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <View style={{ display: 'flex', flexDirection: 'row' }}>
-                    <Icon source="bluetooth" size={30} />
-                    <Text style={{ marginLeft: 10, fontWeight: 'bold', fontSize: 20 }}>{peso} Kg</Text>
+            !!device && <>
+                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <View style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Icon source="bluetooth" size={30} />
+                        <Text style={{ marginLeft: 10, fontWeight: 'bold', fontSize: 20 }}>{peso} Kg</Text>
+                    </View>
                 </View>
-                <Button mode="contained" onPress={save} loading={loadingSave}>
-                    Guardar
-                </Button>
-            </View>
+                <View style={{ marginTop: 15 }}>
+                    <Button disabled={isSaved || peso === 0} mode="contained" onPress={save} loading={loadingSave}>
+                        {text}
+                    </Button>
+                    <View>
+                        {
+                            cronometro > 0 && cronometro < tiempoEstable && <Text style={{ color: 'grey', fontSize: 12 }}>* Puedes hacer click para guardar el valor</Text>
+                        }
+                    </View>
+                </View>
+            </> 
         }
     </>
 }

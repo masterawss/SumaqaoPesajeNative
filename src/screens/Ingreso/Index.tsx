@@ -24,6 +24,8 @@ const Index = ({navigation}: any) => {
         let d = date.toLocaleString().split(',')[0];
         // Cambiar el formato de d/m/Y a Y-m-d
         let [day, month, year] = d.split('/');
+        if(day.length == 1) day = '0' + day;
+        if(month.length == 1) month = '0' + month;
         return `${year}-${month}-${day}`;
     }, [date]);
 
@@ -37,18 +39,18 @@ const Index = ({navigation}: any) => {
         setHasError(false);
         setTickets([]);
         // Restar 1 día a la fecha
-        ;
+        console.log(dateStr);
         api.get('/ticket_pesaje', {
             params: {
                 search: dateStr
             }
         }).then((response) => {
-            // console.log(response.data);
+            console.log("DATAAAA", response);
             setTickets(response.data.ticket_pesajes);
         }
         ).catch((error) => {
             setHasError(true);
-            console.log("ERROR", error.response);
+            console.log("ERROR INDEX", error);
         }).finally(() => {
             setLoading(false);
         });
@@ -105,7 +107,7 @@ const Index = ({navigation}: any) => {
                 </View>
             }
 
-            <ScrollView style={{ marginBottom: 120 }}>
+            <ScrollView style={{ marginBottom: 120, paddingBottom: 400 }}>
                 {
                     tickets.map((ticket: any) => <TouchableOpacity onPress={
                             () => navigation.navigate('ingreso.show' as never, {id: ticket.id} as never)
