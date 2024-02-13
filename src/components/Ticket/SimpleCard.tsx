@@ -2,7 +2,7 @@ import { ActivityIndicator, Button, Icon, IconButton, MD3Colors, Modal, Portal, 
 import { Dimensions, ScrollView, View } from "react-native";
 import { useContext, useEffect, useState } from "react";
 import api from "../../utils/axios";
-import { TicketContext } from "../../screens/Ingreso/Show/provider/TicketProvider";
+import { TicketContext } from "../../screens/TicketPesaje/Show/provider/TicketProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Snackbar from "react-native-snackbar";
 import RNPickerSelect from 'react-native-picker-select';
@@ -119,7 +119,7 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
         })
     }
 
-    return <View style={{  paddingVertical: 10, backgroundColor: '#f5f5f5', borderRadius: 10 }}>
+    return <View style={{  paddingVertical: 10, backgroundColor: 'white', borderRadius: 10 }}>
             {
                 loading && !hasError && <Text style={{ textAlign: 'center', color: 'grey', fontWeight: 'bold', marginTop: 20 }}>
                     <ActivityIndicator size="small" />
@@ -135,21 +135,24 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
             }
             {
                 !ticketContext.loading && !ticketContext.hasError && ticketData && <>
-                    <View style={{ paddingHorizontal: 20, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <View >
-                            <Text variant="titleMedium">{ticketData.codigo}</Text>
-                            <Text style={{ color: 'silver', fontSize: 14, fontWeight: 'bold' }}>{ticketData.fecha_desc}</Text>
+                    <View style={{ display: 'flex', width: '100%', flexDirection: 'row', paddingHorizontal: 10, alignItems: 'center' }}>
+                        <View style={{ height: 100, width: '20%', backgroundColor: 'grey', borderRadius: 10 }}>
                         </View>
-                        <View >
-                            <View style={{ borderRadius: 40, backgroundColor: ticketData.is_saved ? 'teal' : 'orange', paddingHorizontal: 8, marginLeft: 8 }}>
-                                <Text style={{ color: 'white', fontSize: 12 }}>{ticketData.is_saved ? 'Finalizado' : 'Pendiente'}</Text>
+                        <View style={{ width: '80%', paddingLeft: 10 }}>
+                            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Text style={{ fontWeight: 'bold' }}>{ticketData.codigo}1</Text>
+                                <Text style={{ color: 'grey' }}>{ticketData.fecha_desc}</Text>
+                            </View>
+                            <View style={{ marginVertical: 8 }}>
+                                <Text>{ticketData.guias_remision.length} G.R.R.  •   {numberFormat(ticketData.total_nro_sacos)} sacos</Text>
+                            </View>
+                            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Text style={{ color: 'grey' }}>{ticketData.placa_tracto}</Text>
+                                <View style={{ borderRadius: 40, backgroundColor: ticketData.is_saved ? 'teal' : 'orange', paddingHorizontal: 10, paddingVertical: 4 }}>
+                                    <Text style={{ color: 'white', fontSize: 12 }}>{ticketData.is_saved ? 'Guardado' : 'Sin guardar'}</Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
-                    <View showsHorizontalScrollIndicator={false} style={{ display: 'flex', flexDirection: 'row', marginTop: 20 ,justifyContent: 'space-between' }}>
-                        <Item icon="file" styles={{ marginRight: 10, marginLeft: 10 }} title={ticketData.guias_remision.length} subtitle="# G.R.R" />
-                        <Item styles={{ marginRight: 10 }} icon="dots-grid" title={numberFormat(ticketData.total_nro_sacos)} subtitle="Sacos" />
-                        <Item styles={{ marginRight: 10 }} icon="toaster" title={ticketData.placa_tracto} subtitle="Placa" />
                     </View>
                 </>
             }
@@ -185,26 +188,6 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
                 </Portal>
             }
         </View>
-}
-
-const Item = ({title = '', subtitle = '', icon= "", styles={}, children = null}) => {
-    return (
-        <View style={{ flexDirection: 'row', alignItems: 'center', ...styles }}>
-            <View >
-                <Icon
-                    source={icon}
-                    size={20}
-                />
-            </View>
-            <View style={{ marginLeft: 10 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={{ fontWeight: 'bold' }}>{title}</Text>
-                    {children}
-                </View>
-                <Text>{subtitle}</Text>
-            </View>
-        </View>
-    )
 }
 
 export default SimpleCard;

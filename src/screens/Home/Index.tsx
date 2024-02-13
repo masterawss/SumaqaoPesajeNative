@@ -1,16 +1,19 @@
 import { createMaterialBottomTabNavigator } from 'react-native-paper/react-navigation';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
-import IngresoScreen from '../Ingreso/Index';
-import ExportacionScreen from '../Exportacion/Index';
-import ProcesoMPScreen from '../ProcesoMP/Index';
+import {Text} from 'react-native';
+import List from './List';
 
 const Tab = createMaterialBottomTabNavigator();
 
 const Index = () => {
   return (
-    <Tab.Navigator>
-        <Tab.Screen name="ingresos.index" component={IngresoScreen}
+    <Tab.Navigator
+        barStyle={{ backgroundColor: 'white' }}
+        labeled={true}
+        activeColor='orange'
+        inactiveColor='gray'
+    >
+        <Tab.Screen name="ingresos.index" component={List}
             options={{
                 tabBarLabel: 'Ingresos',
                 tabBarIcon: ({ color }) => (
@@ -18,22 +21,24 @@ const Index = () => {
                 ),
             }}
         />
-        <Tab.Screen name="proceso_mp.index" component={ProcesoMPScreen}
+        {/* <Tab.Screen name="proceso_mp.index" component={ProcesoMPScreen}
             options={{
                 tabBarLabel: 'ProcesoMP',
                 tabBarIcon: ({ color }) => (
                     <MaterialCommunityIcons name="open-in-new" color={color} size={26} />
                 ),
             }}
-        />
-        <Tab.Screen name="exportacion.index" component={ExportacionScreen}
+        /> */}
+        <Tab.Screen name="exportacion.index"
             options={{
                 tabBarLabel: 'Exportación',
                 tabBarIcon: ({ color }) => (
                     <MaterialCommunityIcons name="logout" color={color} size={26} />
                 ),
             }}
-        />
+        >
+             {props => <List type={'exportacion'} {...props}/> }
+        </Tab.Screen>
     </Tab.Navigator>
   );
 }

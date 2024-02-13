@@ -5,7 +5,7 @@ import SimpleCard from "../../components/Ticket/SimpleCard";
 import SimpleCardGuiaRemision from "./components/SimpleCard";
 import api from "../../utils/axios";
 import Snackbar from "react-native-snackbar";
-import { TicketContext } from "../Ingreso/Show/provider/TicketProvider";
+import { TicketContext } from "../TicketPesaje/Show/provider/TicketProvider";
 
 const Search = ({navigation, route}:any) => {
     const { ticketId } = route.params || { id: null };

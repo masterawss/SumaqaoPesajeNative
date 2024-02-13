@@ -12,12 +12,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import LoginScreen from './src/screens/Login/Index';
 import HomeScreen from './src/screens/Home/Index';
-import IngresoShowScreen from './src/screens/Ingreso/Show';
+import IngresoShowScreen from './src/screens/TicketPesaje/Show';
 import GuiaRemisionSearchScreen from './src/screens/GuiaRemision/Search';
 import PesajeCreateScreen from './src/screens/Pesaje/Create';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SplashScreen from 'react-native-splash-screen';
-import TicketProvider from './src/screens/Ingreso/Show/provider/TicketProvider';
+import TicketProvider from './src/screens/TicketPesaje/Show/provider/TicketProvider';
 
 const Stack = createNativeStackNavigator();
 

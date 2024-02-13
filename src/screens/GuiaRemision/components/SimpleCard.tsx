@@ -3,7 +3,7 @@ import { Divider, IconButton, Text } from 'react-native-paper';
 import api from '../../../utils/axios';
 import { useContext, useEffect, useState } from 'react';
 import Snackbar from 'react-native-snackbar';
-import { TicketContext } from '../../Ingreso/Show/provider/TicketProvider';
+import { TicketContext } from '../../TicketPesaje/Show/provider/TicketProvider';
 import { numberFormat } from '../../../utils/numberFormat';
 
 const SimpleCard = ({guiaRemision, ticketId, isInTicket = false}: any) => {
