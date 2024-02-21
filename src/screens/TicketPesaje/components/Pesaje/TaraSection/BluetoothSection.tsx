@@ -51,7 +51,6 @@ const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
                     <Icon source="bluetooth" size={30} />
                     <Text style={{ marginLeft: 10, fontWeight: 'bold', fontSize: 20 }}>{peso} Kg</Text>
                 </View>
-                
             </View>
             {
                     isEdit && <>

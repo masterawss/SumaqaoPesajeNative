@@ -24,7 +24,7 @@ const TabsSection = () => {
                 <View style={{ height: 3, marginTop: 5, borderRadius: 10, backgroundColor: tab === 'pesaje' ? 'orange' : 'grey', width: tab === 'pesaje' ? 50 : 5 }}></View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setTab('resumen')} style={{ alignItems: 'center' }}>
-                <Text style={{ fontWeight: tab === 'resumen' ? 'bold' : 'normal', color: tab === 'resumen' ? 'orange' : 'black' }}>Resúmen</Text>
+                <Text style={{ fontWeight: tab === 'resumen' ? 'bold' : 'normal', color: tab === 'resumen' ? 'orange' : 'black' }}>Resumen</Text>
                 <View style={{ height: 3, marginTop: 5, borderRadius: 10, backgroundColor: tab === 'resumen' ? 'orange' : 'grey', width: tab === 'resumen' ? 50 : 5 }}></View>
             </TouchableOpacity>
         </View>

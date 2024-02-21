@@ -12,7 +12,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import LoginScreen from './src/screens/Login/Index';
 import HomeScreen from './src/screens/Home/Index';
-import IngresoShowScreen from './src/screens/TicketPesaje/Show';
+import TicketPesajeShow from './src/screens/TicketPesaje/Show';
 import GuiaRemisionSearchScreen from './src/screens/GuiaRemision/Search';
 import PesajeCreateScreen from './src/screens/Pesaje/Create';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -51,7 +51,7 @@ function App(): JSX.Element {
         >
           <Stack.Screen name="login" component={LoginScreen} />
           <Stack.Screen name="home" component={HomeScreen} />
-          <Stack.Screen name="ingreso.show" component={IngresoShowScreen} />
+          <Stack.Screen name="ticket_pesaje.show" component={TicketPesajeShow} />
           <Stack.Screen name="pesaje.create" component={PesajeCreateScreen} />
           <Stack.Screen name="guia_remision.search" component={GuiaRemisionSearchScreen} />
         </Stack.Navigator>

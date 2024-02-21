@@ -1,5 +1,5 @@
 import { Alert, View } from 'react-native';
-import { Divider, IconButton, Text } from 'react-native-paper';
+import { Divider, IconButton, Text, Button } from 'react-native-paper';
 import api from '../../../utils/axios';
 import { useContext, useEffect, useState } from 'react';
 import Snackbar from 'react-native-snackbar';
@@ -97,9 +97,17 @@ const SimpleCard = ({guiaRemision, ticketId, isInTicket = false}: any) => {
         });
     }
 
+    const style= {
+        textTitle: {
+            fontWeight: 'bold',
+            fontSize: 15,
+            color: 'grey'
+        },
+    }
+
     return (
         <View style={{
-            padding: 10, borderRadius: 10,
+            borderRadius: 10,
             marginBottom: 10,
             backgroundColor: "#fff",
             shadowColor: "#000",
@@ -111,49 +119,65 @@ const SimpleCard = ({guiaRemision, ticketId, isInTicket = false}: any) => {
             shadowRadius: 2.22,
             elevation: 3, 
         }}>
-        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ fontWeight: 'bold' }}>GRR: {guiaRemision.codigo}</Text>
+        <View style={{ display: 'flex', paddingHorizontal: 10, paddingTop: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <View>
+                    <Text style={{ fontWeight: 'bold', fontSize: 15 }}>{guiaRemision.codigo}</Text>
+                    <View style={{ borderRadius: 10, paddingVertical: 4, paddingHorizontal: 10, 
+                        backgroundColor: guiaRemision.is_exportacion ? '#5dd9ab' : '#dbab7d' }}
+                    >
+                        <Text style={{ color: 'white', fontSize: 12, textAlign: 'center' }}>
+                            {guiaRemision.is_exportacion ? 'Exportación' : 'Ingreso'}
+                        </Text>
+                    </View>
+                </View>
                 {
                     added
-                    ? <IconButton
+                    ? <Button
                         style={{ marginTop: -5 }}
                         disabled={loading}
-                        icon="delete"
-                        iconColor='grey'
+                        icon={'delete'}
+                        textColor='grey'
                         size={20}
                         onPress={deleteGuiaRemision}
-                    />
-                    : <IconButton
+                    >
+                        Quitar
+                    </Button>
+                    : <Button
                         style={{ marginTop: -5 }}
                         disabled={loading}
                         icon="plus"
                         iconColor='grey'
                         size={20}
                         onPress={addGuiaRemision}
-                    />
+                    >
+                        Agregar
+                    </Button>
                 }
         </View>
-        <View style={{ marginTop: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
-            <View style={{ flex: 1 }}>
-                <Text>Fecha emisión</Text>
-                <Text>{guiaRemision.fecha_desc}</Text>
+        <Divider style={{ marginTop: 10, backgroundColor: 'grey' }} />
+        <View style={{ padding: 10 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View style={{ flex: 1 }}>
+                    <Text style={style.textTitle}>Fecha emisión</Text>
+                    <Text>{guiaRemision.fecha_desc}</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                    <Text style={style.textTitle}>Placas</Text>
+                    <Text>{guiaRemision.placa}</Text>
+                </View>
             </View>
-            <View style={{ flex: 1 }}>
-                <Text>Placas</Text>
-                <Text>{guiaRemision.placa}</Text>
+            <View style={{ marginTop: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View style={{ flex: 1 }}>
+                    <Text style={style.textTitle}>Sacos</Text>
+                    <Text>{numberFormat(guiaRemision.total_sacos)}</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                    <Text style={style.textTitle}>Peso neto</Text>
+                    <Text>{numberFormat(guiaRemision.peso_neto_enviado)}</Text>
+                </View>
             </View>
+            <Text style={{ marginTop: 10, }}>{guiaRemision.sku}</Text>
         </View>
-        <View style={{ marginTop: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
-            <View style={{ flex: 1 }}>
-                <Text>Sacos</Text>
-                <Text>{numberFormat(guiaRemision.total_sacos)}</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-                <Text>Peso neto</Text>
-                <Text>{numberFormat(guiaRemision.peso_neto_enviado)}</Text>
-            </View>
-        </View>
-        <Text style={{ marginTop: 10, }}>{guiaRemision.sku}</Text>
     </View>)
 }
 export default SimpleCard;

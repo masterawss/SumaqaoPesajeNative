@@ -4,6 +4,6 @@ export const humanDate = (date: Date) => {
     let [day, month, year] = d.split('/');
     if(day.length == 1) day = '0' + day;
     if(month.length == 1) month = '0' + month;
-    // return `${year}-${month}-${day}`;
-    return `${year}-${day}-${month}`;
+    return `${year}-${month}-${day}`;
+    // return `${year}-${day}-${month}`;
 }

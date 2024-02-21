@@ -18,7 +18,7 @@ const BtnCreate = ({type = 'ingreso'}) => {
         }).then((response) => {
             console.log(response.data.id);
             // ingreso.show o exportacion.show
-            navigation.navigate(type+'.show' as never, {id: response.data.id} as never);
+            navigation.navigate('ticket_pesaje.show' as never, {id: response.data.id} as never);
         }).catch((error) => {
             console.log('ERROR', error.response.data);
             Snackbar.show({

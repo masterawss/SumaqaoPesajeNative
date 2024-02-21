@@ -1,5 +1,5 @@
 import { ActivityIndicator, Button, Icon, IconButton, MD3Colors, Modal, Portal, RadioButton, Text, TextInput } from "react-native-paper";
-import { Dimensions, ScrollView, View } from "react-native";
+import { Dimensions, Image, ScrollView, View } from "react-native";
 import { useContext, useEffect, useState } from "react";
 import api from "../../utils/axios";
 import { TicketContext } from "../../screens/TicketPesaje/Show/provider/TicketProvider";
@@ -136,9 +136,10 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
             {
                 !ticketContext.loading && !ticketContext.hasError && ticketData && <>
                     <View style={{ display: 'flex', width: '100%', flexDirection: 'row', paddingHorizontal: 10, alignItems: 'center' }}>
-                        <View style={{ height: 100, width: '20%', backgroundColor: 'grey', borderRadius: 10 }}>
-                        </View>
-                        <View style={{ width: '80%', paddingLeft: 10 }}>
+                        <Image source={{ uri: ticketData.main_image_url }}
+                            style={{ height: 100, width: '30%', backgroundColor: 'grey', borderRadius: 10 }}
+                        />
+                        <View style={{ width: '70%', paddingLeft: 10 }}>
                             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Text style={{ fontWeight: 'bold' }}>{ticketData.codigo}1</Text>
                                 <Text style={{ color: 'grey' }}>{ticketData.fecha_desc}</Text>

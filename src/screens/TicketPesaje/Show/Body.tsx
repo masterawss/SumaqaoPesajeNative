@@ -1,15 +1,17 @@
 import LottieView from 'lottie-react-native';
 import { Text } from 'react-native-paper';
 import TabsSection from './TabsSection';
-import { ScrollView, View } from 'react-native';
+import { ImageBackground, ScrollView, View } from 'react-native';
 import SimpleCard from '../../../components/Ticket/SimpleCard';
 import { useContext } from 'react';
 import { TicketContext } from './provider/TicketProvider';
 import ErrorSection from '../../../components/ErrorSection';
+import BgIngreso from '../../../../assets/img/bg/1.jpg';
+import BgExportacion from '../../../../assets/img/bg/6.jpg';
 
 const Body = () => {
     const { loading, hasError, loadTicket, ticketPesaje } = useContext(TicketContext);
-    return <ScrollView>
+    return <ScrollView style={{ backgroundColor: '#F7f7f7', height: '100%' }}>
         {
             loading && <>
                 <LottieView style={{ height: 250 }} source={require("../../../../assets/lottie/loading.json")} autoPlay loop />
@@ -23,9 +25,9 @@ const Body = () => {
         }
         {
             !loading && !hasError && ticketPesaje && <>
-                <View style={{ paddingBottom: 10 }}>
+                <ImageBackground source={ticketPesaje.is_exportacion ? BgExportacion : BgIngreso} style={{ padding: 10}}>
                     <SimpleCard canEdit={true} />
-                </View>
+                </ImageBackground>
                 <View style={{ marginBottom: 100 }}>
                     <TabsSection/>
                 </View>

@@ -101,7 +101,7 @@ const Index = ({navigation, type = 'ingreso'}: any) => {
                 <ScrollView style={{ marginBottom: 120, paddingBottom: 400 }}>
                     {
                         tickets.map((ticket: any) => <TouchableOpacity onPress={
-                                () => navigation.navigate('ingreso.show' as never, {id: ticket.id} as never)
+                                () => navigation.navigate('ticket_pesaje.show' as never, {id: ticket.id} as never)
                             } key={ticket.id}  style={{ marginVertical: 5 }}>
                             <SimpleCard ticket={ticket} />
                         </TouchableOpacity> )

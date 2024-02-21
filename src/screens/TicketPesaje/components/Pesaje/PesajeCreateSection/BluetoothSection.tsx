@@ -9,7 +9,7 @@ import DesactivadoSection from "../../../../../components/Bluetooth/DesactivadoS
 import NotFoundSection from "../../../../../components/Bluetooth/NotFoundSection";
 import Sound from 'react-native-sound';
 
-const tiempoEstable = 6;
+const tiempoEstable = 4;
 
 const BluetoothSection = () => {
     const [isSaved, setIsSaved] = React.useState(false);

@@ -1,11 +1,12 @@
 import { Appbar, Text, Searchbar, Button, Icon, IconButton } from "react-native-paper"
-import { SafeAreaView, ScrollView, View } from "react-native"
+import { SafeAreaView, ScrollView, View, ImageBackground } from "react-native"
 import React, { useContext, useEffect } from "react";
 import SimpleCard from "../../components/Ticket/SimpleCard";
 import SimpleCardGuiaRemision from "./components/SimpleCard";
 import api from "../../utils/axios";
 import Snackbar from "react-native-snackbar";
 import { TicketContext } from "../TicketPesaje/Show/provider/TicketProvider";
+import Bg from '../../../assets/img/bg/7.jpg';
 
 const Search = ({navigation, route}:any) => {
     const { ticketId } = route.params || { id: null };
@@ -34,7 +35,7 @@ const Search = ({navigation, route}:any) => {
         setHasError(false);
         api.get('/guia_remision/search/'+searchQuery, {
             params: {
-                ticket_id: ticketId
+                ticket_pesaje_id: ticketId
             }
         }).then((response) => {
             console.log(response.data);
@@ -62,25 +63,23 @@ const Search = ({navigation, route}:any) => {
                 <Appbar.BackAction onPress={() => {navigation.goBack()}} />
                 <Appbar.Content title="Buscar guía de remisión" />
             </Appbar.Header>
-            <ScrollView>
-
-            <View style={{ padding: 10 }}>
-                <View style={{ marginBottom: 10 }}>
+            <ScrollView style={{ backgroundColor: '#F7f7f7', height: '100%' }}>
+                <ImageBackground source={Bg} style={{ padding: 10}}>
                     <SimpleCard id={ticketId} />
-                </View>
-                <Text style={{ marginTop: 10, color: 'grey', fontSize: 12 }}>
-                    Busca por el código de guía o la placa del vehículo
-                </Text>
-                <View style={{ display: 'flex' }}>
-                    <Searchbar
-                        loading={loading}
-                        placeholder="Buscar por código o placa"
-                        onChangeText={onChangeSearch}
-                        value={searchQuery}
-                    />
-                </View>
-
-                    <View style={{ paddingHorizontal: 10,paddingVertical:10 }}>
+                </ImageBackground>
+                <View style={{ padding: 10 }}>
+                    <Text style={{ marginTop: 2, color: 'grey', fontSize: 12 }}>
+                        Busca por el código de guía o la placa del vehículo
+                    </Text>
+                    <View style={{ display: 'flex' }}>
+                        <Searchbar
+                            loading={loading}
+                            placeholder="Buscar por código o placa"
+                            onChangeText={onChangeSearch}
+                            value={searchQuery}
+                        />
+                    </View>
+                    <View style={{ paddingHorizontal: 10,paddingVertical:10, marginBottom: 60 }}>
                         {
                             guiasRemision.map((guia: any) => <SimpleCardGuiaRemision key={guia.id} ticketId={ticketId} guiaRemision={guia} />)
                         }

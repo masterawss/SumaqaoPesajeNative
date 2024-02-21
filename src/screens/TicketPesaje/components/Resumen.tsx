@@ -3,6 +3,7 @@ import {View} from 'react-native'
 import { Button, Divider, Text } from 'react-native-paper';
 import { TicketContext } from '../Show/provider/TicketProvider';
 import { numberFormat } from '../../../utils/numberFormat';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Resumen = () => {
     const { loading, hasError, loadTicket, ticketPesaje, deleteTicket, saveTicket } = useContext(TicketContext);
 
