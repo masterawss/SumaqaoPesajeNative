@@ -4,13 +4,22 @@ import { TicketContext } from "../../../../Show/provider/TicketProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../../../../../../utils/axios";
 
+interface ISaveDataProps {
+    peso: any;
+    by_bluetooth: boolean;
+    guia_remision_id?: any;
+}
 export default () => {
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState(false);
 
     const { hasError, loadTicket, ticketPesaje, deleteTicket } = useContext(TicketContext);
 
-    const saveData = async (peso: any, by_bluetooth = false, cb = () => {}) => {
+    const saveData = async ({
+        peso, 
+        by_bluetooth = false,
+        guia_remision_id = null
+    }: ISaveDataProps, cb = () => {}) => {
         setLoading(true);
         setError(false);
         const user = await AsyncStorage.getItem('user');
@@ -18,9 +27,10 @@ export default () => {
             peso_bruto: peso,
             ticket_pesaje_id: ticketPesaje.id,
             created_user_id: JSON.parse(user || '').id,
-            by_bluetooth
+            by_bluetooth,
+            guia_remision_id
         }).then((response) => {
-            console.log(response);
+            // console.log(response);
             setLoading(false);
             Snackbar.show({
                 text: 'Se registró correctamente',

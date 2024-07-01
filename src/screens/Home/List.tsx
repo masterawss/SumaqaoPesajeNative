@@ -36,6 +36,7 @@ const Index = ({navigation, type = 'ingreso'}: any) => {
         api.get('/ticket_pesaje', {
             params: {
                 search: dateStr,
+                // search: '2024-06-07',
                 type
             }
         }).then((response) => {
@@ -44,7 +45,7 @@ const Index = ({navigation, type = 'ingreso'}: any) => {
         }
         ).catch((error) => {
             setHasError(true);
-            console.log("ERROR INDEX", error);
+            console.log("ERROR INDEX", error.response.data);
         }).finally(() => {
             setLoading(false);
         });

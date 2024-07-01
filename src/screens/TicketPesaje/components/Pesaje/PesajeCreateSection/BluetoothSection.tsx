@@ -8,10 +8,13 @@ import { BalanzaBluetoothContext } from "../../../context/BalanzaBluetoothProvid
 import DesactivadoSection from "../../../../../components/Bluetooth/DesactivadoSection";
 import NotFoundSection from "../../../../../components/Bluetooth/NotFoundSection";
 import Sound from 'react-native-sound';
+import { TicketContext } from "../../../Show/provider/TicketProvider";
+import GuiaRemisionSelect from "../GuiaRemisionSelect";
 
-const tiempoEstable = 4;
+const tiempoEstable = 1;
 
 const BluetoothSection = () => {
+    const {currentGuiaRemision, setNextGuiaRemision, setCurrentGuiaRemision} = useContext(TicketContext);
     const [isSaved, setIsSaved] = React.useState(false);
     const [canSave, setCanSave] = React.useState(false);
     // const [peso, setPeso] = React.useState<number>(0);
@@ -27,10 +30,15 @@ const BluetoothSection = () => {
     const save = () => { 
         setCronometro(-1);
         console.log('save');
-        saveData(peso, true, () => {
+        saveData({
+            peso, 
+            by_bluetooth: true,
+            guia_remision_id: currentGuiaRemision?.id
+        }, () => {
             setCanSave(false);
             setIsSaved(true);
             playSound('finish')
+            setNextGuiaRemision()
         })
     }
 
@@ -122,6 +130,23 @@ const BluetoothSection = () => {
         }
         {
             bluetoothEnabled && !device && <NotFoundSection connectToDevice={connectToDevice} />
+        }
+        {
+            currentGuiaRemision
+            ? <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20, marginBottom: 20 }}>
+                <Text>
+                    Se registrará para:
+                </Text>
+                <GuiaRemisionSelect
+                    guia_remision_codigo={currentGuiaRemision.codigo} 
+                    onSelect={(guia: any) => {
+                        setCurrentGuiaRemision(guia);
+                    }}
+                />
+            </View>
+            : <Text>
+                Se registrará sin GRR
+            </Text>
         }
         {
             !!device && <>

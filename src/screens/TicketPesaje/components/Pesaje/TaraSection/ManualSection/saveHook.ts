@@ -4,16 +4,23 @@ import { useContext } from "react";
 import { TicketContext } from "../../../../Show/provider/TicketProvider";
 import Snackbar from "react-native-snackbar";
 
+interface ISaveProps {
+    tara: number,
+    guia_remision_id?: number|null
+}
+
 const saveHook = ({setLoadingTara, setVisible, ticketPesaje, loadTicket}: any) => {
 
     // const { loadTicket, ticketPesaje } = useContext(TicketContext);
 
-    const save = async (tara:number, cb = () => {}) => {
+    const save = async ({tara, guia_remision_id}: ISaveProps, cb = () => {}) => {
         console.log('SAVEEE', tara, ticketPesaje.id)
         setLoadingTara(true)
         const user = await AsyncStorage.getItem('user');
-        api.post('/ticket_pesaje/update/'+ticketPesaje.id, { 
+        api.post('/tara', {
+            ticket_pesaje_id: ticketPesaje.id,
             peso_solo_paletas: tara,
+            guia_remision_id,
             updated_user_id: JSON.parse(user || "")?.id
         })
         .then((response) => {

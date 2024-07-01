@@ -7,8 +7,20 @@ import { TicketContext } from "../../../Show/provider/TicketProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Edit } from "./ManualSection/Edit";
 import saveHook from "./ManualSection/saveHook";
+import GuiaRemisionSelect from "../GuiaRemisionSelect";
 
-const ManualSection = ({ticketPesaje, setVisible, loadTicket, isEdit} : any ) => {
+const ManualSection = ({
+    ticketPesaje, 
+    setVisible, 
+    loadTicket, 
+    isEdit,
+    currentGuiaRemision, 
+    hasGuiasRemision, 
+    setCurrentGuiaRemision, 
+    setNextGuiaRemision,
+    peso_solo_paletas,
+    guiasRemision
+} : any ) => {
     const [taraValue, setTaraValue] = React.useState("0");
     const [taraKg, setTaraKg] = React.useState("0");
     const [loadingTara, setLoadingTara] = React.useState(false);
@@ -17,25 +29,55 @@ const ManualSection = ({ticketPesaje, setVisible, loadTicket, isEdit} : any ) =>
     const {save} = saveHook({setLoadingTara, setVisible, ticketPesaje, loadTicket})
 
     useEffect(() => {
-        if(ticketPesaje?.peso_solo_paletas) {
-            setTaraValue(ticketPesaje?.peso_solo_paletas)
-            setTaraKg(ticketPesaje?.peso_solo_paletas)
+        if(peso_solo_paletas) {
+            setTaraValue(peso_solo_paletas)
+            setTaraKg(peso_solo_paletas)
         }
-    }, [ticketPesaje])
+    }, [peso_solo_paletas])
+
+    const saveTara = async (tara: number) => {
+        try {
+            await save({tara, guia_remision_id: currentGuiaRemision?.id})
+            setNextGuiaRemision()
+        } catch (error) {
+            Snackbar.show({
+                text: 'No se pudo registrar la tara',
+                duration: Snackbar.LENGTH_INDEFINITE,
+                action: {
+                    text: 'Cerrar',
+                    textColor: 'red',
+                    onPress: () => { /* Do something. */ },
+                },
+            });
+        }
+    }
 
     return (
         <>
             {
+                hasGuiasRemision 
+                    && <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between',  alignItems: 'center', marginVertical: 20 }}>
+                        <Text style={{ fontWeight: 'bold' }}>Se registrará para:</Text>
+                        <GuiaRemisionSelect
+                            guiasRemision={guiasRemision}
+                            guia_remision_codigo={currentGuiaRemision.codigo}
+                            onSelect={(guia:any) => {
+                                setCurrentGuiaRemision(guia)
+                            }}
+                        />
+                    </View>
+            }
+            {
                 !isEdit ? <View>
                     <TextInput mode="outlined" label="Peso (Kg)" keyboardType="numeric" value={taraKg} onChangeText={val => setTaraKg(val)} />
                     <Button loading={loadingTara} disabled={loadingTara} style={{ marginTop: 10 }} mode="contained" 
-                        onPress={() => save(parseFloat(taraKg))}
+                        onPress={() => saveTara(parseFloat(taraKg))}
                         // onPress={() => console.log('asdadadasdadasd')}
                     >
                         Guardar
                     </Button>
                 </View>
-                : <Edit taraInicial={ticketPesaje.peso_solo_paletas} loading={loadingTara} onSaveHandler={(tara) => save(parseFloat(tara))} />
+                : <Edit taraInicial={peso_solo_paletas} loading={loadingTara} onSaveHandler={(tara) => saveTara(tara)} />
             }
         </>
     )

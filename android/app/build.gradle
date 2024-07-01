@@ -78,8 +78,8 @@ android {
         applicationId "com.sumaqao.pesaje"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 10200
-        versionName "1.2.0"
+        versionCode 10205
+        versionName "1.2.5"
     }
     signingConfigs {
         debug {

@@ -8,13 +8,26 @@ import { BalanzaBluetoothContext } from "../../context/BalanzaBluetoothProvider"
 
 const TaraSection = () => {
     const [visible, setVisible] = React.useState(false);
-    const { loading, loadTicket, ticketPesaje, hasError } = useContext(TicketContext);
+    const { loading, loadTicket, ticketPesaje, hasError, 
+        currentGuiaRemision, 
+        hasGuiasRemision, 
+        setCurrentGuiaRemision, 
+        setNextGuiaRemision
+     } = useContext(TicketContext);
     const [isBluetooth, setIsBluetooth] = React.useState(false);
     const {bluetoothEnabled, loading: loadingBluetooh, device, peso, connectToDevice, checkBluetoothEnabled} = useContext(BalanzaBluetoothContext);
 
+    const peso_solo_paletas = useMemo(() => {
+        if(currentGuiaRemision){
+            return currentGuiaRemision.ticket_pesaje_tara ?? 0
+        }
+        return ticketPesaje?.peso_solo_paletas
+    }, [ticketPesaje?.peso_solo_paletas, currentGuiaRemision])
+
     const isEdit = useMemo(() => {
-        return parseFloat(ticketPesaje?.peso_solo_paletas) > 0
-    }, [ticketPesaje?.peso_solo_paletas])
+        return parseFloat(peso_solo_paletas) > 0
+    }, [peso_solo_paletas])
+
     return (
         <>
             <View style={{
@@ -49,18 +62,45 @@ const TaraSection = () => {
                 }
                 {
                     !loading && !hasError && <>
-                        <Text style={{ marginVertical: 10, fontWeight: 'bold', color: 'grey' }}>Tara en paletas (Kg)</Text>
+                        {
+                            !hasGuiasRemision ? <>
+                                <Text style={{ marginVertical: 10, fontWeight: 'bold', color: 'grey' }}>Tara en paletas (Kg)</Text>
 
-                        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
-                            <Text style={{ fontWeight: 'bold' }}>{ticketPesaje.peso_solo_paletas} Kg</Text>
-                            <IconButton
-                                disabled={loading}
-                                icon="pencil"
-                                iconColor='grey'
-                                size={20}
-                                onPress={() => setVisible(true)}
-                            />
-                        </View>
+                                <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
+                                    <Text style={{ fontWeight: 'bold' }}>{peso_solo_paletas} Kg</Text>
+                                    <IconButton
+                                        disabled={loading}
+                                        icon="pencil"
+                                        iconColor='grey'
+                                        size={20}
+                                        onPress={() => setVisible(true)}
+                                    />
+                                </View>
+                            </> : <>
+                                    <Text style={{ marginVertical: 10, fontWeight: 'bold', color: 'grey' }}>Taras</Text>
+                                    <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
+                                        <IconButton
+                                            disabled={loading}
+                                            icon="pencil"
+                                            iconColor='grey'
+                                            size={20}
+                                            onPress={() => setVisible(true)}
+                                        />
+                                    </View>
+                                <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                </View>
+                                <View style={{ flex: 1 }}>
+                                    {
+                                        ticketPesaje?.guias_remision?.map((guia: any, index: number) => (
+                                            <View key={index} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 10 }}>
+                                                <Text style={{ fontWeight: 'bold' }}>{guia.codigo}</Text>
+                                                <Text>{guia.ticket_pesaje_tara} Kg</Text>
+                                            </View>
+                                        ))
+                                    }
+                                </View>
+                            </>
+                        }
                     </>
                 }
             </View>
@@ -76,7 +116,9 @@ const TaraSection = () => {
                     </View>
                     {
                         isBluetooth
-                            ? <BluetoothSection 
+                            ? <BluetoothSection
+                                guiasRemision={ticketPesaje?.guias_remision}
+                                peso_solo_paletas={peso_solo_paletas}
                                 ticketPesaje={ticketPesaje}
                                 loadTicket={loadTicket}
                                 setVisible={setVisible}
@@ -87,8 +129,19 @@ const TaraSection = () => {
                                 connectToDevice={connectToDevice}
                                 checkBluetoothEnabled={checkBluetoothEnabled}
                                 isEdit={isEdit}
+                                currentGuiaRemision={currentGuiaRemision}
+                                hasGuiasRemision={hasGuiasRemision}
+                                setCurrentGuiaRemision={setCurrentGuiaRemision}
+                                setNextGuiaRemision={setNextGuiaRemision}
                             />
-                            : <ManualSection isEdit={isEdit} setVisible={setVisible} ticketPesaje={ticketPesaje} loadTicket={loadTicket} />
+                            : <ManualSection isEdit={isEdit} setVisible={setVisible} ticketPesaje={ticketPesaje} loadTicket={loadTicket}
+                                guiasRemision={ticketPesaje?.guias_remision}
+                                peso_solo_paletas={peso_solo_paletas}
+                                currentGuiaRemision={currentGuiaRemision}
+                                hasGuiasRemision={hasGuiasRemision}
+                                setCurrentGuiaRemision={setCurrentGuiaRemision}
+                                setNextGuiaRemision={setNextGuiaRemision}
+                            />
                     }
                 </Modal>
             </Portal>
