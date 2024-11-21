@@ -48,7 +48,7 @@ const AddPesajeSection = ({onSaved = (data: number) => {}}) => {
 
           
         try {
-            const address = '00:08:F4:02:BC:F5';
+            const address = '00:08:F4:02:BC:F9';
             // const device = await RNBluetoothClassic.getConnectedDevice(address);
             const paired = await RNBluetoothClassic.getBondedDevices();
             const device = paired.find(d => d.address === address)

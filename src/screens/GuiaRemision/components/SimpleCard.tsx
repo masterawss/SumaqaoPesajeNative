@@ -212,10 +212,13 @@ const SimpleCard = ({guiaRemision: gr, ticketId, isInTicket = false}: any) => {
                 </View>
             </View>
             <View style={{ marginTop: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
-                <View style={{ flex: 1 }}>
-                    <Text style={style.textTitle}>Sacos en guía</Text>
-                    <Text>{numberFormat(guiaRemision.total_sacos)}</Text>
-                </View>
+                {
+                    !guiaRemision.is_exportacion &&
+                    <View style={{ flex: 1 }}>
+                        <Text style={style.textTitle}>Sacos en guía</Text>
+                        <Text>{numberFormat(guiaRemision.total_sacos)}</Text>
+                    </View>
+                }
                 <View style={{ flex: 1 }}>
                     <Text style={style.textTitle}>Peso neto</Text>
                     <Text>{numberFormat(guiaRemision.peso_neto_enviado)}</Text>
@@ -234,10 +237,10 @@ const SimpleCard = ({guiaRemision: gr, ticketId, isInTicket = false}: any) => {
                             <Text style={style.textTitle}>Nro de sacos</Text>
                             <Text>{numberFormat(guiaRemision.nro_sacos)}</Text>
                         </View>
-                        <View style={{ flex: 1 }}>
+                        {/* <View style={{ flex: 1 }}>
                             <Text style={style.textTitle}>Nro de sacos 2</Text>
                             <Text>{numberFormat(guiaRemision.nro_sacos2)}</Text>
-                        </View>
+                        </View> */}
                     </View>
                     <Button mode='contained' style={{ marginTop: 10 }} onPress={() => showModal()}>
                         Actualizar
@@ -252,7 +255,7 @@ const SimpleCard = ({guiaRemision: gr, ticketId, isInTicket = false}: any) => {
                 <View style={{ padding:10 }} >
                     <Text style={{ fontSize: 17, fontWeight: 'bold', textAlign: 'center', marginVertical: 10 }}>Editar nro de sacos para ticket de pesaje</Text>
                     <TextInput label="Nro de sacos" value={nroSacos} onChangeText={setNroSacos} keyboardType='numeric' />
-                    <TextInput label="Nro de sacos 2" value={nroSacos2} onChangeText={setNroSacos2} keyboardType='numeric' />
+                    {/* <TextInput label="Nro de sacos 2" value={nroSacos2} onChangeText={setNroSacos2} keyboardType='numeric' /> */}
                     <Button style={{ marginTop: 20 }} mode="contained" onPress={updateGuiaRemision}>
                         Cambiar
                     </Button>

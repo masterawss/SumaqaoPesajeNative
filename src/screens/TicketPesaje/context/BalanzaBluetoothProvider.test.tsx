@@ -29,7 +29,7 @@ const BalanzaBluetoothProvider = ({children}: {children: ReactNode}) => {
     const connectToDevice = async () => {
         setDevice({
             name: 'Balanza',
-            address: '00:08:F4:02:BC:F5'
+            address: '00:08:F4:02:BC:F9'
         })
         setTimeout(() => {
             setPeso(Math.random() * 100);

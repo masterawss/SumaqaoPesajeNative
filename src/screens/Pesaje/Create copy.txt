@@ -10,7 +10,7 @@ const Create = ({navigation}: any) => {
 
     useEffect(() => {
         // bondedDevices()
-        connectToDevice({address: "00:08:F4:02:BC:F5"})
+        connectToDevice({address: "00:08:F4:02:BC:F9"})
     }, [])
 
     // useEffect(() => {

@@ -141,11 +141,11 @@ const SimpleCard = ({id = null, ticket = null, canEdit = false}: any) => {
                         />
                         <View style={{ width: '70%', paddingLeft: 10 }}>
                             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <Text style={{ fontWeight: 'bold' }}>{ticketData.codigo}1</Text>
+                                <Text style={{ fontWeight: 'bold' }}>{ticketData.codigo}</Text>
                                 <Text style={{ color: 'grey' }}>{ticketData.fecha_desc}</Text>
                             </View>
                             <View style={{ marginVertical: 8 }}>
-                                <Text>{ticketData.guias_remision.length} G.R.R.  •   {numberFormat(ticketData.total_nro_sacos)} sacos</Text>
+                                <Text>{ticketData.guias_remision.length} G.R.R.  •   {numberFormat( ticketData.is_exportacion ? ticketData.total_grr_sacos : ticketData.total_nro_sacos)} sacos</Text>
                             </View>
                             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Text style={{ color: 'grey' }}>{ticketData.placa_tracto}</Text>
