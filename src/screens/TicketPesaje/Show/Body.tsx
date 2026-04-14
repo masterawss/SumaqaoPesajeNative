@@ -8,10 +8,15 @@ import { TicketContext } from './provider/TicketProvider';
 import ErrorSection from '../../../components/ErrorSection';
 import BgIngreso from '../../../../assets/img/bg/1.jpg';
 import BgExportacion from '../../../../assets/img/bg/6.jpg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Body = () => {
     const { loading, hasError, loadTicket, ticketPesaje } = useContext(TicketContext);
-    return <ScrollView style={{ backgroundColor: '#F7f7f7', height: '100%' }}>
+    const insets = useSafeAreaInsets();
+    return <ScrollView
+        style={{ flex: 1, backgroundColor: '#F7f7f7' }}
+        contentContainerStyle={{ paddingBottom: 100 + insets.bottom }}
+    >
         {
             loading && <>
                 <LottieView style={{ height: 250 }} source={require("../../../../assets/lottie/loading.json")} autoPlay loop />
@@ -23,16 +28,16 @@ const Body = () => {
                 onRetry={loadTicket}
             />
         }
-        {
-            !loading && !hasError && ticketPesaje && <>
-                <ImageBackground source={ticketPesaje.is_exportacion ? BgExportacion : BgIngreso} style={{ padding: 10}}>
-                    <SimpleCard canEdit={true} />
-                </ImageBackground>
-                <View style={{ marginBottom: 100 }}>
-                    <TabsSection/>
-                </View>
-            </>
-        }
+                {
+                    !loading && !hasError && ticketPesaje && <>
+                        <ImageBackground source={ticketPesaje.is_exportacion ? BgExportacion : BgIngreso} style={{ padding: 10}}>
+                            <SimpleCard canEdit={true} />
+                        </ImageBackground>
+                        <View>
+                            <TabsSection/>
+                        </View>
+                    </>
+                }
     </ScrollView>
 }
 export default Body;

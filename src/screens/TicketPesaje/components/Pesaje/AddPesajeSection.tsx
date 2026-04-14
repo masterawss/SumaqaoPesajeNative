@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import {Dimensions, Image, View, PermissionsAndroid} from "react-native";
+import {Dimensions, Image, View} from "react-native";
 import { Button, Modal, Portal, Text } from "react-native-paper";
 import BalanceImg from '../../../../../assets/img/balance.png';
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
+import { requestBluetoothPermissions } from "../../../../utils/androidBluetoothPermissions";
 
 const deviceHeight = Dimensions.get('window').height
 
@@ -33,18 +34,15 @@ const AddPesajeSection = ({onSaved = (data: number) => {}}) => {
 
     const connectToDevice = async () => {
         setLoading(true)
-        await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-              title: 'Access fine location required for discovery',
-              message:
-                'In order to perform discovery, you must enable/allow ' +
-                'fine location access.',
-              buttonNeutral: 'Ask Me Later"',
-              buttonNegative: 'Cancel',
-              buttonPositive: 'OK'
-            }
-          );
+        const hasPermissions = await requestBluetoothPermissions({
+            connect: true,
+            title: 'Se requieren permisos de Bluetooth',
+            message: 'Debemos permitir el acceso para conectarnos con la balanza.',
+        });
+        if (!hasPermissions) {
+            setLoading(false)
+            return;
+        }
 
           
         try {
@@ -52,6 +50,9 @@ const AddPesajeSection = ({onSaved = (data: number) => {}}) => {
             // const device = await RNBluetoothClassic.getConnectedDevice(address);
             const paired = await RNBluetoothClassic.getBondedDevices();
             const device = paired.find(d => d.address === address)
+            if (!device) {
+                throw new Error('No se encontró la balanza vinculada.')
+            }
             console.log('DEVIVE', device)
             const con = await device.connect({})
             console.log('CON', con)

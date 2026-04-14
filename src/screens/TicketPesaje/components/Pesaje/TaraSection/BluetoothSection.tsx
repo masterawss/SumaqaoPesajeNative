@@ -3,12 +3,12 @@ import { ActivityIndicator, RadioButton, Text } from "react-native-paper"
 import { BalanzaBluetoothContext } from "../../../context/BalanzaBluetoothProvider";
 import DesactivadoSection from "../../../../../components/Bluetooth/DesactivadoSection";
 import NotFoundSection from "../../../../../components/Bluetooth/NotFoundSection";
-import { Button, Icon, IconButton, TextInput } from "react-native-paper";
+import { Button, Icon } from "react-native-paper";
 import { View } from "react-native";
 import saveHook from "./ManualSection/saveHook";
-import { TicketContext } from "../../../Show/provider/TicketProvider";
-import Snackbar from "react-native-snackbar";
 import GuiaRemisionSelect from "../GuiaRemisionSelect";
+
+const Snackbar = require("react-native-snackbar");
 
 const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
     guiasRemision,
@@ -26,6 +26,7 @@ const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
     peso_solo_paletas
 }: any) => {
     const [loadingTara, setLoadingTara] = useState(false)
+    const { activeBalanza } = useContext(BalanzaBluetoothContext);
     const {save} = saveHook({setLoadingTara, setVisible, ticketPesaje, loadTicket})
 
 
@@ -53,13 +54,24 @@ const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
 
     const taraFinalCalculated = useMemo(() => {
         if(typeChange === 'sumar') {
-            return parseInt(peso) + parseInt(peso_solo_paletas)
+            return parseInt(peso, 10) + parseInt(peso_solo_paletas, 10)
         } else {
-            return parseInt(peso) - parseInt(peso_solo_paletas)
+            return parseInt(peso, 10) - parseInt(peso_solo_paletas, 10)
         }
     }, [typeChange, peso, peso_solo_paletas])
 
     return <>
+        <View style={{ marginBottom: 16 }}>
+            <Text style={{ color: 'grey', fontSize: 12 }}>Balanza seleccionada</Text>
+            <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
+                {activeBalanza?.title ?? 'Sin balanza seleccionada'}
+            </Text>
+            {
+                activeBalanza?.address
+                    ? <Text style={{ color: 'grey' }}>{activeBalanza.address}</Text>
+                    : null
+            }
+        </View>
         {
             loading && <Text><ActivityIndicator size="small" /> Cargando ...</Text>
         }

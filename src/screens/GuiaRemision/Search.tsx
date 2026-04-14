@@ -1,5 +1,5 @@
 import { Appbar, Text, Searchbar, Button, Icon, IconButton } from "react-native-paper"
-import { SafeAreaView, ScrollView, View, ImageBackground } from "react-native"
+import { ScrollView, View, ImageBackground } from "react-native"
 import React, { useContext, useEffect } from "react";
 import SimpleCard from "../../components/Ticket/SimpleCard";
 import SimpleCardGuiaRemision from "./components/SimpleCard";
@@ -7,10 +7,12 @@ import api from "../../utils/axios";
 import Snackbar from "react-native-snackbar";
 import { TicketContext } from "../TicketPesaje/Show/provider/TicketProvider";
 import Bg from '../../../assets/img/bg/7.jpg';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Search = ({navigation, route}:any) => {
     const { ticketId } = route.params || { id: null };
     const {assignReload} = useContext(TicketContext);
+    const insets = useSafeAreaInsets();
 
     const [searchQuery, setSearchQuery] = React.useState('');
 
@@ -58,12 +60,15 @@ const Search = ({navigation, route}:any) => {
     }
 
     return (
-        <SafeAreaView>
+        <View style={[{ flex: 1, backgroundColor: "#F7f7f7" }, { paddingTop: insets.top }]}>
             <Appbar.Header>
                 <Appbar.BackAction onPress={() => {navigation.goBack()}} />
                 <Appbar.Content title="Buscar guía de remisión" />
             </Appbar.Header>
-            <ScrollView style={{ backgroundColor: '#F7f7f7', height: '100%' }}>
+            <ScrollView
+                style={{ flex: 1, backgroundColor: '#F7f7f7' }}
+                contentContainerStyle={{ paddingBottom: 60 + insets.bottom }}
+            >
                 <ImageBackground source={Bg} style={{ padding: 10}}>
                     <SimpleCard id={ticketId} />
                 </ImageBackground>
@@ -79,14 +84,14 @@ const Search = ({navigation, route}:any) => {
                             value={searchQuery}
                         />
                     </View>
-                    <View style={{ paddingHorizontal: 10,paddingVertical:10, marginBottom: 60 }}>
+                    <View style={{ paddingHorizontal: 10, paddingVertical: 10 }}>
                         {
                             guiasRemision.map((guia: any) => <SimpleCardGuiaRemision key={guia.id} ticketId={ticketId} guiaRemision={guia} />)
                         }
                     </View>
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
 
     )
 }

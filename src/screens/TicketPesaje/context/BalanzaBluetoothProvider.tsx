@@ -1,78 +1,80 @@
-import React, { ReactNode, createContext, useEffect } from "react";
+import React, { ReactNode, createContext, useCallback, useEffect } from "react";
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
-import { Button, Icon, IconButton, Text } from "react-native-paper";
-import { ActivityIndicator, PermissionsAndroid, View } from "react-native";
-import Snackbar from "react-native-snackbar";
+import { requestBluetoothPermissions } from "../../../utils/androidBluetoothPermissions";
+import { getStoredActiveBalanza } from "../../../utils/balanzasStorage";
 
 export const BalanzaBluetoothContext = createContext<any | null>(null);
+const Snackbar = require("react-native-snackbar");
 
 const BalanzaBluetoothProvider = ({children}: {children: ReactNode}) => {
     const [loading, setLoading] = React.useState(false);
     const [bluetoothEnabled, setBluetoothEnabled] = React.useState(false);
-    const [device, setDevice] = React.useState<any>(null)
-    const [peso, setPeso] = React.useState<any>(null)
+    const [device, setDevice] = React.useState<any>(null);
+    const [peso, setPeso] = React.useState<any>(null);
+    const [activeBalanza, setActiveBalanza] = React.useState<any>(null);
+    const [ready, setReady] = React.useState(false);
 
-    useEffect(() => {
-        checkBluetoothEnabled()
-    }, [])
+    const loadActiveBalanza = useCallback(async () => {
+        const balanza = await getStoredActiveBalanza();
+        setActiveBalanza(balanza);
+        return balanza;
+    }, []);
 
-    useEffect(() => {
-        if(bluetoothEnabled)
-            connectToDevice()
-    }, [bluetoothEnabled])
-
-    const checkBluetoothEnabled = async () => {
+    const checkBluetoothEnabled = useCallback(async () => {
         setLoading(true);
         const enabled = await RNBluetoothClassic.isBluetoothEnabled();
         setBluetoothEnabled(enabled);
         setLoading(false);
-    }
+    }, []);
 
-    const connectToDevice = async () => {
+    useEffect(() => {
+        loadActiveBalanza().finally(() => {
+            setReady(true);
+        });
+    }, [loadActiveBalanza]);
+
+    useEffect(() => {
+        if (ready) {
+            checkBluetoothEnabled();
+        }
+    }, [checkBluetoothEnabled, ready]);
+
+    const connectToDevice = useCallback(async () => {
+        if (!activeBalanza?.address) {
+            Snackbar.show({
+                text: 'Selecciona una balanza antes de conectar.',
+                duration: Snackbar.LENGTH_SHORT,
+            });
+            return;
+        }
+
         setLoading(true)
-        await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-              title: 'Se requiere permiso de acceso a la ubicación',
-              message:
-                'Debemos permitir el acceso para conectarnos con la balanza ',
-              buttonNeutral: 'Preguntarme luego',
-              buttonNegative: 'Cancelar',
-              buttonPositive: 'OK'
-            }
-          );
-        await PermissionsAndroid.request(
-             PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
-             {
-                title: 'Se requiere permiso de acceso a la ubicación',
-                message:
-                  'Debemos permitir el acceso para conectarnos con la balanza ',
-                buttonNeutral: 'Preguntarme luego',
-                buttonNegative: 'Cancelar',
-                buttonPositive: 'OK'
-              }
-        );
+        const hasPermissions = await requestBluetoothPermissions({
+            connect: true,
+            title: 'Se requieren permisos de Bluetooth',
+            message: 'Debemos permitir el acceso para conectarnos con la balanza.',
+        });
+        if (!hasPermissions) {
+            setLoading(false)
+            return;
+        }
 
         try {
-            const address = '00:08:F4:02:BC:F9';
-            // const device = await RNBluetoothClassic.getConnectedDevice(address);
             const paired = await RNBluetoothClassic.getBondedDevices();
-            const device = paired.find(d => d.address === address)
-            console.log('DEVIVE', device)
-            const con = await device.connect({})
-            setDevice(con)
-            device.onDataReceived((data) => {
-                // Eliminar los caracteres no numericos
-                // let peso = data.data.replace(/[^0-9]/g, '')
-                let peso = data.data.substring(0, data.data.length - 3)
-                // console.log(data)
-                setPeso(peso)
+            const pairedDevice = paired.find(d => d.address === activeBalanza.address)
+            if (!pairedDevice) {
+                throw new Error('No se encontró la balanza vinculada.')
+            }
+            const connectedDevice = await pairedDevice.connect({})
+            setDevice(connectedDevice)
+            pairedDevice.onDataReceived((data) => {
+                const nextPeso = data.data.substring(0, data.data.length - 3)
+                setPeso(nextPeso)
             })
         } catch (error) {
-            console.log('ERROR', error)
+            setDevice(null);
             Snackbar.show({
                 text: 'No se pudo conectar con la balanza',
-                // text: JSON.stringify(error),
                 duration: Snackbar.LENGTH_INDEFINITE,
                 action: {
                   text: 'Cerrar',
@@ -83,15 +85,26 @@ const BalanzaBluetoothProvider = ({children}: {children: ReactNode}) => {
         } finally {
             setLoading(false)
         }
-    }
+    }, [activeBalanza?.address]);
+
+    useEffect(() => {
+        setDevice(null);
+        setPeso(null);
+
+        if (bluetoothEnabled && activeBalanza?.address) {
+            connectToDevice();
+        }
+    }, [activeBalanza?.address, bluetoothEnabled, connectToDevice]);
 
     return <BalanzaBluetoothContext.Provider value={{
         bluetoothEnabled,
         loading,
         device,
         peso,
+        activeBalanza,
         connectToDevice,
-        checkBluetoothEnabled
+        checkBluetoothEnabled,
+        loadActiveBalanza,
     }}>
         {children}
     </BalanzaBluetoothContext.Provider>

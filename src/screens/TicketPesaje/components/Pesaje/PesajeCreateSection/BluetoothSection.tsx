@@ -1,8 +1,6 @@
-import React, { useContext, useEffect, useMemo } from "react";
-import RNBluetoothClassic from 'react-native-bluetooth-classic';
-import { Button, Icon, IconButton, Text } from "react-native-paper";
-import { ActivityIndicator, PermissionsAndroid, View } from "react-native";
-import Snackbar from "react-native-snackbar";
+import React, { useCallback, useContext, useEffect, useMemo } from "react";
+import { Button, Icon, Text } from "react-native-paper";
+import { ActivityIndicator, View } from "react-native";
 import savePesoHook from "./hook/savePesoHook";
 import { BalanzaBluetoothContext } from "../../../context/BalanzaBluetoothProvider";
 import DesactivadoSection from "../../../../../components/Bluetooth/DesactivadoSection";
@@ -22,14 +20,13 @@ const BluetoothSection = () => {
     //     setPeso(Math.random() * 100);
     // }
     // const {bluetoothEnabled, loading, device, connectToDevice, checkBluetoothEnabled} = useContext(BalanzaBluetoothContext);
-    const {bluetoothEnabled, loading, device, peso, connectToDevice, checkBluetoothEnabled} = useContext(BalanzaBluetoothContext);
+    const {bluetoothEnabled, loading, device, peso, connectToDevice, checkBluetoothEnabled, activeBalanza} = useContext(BalanzaBluetoothContext);
 
-    const {loading: loadingSave, error, saveData} = savePesoHook()
+    const {loading: loadingSave, saveData} = savePesoHook()
     const [pesoEstable, setPesoEstable] = React.useState<number>(0);
 
-    const save = () => { 
+    const save = useCallback(() => {
         setCronometro(-1);
-        console.log('save');
         saveData({
             peso, 
             by_bluetooth: true,
@@ -40,7 +37,7 @@ const BluetoothSection = () => {
             playSound('finish')
             setNextGuiaRemision()
         })
-    }
+    }, [currentGuiaRemision?.id, peso, saveData, setNextGuiaRemision]);
 
     useEffect(() => {
         setPesoEstable(peso); // Actualiza el valor de pesoEstable cuando el peso cambia
@@ -59,7 +56,7 @@ const BluetoothSection = () => {
           setCanSave(false);
         }
 
-        if(pesoEstable === 0 && peso == 0){
+        if(pesoEstable === 0 && Number(peso) === 0){
             setCronometro(-1);
         }
 
@@ -85,20 +82,11 @@ const BluetoothSection = () => {
     useEffect(() => {
         if(canSave && peso > 0){
             save();
-            console.log('save');
         }
-    }, [canSave, peso]);
+    }, [canSave, peso, save]);
 
-
-    const [sound, setSound] = React.useState();
-    useEffect(() => {
-        return () => {
-          if (sound) sound.release(); // Limpia el sonido al desmontar el componente
-        };
-    }, [sound]);
     const playSound = (type = '') => {
         const soundPath = type === 'finish' ? 'beep_finish.mp3' : 'beep.mp3';
-        // const sound = '../../../../../../assets/sound/beep-finish.mp3'
         Sound.setCategory('Playback');
         const s = new Sound(soundPath, Sound.MAIN_BUNDLE, (e) => {
             if (e) {
@@ -109,19 +97,30 @@ const BluetoothSection = () => {
         })
     }
 
-    const text = useMemo(() => {
-        let text = ''
+    const buttonText = useMemo(() => {
+        let nextText = ''
         if(isSaved){
-            text = 'Guardado'
+            nextText = 'Guardado'
         }else if(cronometro < tiempoEstable && cronometro >= 0){
-            text = `Guardar en ${cronometro}`
+            nextText = `Guardar en ${cronometro}`
         }else{
-            text = 'Guardar'
+            nextText = 'Guardar'
         }
-        return text;
-    }, [isSaved, cronometro, tiempoEstable])
+        return nextText;
+    }, [isSaved, cronometro])
 
     return <>
+        <View style={{ marginBottom: 16 }}>
+            <Text style={{ color: 'grey', fontSize: 12 }}>Balanza seleccionada</Text>
+            <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
+                {activeBalanza?.title ?? 'Sin balanza seleccionada'}
+            </Text>
+            {
+                activeBalanza?.address
+                    ? <Text style={{ color: 'grey' }}>{activeBalanza.address}</Text>
+                    : null
+            }
+        </View>
         {
             loading && <Text><ActivityIndicator size="small" /> Cargando ...</Text>
         }
@@ -158,7 +157,7 @@ const BluetoothSection = () => {
                 </View>
                 <View style={{ marginTop: 15 }}>
                     <Button disabled={isSaved || peso === 0} mode="contained" onPress={save} loading={loadingSave}>
-                        {text}
+                        {buttonText}
                     </Button>
                     <View>
                         {

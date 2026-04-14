@@ -1,27 +1,26 @@
 import { Button, Text } from "react-native-paper";
-import {View, PermissionsAndroid} from 'react-native'
-import { SafeAreaView } from "react-native-safe-area-context";
+import {View} from 'react-native'
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {useState} from 'react'
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
+import { requestBluetoothPermissions } from "../../utils/androidBluetoothPermissions";
 
 const Create = () => {
+      const insets = useSafeAreaInsets();
       const [discovering, setDiscovering] = useState(false)
       const [devices, setDevices] = useState<any>([])
       const [data, setData] = useState<any>(null)
       const startDiscovery = async () => {
         try {
-            await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-                {
-                  title: 'Access fine location required for discovery',
-                  message:
-                    'In order to perform discovery, you must enable/allow ' +
-                    'fine location access.',
-                  buttonNeutral: 'Ask Me Later"',
-                  buttonNegative: 'Cancel',
-                  buttonPositive: 'OK'
-                }
-              );
+            const hasPermissions = await requestBluetoothPermissions({
+                scan: true,
+                connect: true,
+                title: 'Se requieren permisos de Bluetooth',
+                message: 'Debemos permitir el acceso para buscar dispositivos Bluetooth.',
+            });
+            if (!hasPermissions) {
+                return;
+            }
             const unpaired = await RNBluetoothClassic.startDiscovery();
             setDevices(unpaired)
             // const con = await unpaired[0].connect({})
@@ -38,6 +37,14 @@ const Create = () => {
         // await RNBluetoothClassic.accept({});
         // const dev = await RNBluetoothClassic.accept({});
         try {
+            const hasPermissions = await requestBluetoothPermissions({
+                connect: true,
+                title: 'Se requieren permisos de Bluetooth',
+                message: 'Debemos permitir el acceso para conectarnos con el dispositivo Bluetooth.',
+            });
+            if (!hasPermissions) {
+                return;
+            }
             // const dev = await RNBluetoothClassic.getConnectedDevice(device.address);
             // const dev = await RNBluetoothClassic.connectToDevice(device.address)
             // console.log(dev)
@@ -67,7 +74,7 @@ const Create = () => {
 
       }
 
-    return <SafeAreaView>
+    return <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}>
             <Button icon="camera" mode="contained" onPress={startDiscovery}>
                 Buscar
             </Button>
@@ -87,6 +94,6 @@ const Create = () => {
 
             <Text style={{marginBottom: 20, fontWeight: 'bold'}}>DATA</Text>
             <Text>-{data.data}-</Text>
-        </SafeAreaView>
+        </View>
 }
 export default Create

@@ -2,8 +2,9 @@
 import { TicketContext } from './Show/provider/TicketProvider';
 import Header from './Show/Header';
 import Body from './Show/Body';
-import { SafeAreaView, View } from 'react-native';
+import { View } from 'react-native';
 import { useContext, useEffect } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface IIngreso {
     id: number;
@@ -20,6 +21,7 @@ interface IIngreso {
 const ShowScreen = ({ navigation, route }: any) => {
     const { id } = route.params || { id: null };
     const ticketContext = useContext(TicketContext);
+    const insets = useSafeAreaInsets();
 
     useEffect(() => {
         ticketContext.setId(id);
@@ -32,10 +34,10 @@ const ShowScreen = ({ navigation, route }: any) => {
         }
     }, [ticketContext.reload])
 
-    return <SafeAreaView>
+    return <View style={{ flex: 1, paddingTop: insets.top }}>
             <Header />
             <Body />
-    </SafeAreaView>
+    </View>
 }
 
 export default ShowScreen;
