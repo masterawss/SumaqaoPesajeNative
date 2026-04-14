@@ -1,21 +1,15 @@
-import { ScrollView, View } from "react-native"
-import { Text } from "react-native-paper"
+import { View, Text, StyleSheet } from "react-native";
+import React, { useContext, useMemo } from "react";
+
 import TaraSection from "./Pesaje/TaraSection";
 import SimpleCard from "./Pesaje/SimpleCard";
-import React, { useContext, useMemo } from "react";
 import PesajeCreateSection from "./Pesaje/PesajeCreateSection";
 import { TicketContext } from "../Show/provider/TicketProvider";
 import BalanzaBluetoothProvider from "../context/BalanzaBluetoothProvider";
 
 const Pesaje = () => {
-    const { loading, hasError, loadTicket, ticketPesaje, deleteTicket } = useContext(TicketContext);
+    const { ticketPesaje } = useContext(TicketContext) as any;
 
-    const [items, setItems] = React.useState([
-        {id: 1, peso: 98, fecha: '2021-09-01'},
-        {id: 2, peso: 98, fecha: '2021-09-01'},
-        {id: 3, peso: 98, fecha: '2021-09-01'},
-    ])
-    // Agrupar por el campo cdigo
     const ticketPesajeGroup = useMemo(() => {
         const group: any = {};
         ticketPesaje.detalle.forEach((item: any) => {
@@ -32,21 +26,55 @@ const Pesaje = () => {
         return Object.keys(ticketPesajeGroup)
     }, [ticketPesajeGroup])
 
-    return (<BalanzaBluetoothProvider>
-        <View style={{ padding: 10, paddingTop: 0 }}>
-            <TaraSection />
-            <PesajeCreateSection />
-            <Text style={{ marginVertical: 10, fontWeight: 'bold', color: 'grey' }}>Lista de pesaje</Text>
-            {
-                ticketPesajeGroupKeys.map((key) => <View key={key}>
-                    <Text style={{ marginVertical: 10, fontWeight: 'bold', color: 'grey' }}>{key}</Text>
-                    {
-                        ticketPesajeGroup[key].map((item: any, index: number) => <SimpleCard key={item.id} nro={index+1} detalle={item} />)
-                    }
-                </View>)
-            }
-        </View>
-    </BalanzaBluetoothProvider>)
+    return (
+        <BalanzaBluetoothProvider>
+            <View style={styles.container}>
+                <TaraSection />
+                <PesajeCreateSection />
+                <View style={styles.listHeader}>
+                    <Text style={styles.title}>Lista de pesaje</Text>
+                    <Text style={styles.subtitle}>Registros agrupados por guía.</Text>
+                </View>
+                {ticketPesajeGroupKeys.map((key) => (
+                    <View key={key} style={styles.group}>
+                        <Text style={styles.groupTitle}>{key}</Text>
+                        {ticketPesajeGroup[key].map((item: any, index: number) => (
+                            <SimpleCard key={item.id} nro={index + 1} detalle={item} />
+                        ))}
+                    </View>
+                ))}
+            </View>
+        </BalanzaBluetoothProvider>
+    );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        gap: 12,
+    },
+    listHeader: {
+        marginTop: 4,
+    },
+    title: {
+        color: "#111827",
+        fontSize: 16,
+        fontWeight: "800",
+    },
+    subtitle: {
+        color: "#6B7280",
+        fontSize: 12,
+        marginTop: 2,
+    },
+    group: {
+        gap: 8,
+    },
+    groupTitle: {
+        color: "#6B7280",
+        fontSize: 12,
+        fontWeight: "800",
+        textTransform: "uppercase",
+        letterSpacing: 0.5,
+    },
+});
 
 export default Pesaje;

@@ -1,39 +1,66 @@
 import React from "react";
-import { View } from "react-native"
-import { Switch, Text } from "react-native-paper";
+import { Switch, Text, View, StyleSheet } from "react-native";
+
 import BluetoothSection from "./PesajeCreateSection/BluetoothSection";
 import ManualSection from "./PesajeCreateSection/ManualSection";
+import AppSurface from "../../../../components/ui/AppSurface";
 
 const PesajeCreateSection = () => {
     const [isBluetooth, setIsBluetooth] = React.useState(true);
 
-    return <>
-        <View style={{
-                padding: 10, borderRadius: 10, marginVertical: 4,
-                backgroundColor: "#fff",
-                shadowColor: "#000",
-                shadowOffset: {
-                    width: 0,
-                    height: 1,
-                },
-                shadowOpacity: 0.22,
-                shadowRadius: 2.22,
-                elevation: 3,
-            }}>
-                <View style={{ display: 'flex', marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
-                    <Text style={{ fontWeight: 'bold' }}>Registro de pesaje</Text>
-
-                    <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
-                        <Text style={{ color: 'grey', marginRight: 10 }}>{isBluetooth ? 'Bluetooth' : 'Manual'}</Text>
-                        <Switch value={isBluetooth} onValueChange={() => setIsBluetooth(val => !val)} />
-                    </View>
+    return (
+        <AppSurface style={styles.card}>
+            <View style={styles.header}>
+                <View style={styles.headerText}>
+                    <Text style={styles.title}>Registro de pesaje</Text>
+                    <Text style={styles.subtitle}>Manual o Bluetooth</Text>
                 </View>
-
-                {
-                    isBluetooth ? <BluetoothSection /> : <ManualSection />
-                }
-        </View>
-    </>
+                <View style={styles.switchWrap}>
+                    <Text style={styles.switchLabel}>{isBluetooth ? 'Bluetooth' : 'Manual'}</Text>
+                    <Switch value={isBluetooth} onValueChange={() => setIsBluetooth(val => !val)} trackColor={{ false: "#D1D5DB", true: "#111827" }} thumbColor="#FFFFFF" />
+                </View>
+            </View>
+            {isBluetooth ? <BluetoothSection /> : <ManualSection />}
+        </AppSurface>
+    )
 }
+
+const styles = StyleSheet.create({
+    card: {
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+    },
+    header: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: 8,
+        marginBottom: 6,
+    },
+    headerText: {
+        flex: 1,
+        minWidth: 0,
+    },
+    title: {
+        color: "#111827",
+        fontSize: 14,
+        fontWeight: "800",
+    },
+    subtitle: {
+        color: "#6B7280",
+        fontSize: 11,
+        marginTop: 0,
+    },
+    switchWrap: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+    },
+    switchLabel: {
+        color: "#6B7280",
+        fontSize: 11,
+        fontWeight: "600",
+    },
+});
 
 export default PesajeCreateSection;

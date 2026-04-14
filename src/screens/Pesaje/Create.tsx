@@ -1,9 +1,9 @@
-import { Button, Text } from "react-native-paper";
-import {View} from 'react-native'
+import { Text, View } from 'react-native'
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {useState} from 'react'
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
 import { requestBluetoothPermissions } from "../../utils/androidBluetoothPermissions";
+import AppButton from "../../components/ui/AppButton";
 
 const Create = () => {
       const insets = useSafeAreaInsets();
@@ -29,11 +29,11 @@ const Create = () => {
             // console.log('READ', read)
 
             } catch (err) {
-                console.error(err?.message)
+                console.error((err as any)?.message)
             }
       }
 
-      const connectToDevice = async (device) => {
+      const connectToDevice = async (device: any) => {
         // await RNBluetoothClassic.accept({});
         // const dev = await RNBluetoothClassic.accept({});
         try {
@@ -52,7 +52,7 @@ const Create = () => {
             console.log('CON', con)
             // const read = await device.read()
             // console.log('READ', read)
-            device.onDataReceived((data) => {
+            device.onDataReceived((data: any) => {
                 console.log('DaTA', data)
                 setData(data)
             })
@@ -75,18 +75,18 @@ const Create = () => {
       }
 
     return <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}>
-            <Button icon="camera" mode="contained" onPress={startDiscovery}>
+            <AppButton icon="bluetooth-searching" onPress={startDiscovery}>
                 Buscar
-            </Button>
+            </AppButton>
             {
                 devices.map(
                     (device : any, id: any) => {
                         return <View key={id}>
                             <Text>{device.name}</Text>
                             <Text>{device.address}</Text>
-                            <Button icon="camera" mode="contained" onPress={()=>connectToDevice(device)}>
+                            <AppButton icon="bluetooth-connect" onPress={()=>connectToDevice(device)}>
                                 Conectar
-                            </Button>
+                            </AppButton>
                         </View>
                     }
                 )

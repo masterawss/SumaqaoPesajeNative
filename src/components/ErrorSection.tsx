@@ -2,6 +2,7 @@ import LottieView from "lottie-react-native";
 import { View, Text, StyleSheet } from "react-native";
 
 import AppButton from "./ui/AppButton";
+import AppSurface from "./ui/AppSurface";
 
 const ErrorSection = ({
     message = "Ha ocurrido un error",
@@ -9,7 +10,7 @@ const ErrorSection = ({
 }) => {
     return (
         <View style={styles.container}>
-            <View style={styles.card}>
+            <AppSurface style={styles.card}>
                 <LottieView
                     style={styles.animation}
                     source={require("../../assets/lottie/not_found.json")}
@@ -21,7 +22,7 @@ const ErrorSection = ({
                 <AppButton onPress={onRetry} style={styles.button}>
                     Reintentar
                 </AppButton>
-            </View>
+            </AppSurface>
         </View>
     );
 };
@@ -31,17 +32,9 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
     },
     card: {
-        backgroundColor: "rgba(255,255,255,0.9)",
-        borderRadius: 24,
+        borderRadius: 16,
         padding: 18,
         alignItems: "center",
-        borderWidth: 1,
-        borderColor: "rgba(17, 24, 39, 0.08)",
-        shadowColor: "#000",
-        shadowOpacity: 0.06,
-        shadowRadius: 16,
-        shadowOffset: { width: 0, height: 10 },
-        elevation: 2,
     },
     animation: {
         height: 150,

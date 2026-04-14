@@ -1,57 +1,77 @@
-import { ScrollView, TouchableOpacity, View } from 'react-native';
-import GuiaRemision from '../components/GuiaRemision';
-import Pesaje from '../components/Pesaje';
-import { Button, Text } from 'react-native-paper';
-import { useContext, useState } from 'react';
-import Resumen from '../components/Resumen';
-import Saco from '../components/Saco';
-import { TicketContext } from './provider/TicketProvider';
+import { View, StyleSheet } from "react-native";
+import { useContext, useState } from "react";
+
+import GuiaRemision from "../components/GuiaRemision";
+import Pesaje from "../components/Pesaje";
+import Resumen from "../components/Resumen";
+import Saco from "../components/Saco";
+import { TicketContext } from "./provider/TicketProvider";
+import AppTabChip from "../../../components/ui/AppTabChip";
 
 const TabsSection = () => {
-    const [tab, setTab] = useState('guia_remision');
-    const { ticketPesaje } = useContext(TicketContext);
+    const [tab, setTab] = useState("guia_remision");
+    const { ticketPesaje } = useContext(TicketContext) as any;
 
-    return <View>
-        <View style={{ paddingHorizontal: 15, marginTop: 15, marginBottom: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
-            <TouchableOpacity onPress={() => setTab('guia_remision')} style={{ alignItems: 'center' }}>
-                <Text style={{ fontWeight: tab === 'guia_remision' ? 'bold' : 'normal', color: tab === 'guia_remision' ? 'orange' : 'black' }}>Guía de remisión</Text>
-                <View style={{ height: 3, marginTop: 5, borderRadius: 10, backgroundColor: tab === 'guia_remision' ? 'orange' : 'grey', width: tab === 'guia_remision' ? 50 : 5 }}></View>
-            </TouchableOpacity>
-            {
-                !ticketPesaje.is_exportacion &&
-                <TouchableOpacity onPress={() => setTab('saco')} style={{ alignItems: 'center' }}>
-                    <Text style={{ fontWeight: tab === 'saco' ? 'bold' : 'normal', color: tab === 'saco' ? 'orange' : 'black' }}>Sacos</Text>
-                    <View style={{ height: 3, marginTop: 5, borderRadius: 10, backgroundColor: tab === 'saco' ? 'orange' : 'grey', width: tab === 'saco' ? 50 : 5 }}></View>
-                </TouchableOpacity>
-            }
-            <TouchableOpacity onPress={() => setTab('pesaje')} style={{ alignItems: 'center' }}>
-                <Text style={{ fontWeight: tab === 'pesaje' ? 'bold' : 'normal', color: tab === 'pesaje' ? 'orange' : 'black' }}>Pesaje</Text>
-                <View style={{ height: 3, marginTop: 5, borderRadius: 10, backgroundColor: tab === 'pesaje' ? 'orange' : 'grey', width: tab === 'pesaje' ? 50 : 5 }}></View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setTab('resumen')} style={{ alignItems: 'center' }}>
-                <Text style={{ fontWeight: tab === 'resumen' ? 'bold' : 'normal', color: tab === 'resumen' ? 'orange' : 'black' }}>Resumen</Text>
-                <View style={{ height: 3, marginTop: 5, borderRadius: 10, backgroundColor: tab === 'resumen' ? 'orange' : 'grey', width: tab === 'resumen' ? 50 : 5 }}></View>
-            </TouchableOpacity>
+    return (
+        <View style={styles.container}>
+            <View style={styles.tabsWrap}>
+                <AppTabChip
+                    label="Guías"
+                    icon="truck-fast-outline"
+                    active={tab === "guia_remision"}
+                    onPress={() => setTab("guia_remision")}
+                />
+                {!ticketPesaje.is_exportacion ? (
+                    <AppTabChip
+                        label="Sacos"
+                        icon="shopping-outline"
+                        active={tab === "saco"}
+                        onPress={() => setTab("saco")}
+                    />
+                ) : null}
+                <AppTabChip
+                    label="Pesaje"
+                    icon="scale-bathroom"
+                    active={tab === "pesaje"}
+                    onPress={() => setTab("pesaje")}
+                />
+                <AppTabChip
+                    label="Resumen"
+                    icon="file-document-outline"
+                    active={tab === "resumen"}
+                    onPress={() => setTab("resumen")}
+                />
+            </View>
+            <View style={styles.content}>
+                <Tab tab={tab} />
+            </View>
         </View>
-        <ScrollView style={{ paddingHorizontal: 15 }}>
-            <Tab tab={tab}/>
-        </ScrollView>
-    </View>
-}
+    );
+};
 
-const Tab = ({tab}: {tab: string}) => {
+const Tab = ({ tab }: { tab: string }) => {
     switch (tab) {
-        case 'guia_remision':
-            return <GuiaRemision />
-        case 'pesaje':
-            return <Pesaje />
-        case 'saco':
-            return <Saco />
-        // case 'sacos_recibidos':
-        //     return <Sa />
+        case "guia_remision":
+            return <GuiaRemision />;
+        case "pesaje":
+            return <Pesaje />;
+        case "saco":
+            return <Saco />;
         default:
-            return <Resumen />
+            return <Resumen />;
     }
-}
+};
+
+const styles = StyleSheet.create({
+    container: {
+        gap: 10,
+    },
+    tabsWrap: {
+        flexDirection: "row",
+        gap: 6,
+        flexWrap: "wrap",
+    },
+    content: {},
+});
 
 export default TabsSection;

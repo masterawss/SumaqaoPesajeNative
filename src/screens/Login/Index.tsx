@@ -8,16 +8,18 @@ import {
     Platform,
     ScrollView,
     StatusBar,
+    Pressable,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { TextInput, Button, Snackbar } from "react-native-paper";
 import LinearGradient from "react-native-linear-gradient";
 import LogoImg from "../../../assets/img/logo.png";
 import api from "../../utils/axios";
+import AppButton from "../../components/ui/AppButton";
+import AppInput from "../../components/ui/AppInput";
 
-const LoginScreen = ({ navigation }: any): JSX.Element => {
+const LoginScreen = ({ navigation }: any) => {
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [hasError, setHasError] = React.useState(false);
@@ -88,46 +90,35 @@ const LoginScreen = ({ navigation }: any): JSX.Element => {
                         <View style={styles.form}>
                             <View style={styles.inputGroup}>
                                 <Text style={styles.label}>Correo</Text>
-                                <TextInput
-                                    mode="outlined"
+                                <AppInput
                                     value={email}
                                     onChangeText={setEmail}
                                     keyboardType="email-address"
                                     autoCapitalize="none"
                                     autoComplete="email"
                                     textContentType="emailAddress"
-                                    dense
-                                    style={styles.input}
-                                    outlineStyle={styles.inputOutline}
                                 />
                             </View>
                             <View style={styles.inputGroup}>
                                 <Text style={styles.label}>Contraseña</Text>
-                                <TextInput
-                                    mode="outlined"
+                                <AppInput
                                     value={password}
                                     onChangeText={setPassword}
                                     secureTextEntry
                                     autoCapitalize="none"
                                     autoComplete="password"
                                     textContentType="password"
-                                    dense
-                                    style={styles.input}
-                                    outlineStyle={styles.inputOutline}
                                 />
                             </View>
 
-                            <Button
+                            <AppButton
                                 loading={loading}
                                 disabled={loading}
-                                mode="contained"
                                 onPress={login}
-                                contentStyle={styles.buttonContent}
                                 style={styles.button}
-                                labelStyle={styles.buttonLabel}
                             >
                                 Ingresar
-                            </Button>
+                            </AppButton>
                         </View>
                     </KeyboardAvoidingView>
                 </ScrollView>
@@ -139,16 +130,17 @@ const LoginScreen = ({ navigation }: any): JSX.Element => {
                 </View>
             </LinearGradient>
 
-            <Snackbar
-                visible={hasError}
-                onDismiss={() => {
-                    setErrorMsg("");
-                    setHasError(false);
-                }}
-                duration={3000}
-            >
-                {errorMsg}
-            </Snackbar>
+            {hasError ? (
+                <Pressable
+                    style={[styles.toast, { bottom: 20 + insets.bottom }]}
+                    onPress={() => {
+                        setErrorMsg("");
+                        setHasError(false);
+                    }}
+                >
+                    <Text style={styles.toastText}>{errorMsg}</Text>
+                </Pressable>
+            ) : null}
         </View>
     );
 };
@@ -249,31 +241,13 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         marginLeft: 4,
     },
-    input: {
-        backgroundColor: "rgba(255, 255, 255, 0.88)",
-        borderRadius: 16,
-    },
-    inputOutline: {
-        borderRadius: 16,
-        borderColor: "rgba(17, 24, 39, 0.10)",
-    },
     button: {
         marginTop: 10,
-        borderRadius: 16,
-        backgroundColor: "#111827",
         shadowColor: "#111827",
         shadowOpacity: 0.22,
         shadowRadius: 14,
         shadowOffset: { width: 0, height: 10 },
         elevation: 4,
-    },
-    buttonContent: {
-        height: 54,
-    },
-    buttonLabel: {
-        fontSize: 15,
-        fontWeight: "700",
-        letterSpacing: 0.3,
     },
     footer: {
         position: "absolute",
@@ -287,6 +261,20 @@ const styles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 18,
         textAlign: "center",
+    },
+    toast: {
+        position: "absolute",
+        left: 20,
+        right: 20,
+        backgroundColor: "#111827",
+        borderRadius: 14,
+        paddingHorizontal: 14,
+        paddingVertical: 12,
+    },
+    toastText: {
+        color: "#FFFFFF",
+        fontSize: 13,
+        fontWeight: "600",
     },
 });
 

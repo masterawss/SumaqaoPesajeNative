@@ -1,13 +1,14 @@
 import React, { useCallback, useState } from "react";
-import { View, StyleSheet, Image, StatusBar } from "react-native";
+import { View, StyleSheet, Image, StatusBar, Text, Pressable, Modal } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LinearGradient from "react-native-linear-gradient";
-import { Appbar, Menu, IconButton } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import List from "./List";
 import BtnCreate from "./components/BtnCreate";
 import AppTabChip from "../../components/ui/AppTabChip";
+import AppIconButton from "../../components/ui/AppIconButton";
 
 const LogoImg = require("../../../assets/img/logo.png");
 
@@ -31,27 +32,36 @@ const Index = ({ navigation }: any) => {
         <View style={[styles.safeArea, { paddingTop: insets.top }]}>
             <StatusBar barStyle="dark-content" backgroundColor="#F4F6F9" />
             <LinearGradient colors={["#F4F6F9", "#FFFFFF"]} style={styles.background}>
-                <Appbar.Header style={styles.appbar} elevated={false}>
-                    <Image source={LogoImg} style={styles.logo} resizeMode="contain" />
-                    <Appbar.Content title="Tickets de pesaje" />
-                    <BtnCreate type={type} />
-                    <Menu
-                        visible={visibleMenu}
-                        onDismiss={() => setVisibleMenu(false)}
-                        anchor={
-                            <IconButton
-                                icon="account-circle-outline"
-                                size={22}
-                                iconColor="#111827"
-                                onPress={() => setVisibleMenu(true)}
-                                style={styles.accountButton}
-                            />
-                        }
-                    >
-                        <Menu.Item onPress={goToBalanzas} title="Balanzas" />
-                        <Menu.Item onPress={logout} title="Cerrar sesión" />
-                    </Menu>
-                </Appbar.Header>
+                <View style={styles.appbar}>
+                    <View style={styles.appbarLeft}>
+                        <Image source={LogoImg} style={styles.logo} resizeMode="contain" />
+                        <Text style={styles.appbarTitle}>Tickets de pesaje</Text>
+                    </View>
+                    <View style={styles.appbarActions}>
+                        <BtnCreate type={type} />
+                        <AppIconButton
+                            icon="account-circle-outline"
+                            size={22}
+                            variant="soft"
+                            onPress={() => setVisibleMenu((current) => !current)}
+                            style={styles.accountButton}
+                        />
+                    </View>
+                </View>
+                <Modal transparent visible={visibleMenu} animationType="fade" onRequestClose={() => setVisibleMenu(false)}>
+                    <Pressable style={styles.menuBackdrop} onPress={() => setVisibleMenu(false)}>
+                        <Pressable style={styles.menu} onPress={(event) => event.stopPropagation()}>
+                            <Pressable style={styles.menuItem} onPress={goToBalanzas}>
+                                <MaterialCommunityIcons name="scale-bathroom" size={18} color="#111827" />
+                                <Text style={styles.menuText}>Balanzas</Text>
+                            </Pressable>
+                            <Pressable style={styles.menuItem} onPress={logout}>
+                                <MaterialCommunityIcons name="logout" size={18} color="#111827" />
+                                <Text style={styles.menuText}>Cerrar sesión</Text>
+                            </Pressable>
+                        </Pressable>
+                    </Pressable>
+                </Modal>
 
                 <View style={styles.shell}>
                     <View style={styles.tabsRow}>
@@ -90,16 +100,66 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF",
         borderBottomWidth: 1,
         borderBottomColor: "rgba(17, 24, 39, 0.06)",
-        elevation: 0,
+        minHeight: 64,
+        paddingHorizontal: 12,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+    },
+    appbarLeft: {
+        flexDirection: "row",
+        alignItems: "center",
+        flex: 1,
+    },
+    appbarActions: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+    },
+    appbarTitle: {
+        color: "#111827",
+        fontSize: 18,
+        fontWeight: "800",
+        marginLeft: 4,
     },
     logo: {
         width: 28,
         height: 28,
-        marginLeft: 12,
-        marginRight: 4,
     },
     accountButton: {
-        margin: 0,
+        marginLeft: 2,
+    },
+    menuBackdrop: {
+        flex: 1,
+        backgroundColor: "rgba(15, 23, 42, 0.18)",
+    },
+    menu: {
+        position: "absolute",
+        top: 74,
+        right: 12,
+        width: 180,
+        backgroundColor: "#FFFFFF",
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: "#E5E7EB",
+        paddingVertical: 6,
+        elevation: 12,
+        shadowColor: "#000",
+        shadowOpacity: 0.12,
+        shadowRadius: 18,
+        shadowOffset: { width: 0, height: 10 },
+    },
+    menuItem: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+        paddingHorizontal: 14,
+        paddingVertical: 12,
+    },
+    menuText: {
+        color: "#111827",
+        fontSize: 14,
+        fontWeight: "600",
     },
     shell: {
         flex: 1,

@@ -1,12 +1,15 @@
 import React , { useContext, useMemo, useState } from "react";
-import { ActivityIndicator, RadioButton, Text } from "react-native-paper"
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
 import { BalanzaBluetoothContext } from "../../../context/BalanzaBluetoothProvider";
 import DesactivadoSection from "../../../../../components/Bluetooth/DesactivadoSection";
 import NotFoundSection from "../../../../../components/Bluetooth/NotFoundSection";
-import { Button, Icon } from "react-native-paper";
-import { View } from "react-native";
 import saveHook from "./ManualSection/saveHook";
 import GuiaRemisionSelect from "../GuiaRemisionSelect";
+import AppRadio from "../../../../../components/ui/AppRadio";
+import AppButton from "../../../../../components/ui/AppButton";
+import AppSurface from "../../../../../components/ui/AppSurface";
 
 const Snackbar = require("react-native-snackbar");
 
@@ -19,16 +22,15 @@ const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
     connectToDevice,
     checkBluetoothEnabled,
     isEdit,
-    currentGuiaRemision, 
-    hasGuiasRemision, 
-    setCurrentGuiaRemision, 
+    currentGuiaRemision,
+    hasGuiasRemision,
+    setCurrentGuiaRemision,
     setNextGuiaRemision,
     peso_solo_paletas
 }: any) => {
     const [loadingTara, setLoadingTara] = useState(false)
     const { activeBalanza } = useContext(BalanzaBluetoothContext);
     const {save} = saveHook({setLoadingTara, setVisible, ticketPesaje, loadTicket})
-
 
     const [typeChange, setTypeChange] = useState('sumar')
 
@@ -46,7 +48,7 @@ const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
                 action: {
                     text: 'Cerrar',
                     textColor: 'red',
-                    onPress: () => { /* Do something. */ },
+                    onPress: () => {},
                 },
             });
         }
@@ -61,39 +63,25 @@ const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
     }, [typeChange, peso, peso_solo_paletas])
 
     return <>
-        <View style={{ marginBottom: 16 }}>
-            <Text style={{ color: 'grey', fontSize: 12 }}>Balanza seleccionada</Text>
-            <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                {activeBalanza?.title ?? 'Sin balanza seleccionada'}
-            </Text>
-            {
-                activeBalanza?.address
-                    ? <Text style={{ color: 'grey' }}>{activeBalanza.address}</Text>
-                    : null
-            }
+        <View style={styles.balanceInfo}>
+            <Text style={styles.infoLabel}>Balanza seleccionada</Text>
+            <Text style={styles.infoTitle}>{activeBalanza?.title ?? 'Sin balanza seleccionada'}</Text>
+            {activeBalanza?.address ? <Text style={styles.infoText}>{activeBalanza.address}</Text> : null}
         </View>
-        {
-            loading && <Text><ActivityIndicator size="small" /> Cargando ...</Text>
-        }
-        {
-            !bluetoothEnabled && <DesactivadoSection loading={loading} checkBluetoothEnabled={checkBluetoothEnabled} />
-        }
-        {
-            bluetoothEnabled && !device && <NotFoundSection connectToDevice={connectToDevice} />
-        }
-        {
-            !!device && <>
-            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <View style={{ display: 'flex', flexDirection: 'row' }}>
-                    <Icon source="bluetooth" size={30} />
-                    <Text style={{ marginLeft: 10, fontWeight: 'bold', fontSize: 20 }}>{peso} Kg</Text>
-                </View>
-            </View>
-            {
-                hasGuiasRemision 
-                    && currentGuiaRemision 
-                    && <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between',  alignItems: 'center', marginVertical: 20 }}>
-                        <Text style={{ fontWeight: 'bold' }}>Se registrará para:</Text>
+        {loading ? <View style={styles.loadingRow}><ActivityIndicator size="small" color="#111827" /><Text style={styles.infoText}>Cargando...</Text></View> : null}
+        {!bluetoothEnabled ? <DesactivadoSection loading={loading} checkBluetoothEnabled={checkBluetoothEnabled} /> : null}
+        {bluetoothEnabled && !device ? <NotFoundSection connectToDevice={connectToDevice} /> : null}
+        {!!device ? (
+            <>
+                <AppSurface style={styles.weightCard}>
+                    <View style={styles.weightRow}>
+                        <MaterialCommunityIcons name="bluetooth" size={24} color="#111827" />
+                        <Text style={styles.weightValue}>{peso} Kg</Text>
+                    </View>
+                </AppSurface>
+                {hasGuiasRemision && currentGuiaRemision ? (
+                    <View style={styles.assignmentRow}>
+                        <Text style={styles.assignmentLabel}>Se registrará para:</Text>
                         <GuiaRemisionSelect
                             guiasRemision={guiasRemision}
                             guia_remision_codigo={currentGuiaRemision.codigo}
@@ -102,35 +90,86 @@ const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
                             }}
                         />
                     </View>
-            }
-            {
-                    isEdit && <>
-                        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Tara actual: {peso_solo_paletas} Kg</Text>
-                        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Tara final: {taraFinalCalculated} Kg</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5, marginTop: 25 }}>
-                            <RadioButton
-                                value="first"
-                                status={ typeChange === 'sumar' ? 'checked' : 'unchecked' }
-                                onPress={() => setTypeChange('sumar')}
-                            />
-                            <Text style={{ fontSize: 18 }}>Sumar</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5, marginBottom: 25 }}>
-                            <RadioButton
-                                value="first"
-                                status={ typeChange === 'restar' ? 'checked' : 'unchecked' }
-                                onPress={() => setTypeChange('restar')}
-                            />
-                            <Text style={{ fontSize: 18 }}>Restar</Text>
+                ) : null}
+                {isEdit ? (
+                    <>
+                        <Text style={styles.summaryText}>Tara actual: {peso_solo_paletas} Kg</Text>
+                        <Text style={styles.summaryText}>Tara final: {taraFinalCalculated} Kg</Text>
+                        <View style={styles.radioWrap}>
+                            <AppRadio label="Sumar" checked={typeChange === 'sumar'} onPress={() => setTypeChange('sumar')} />
+                            <AppRadio label="Restar" checked={typeChange === 'restar'} onPress={() => setTypeChange('restar')} />
                         </View>
                     </>
-                }
-                <Button mode="contained" onPress={onPress} loading={loadingTara}>
+                ) : null}
+                <AppButton style={{ marginTop: 12 }} onPress={onPress} loading={loadingTara}>
                     Guardar
-                </Button>
+                </AppButton>
             </>
-            
-        }
+        ) : null}
     </>
 }
+
+const styles = StyleSheet.create({
+    balanceInfo: {
+        marginBottom: 12,
+    },
+    infoLabel: {
+        color: "#6B7280",
+        fontSize: 12,
+        fontWeight: "700",
+        textTransform: "uppercase",
+    },
+    infoTitle: {
+        color: "#111827",
+        fontSize: 16,
+        fontWeight: "800",
+        marginTop: 4,
+    },
+    infoText: {
+        color: "#6B7280",
+        fontSize: 13,
+        marginTop: 2,
+    },
+    loadingRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+        marginBottom: 12,
+    },
+    weightCard: {
+        padding: 16,
+    },
+    weightRow: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    weightValue: {
+        color: "#111827",
+        fontSize: 22,
+        fontWeight: "800",
+        marginLeft: 10,
+    },
+    assignmentRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginVertical: 16,
+        gap: 12,
+    },
+    assignmentLabel: {
+        color: "#111827",
+        fontSize: 13,
+        fontWeight: "600",
+    },
+    summaryText: {
+        color: "#111827",
+        fontSize: 15,
+        fontWeight: "700",
+        marginTop: 12,
+    },
+    radioWrap: {
+        marginTop: 12,
+    },
+});
+
 export default BluetoothSection;

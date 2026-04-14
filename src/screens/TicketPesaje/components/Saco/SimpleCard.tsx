@@ -1,22 +1,25 @@
 import React, { useContext, useEffect } from "react";
-import { ActivityIndicator, Alert, Dimensions, ScrollView, View } from "react-native"
-import { Button, IconButton, MD3Colors, Modal, Portal, RadioButton, Text, TextInput } from "react-native-paper"
+import { StyleSheet, Text, View } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { TicketContext } from "../../Show/provider/TicketProvider";
 import api from "../../../../utils/axios";
-import Snackbar from "react-native-snackbar";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-const deviceHeight = Dimensions.get('window').height
+import AppButton from "../../../../components/ui/AppButton";
+import AppIconButton from "../../../../components/ui/AppIconButton";
+import AppInput from "../../../../components/ui/AppInput";
+import AppModalSheet from "../../../../components/ui/AppModalSheet";
+import AppRadio from "../../../../components/ui/AppRadio";
+import AppSurface from "../../../../components/ui/AppSurface";
+const Snackbar = require("react-native-snackbar");
 
 const SimpleCard = ({col = 1, nroItem}: any) => {
-    const { ticketPesaje, loadTicket } = useContext(TicketContext);
+    const { ticketPesaje, loadTicket } = useContext(TicketContext) as any;
 
-    const [sacosColor, setSacosColor] = React.useState([]);
+    const [sacosColor, setSacosColor] = React.useState<any[]>([]);
     const [saveLoading, setSaveLoading] = React.useState(false);
-
-
-    const [nroSacos, setNroSacos] = React.useState(0);
+    const [nroSacos, setNroSacos] = React.useState<any>(0);
     const [sacoColorId, setSacoColorId] = React.useState(0);
-    const [sacoColor, setSacoColor] = React.useState({});
+    const [sacoColor, setSacoColor] = React.useState<any>({});
     const [visible, setVisible] = React.useState(false);
 
     useEffect(() => {
@@ -33,29 +36,13 @@ const SimpleCard = ({col = 1, nroItem}: any) => {
 
     useEffect(() => {
         api.get('/sacos_color').then((response) => {
-            // let sacos_color = response.data.sacos_color.map((item: any) => {
-            //     item.label = item.descripcion;
-            //     item.value = item.id;
-            // })
             setSacosColor(response.data.sacos_color);
         }).catch((error) => {
             console.log(error.response);
-            // setHasError(true);
-        }).finally(() => {
-            // setLoading(false);
         });
     }, [])
 
-    const containerStyle = {
-        height: deviceHeight - (deviceHeight * 0.3),
-        padding: 20,
-        margin: 20,
-        backgroundColor: 'white',
-    };
-
-
     const save = async () => {
-
         if(nroSacos <= 0 || !sacoColorId){
             Snackbar.show({
                 text: 'Ingrese los datos correctamente',
@@ -63,7 +50,7 @@ const SimpleCard = ({col = 1, nroItem}: any) => {
                 action: {
                   text: 'Cerrar',
                   textColor: 'red',
-                  onPress: () => { /* Do something. */ },
+                  onPress: () => {},
                 },
             });
             return;
@@ -71,16 +58,16 @@ const SimpleCard = ({col = 1, nroItem}: any) => {
 
         setSaveLoading(true);
         const user = await AsyncStorage.getItem('user');
-        const data = col === 1 ? 
+        const data = col === 1 ?
             {
-                nro_sacos: nroSacos, 
-                saco_color_id: sacoColorId, 
-                updated_user_id: JSON.parse(user || "")?.id 
+                nro_sacos: nroSacos,
+                saco_color_id: sacoColorId,
+                updated_user_id: JSON.parse(user || "")?.id
             } :
             {
-                nro_sacos2: nroSacos, 
-                saco_color2_id: sacoColorId, 
-                updated_user_id: JSON.parse(user || "")?.id 
+                nro_sacos2: nroSacos,
+                saco_color2_id: sacoColorId,
+                updated_user_id: JSON.parse(user || "")?.id
             }
         api.post('/ticket_pesaje/update/'+ticketPesaje.id, data)
         .then((response) => {
@@ -96,7 +83,7 @@ const SimpleCard = ({col = 1, nroItem}: any) => {
                 action: {
                   text: 'Cerrar',
                   textColor: 'red',
-                  onPress: () => { /* Do something. */ },
+                  onPress: () => {},
                 },
             });
         })
@@ -105,60 +92,95 @@ const SimpleCard = ({col = 1, nroItem}: any) => {
         })
     }
 
-
-
     return (
-        <View style={{
-            borderRadius: 10, marginVertical: 4,
-            display: 'flex', flexDirection: 'row',
-            backgroundColor: "#f5f5f5",
-        }}>
-            <View style={{ backgroundColor: '#7da82c', padding: 15, borderTopLeftRadius: 10, borderBottomLeftRadius: 10 }}>
-                <Text style={{ color: 'white', fontSize: 15 }}>{nroItem}</Text>
+        <AppSurface style={styles.card}>
+            <View style={styles.indexBadge}>
+                <Text style={styles.indexText}>{nroItem}</Text>
             </View>
-            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '85%' }}>
-                <View>
-                    <Text style={{ fontWeight: 'bold', marginLeft: 20, fontSize: 16 }}>
-                        { sacoColor?.descripcion ? 'Saco: '+sacoColor?.descripcion : 'Saco: (Opcional)' }
-                    </Text>
+            <View style={styles.body}>
+                <View style={{ flex: 1 }}>
+                    <Text style={styles.title}>{ sacoColor?.descripcion ? 'Saco: '+sacoColor?.descripcion : 'Saco: (Opcional)' }</Text>
+                    <Text style={styles.value}>{nroSacos}</Text>
                 </View>
-                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginRight: 20 }}>
-                    <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{nroSacos}</Text>
-                    <IconButton icon="pencil" color={MD3Colors.orange} size={20} onPress={() => setVisible(true)} />
-                </View>
+                <AppIconButton icon="pencil" color="#111827" variant="soft" size={20} onPress={() => setVisible(true)} />
             </View>
 
-            <Portal>
-                    <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={containerStyle}>
-                        <ScrollView>
-                            <View style={{ marginBottom: 20 }}>
-                                {
-                                    sacosColor.map((item) => <View key={item.id} style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                        <RadioButton
-                                            value={item.descripcion}
-                                            status={ sacoColorId === item.id ? 'checked' : 'unchecked' }
-                                            onPress={() => setSacoColorId(item.id)}
-                                        />
-                                        <Text>{item.descripcion}</Text>
-                                    </View>)
-                                }
-                            </View>
-                            <TextInput
-                                mode="outlined"
-                                label="Cantidad de sacos"
-                                keyboardType="numeric"
-                                value={nroSacos}
-                                onChangeText={val => setNroSacos(val)}
-                                placeholder={!nroSacos ? '0' : ''}
+            <AppModalSheet
+                visible={visible}
+                onClose={() => setVisible(false)}
+                title={`Editar sacos ${nroItem}`}
+                subtitle="Selecciona el tipo de saco y la cantidad."
+            >
+                <View style={styles.sheetContent}>
+                    <View style={styles.radioList}>
+                        {sacosColor.map((item) => (
+                            <AppRadio
+                                key={item.id}
+                                label={item.descripcion}
+                                checked={sacoColorId === item.id}
+                                onPress={() => setSacoColorId(item.id)}
                             />
-                            <Button style={{ marginTop: 10 }} mode="contained" loading={saveLoading} disabled={saveLoading} onPress={save}>
-                                Guardar
-                            </Button>
-                        </ScrollView>
-                    </Modal>
-            </Portal>
-        </View>
+                        ))}
+                    </View>
+                    <AppInput
+                        label="Cantidad de sacos"
+                        keyboardType="numeric"
+                        value={String(nroSacos ?? "")}
+                        onChangeText={val => setNroSacos(val)}
+                        placeholder={!nroSacos ? '0' : ''}
+                    />
+                    <AppButton style={{ marginTop: 12 }} loading={saveLoading} disabled={saveLoading} onPress={save}>
+                        Guardar
+                    </AppButton>
+                </View>
+            </AppModalSheet>
+        </AppSurface>
     )
 }
+
+const styles = StyleSheet.create({
+    card: {
+        padding: 10,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+    },
+    indexBadge: {
+        width: 30,
+        height: 30,
+        borderRadius: 999,
+        backgroundColor: "#111827",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    indexText: {
+        color: "#FFFFFF",
+        fontSize: 12,
+        fontWeight: "800",
+    },
+    body: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: 10,
+    },
+    title: {
+        color: "#111827",
+        fontSize: 14,
+        fontWeight: "700",
+    },
+    value: {
+        color: "#6B7280",
+        fontSize: 13,
+        marginTop: 2,
+    },
+    sheetContent: {
+        paddingBottom: 8,
+    },
+    radioList: {
+        marginBottom: 12,
+    },
+});
 
 export default SimpleCard;

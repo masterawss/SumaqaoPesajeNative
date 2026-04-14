@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
-import Snackbar from "react-native-snackbar";
 import { TicketContext } from "../../../../Show/provider/TicketProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../../../../../../utils/axios";
+const Snackbar = require("react-native-snackbar");
 
 interface ISaveDataProps {
     peso: any;
@@ -13,7 +13,7 @@ export default () => {
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState(false);
 
-    const { hasError, loadTicket, ticketPesaje, deleteTicket } = useContext(TicketContext);
+    const { loadTicket, ticketPesaje } = useContext(TicketContext) as any;
 
     const saveData = async ({
         peso, 

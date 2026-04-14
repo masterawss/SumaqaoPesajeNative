@@ -1,5 +1,5 @@
 import { ScrollView, Text, View } from "react-native"
-import { Appbar } from "react-native-paper"
+// legacy copy file
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
 import { useEffect, useState } from "react";
 

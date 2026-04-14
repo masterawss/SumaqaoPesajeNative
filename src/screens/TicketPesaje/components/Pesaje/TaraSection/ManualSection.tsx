@@ -1,36 +1,32 @@
-import React, { useContext, useEffect, useMemo } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native"
-import { Button, IconButton, Modal, Portal, RadioButton, Text, TextInput } from "react-native-paper"
-import api from "../../../../../utils/axios";
-import Snackbar from "react-native-snackbar";
-import { TicketContext } from "../../../Show/provider/TicketProvider";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect } from "react";
+import { StyleSheet, Text, View } from "react-native";
+
 import { Edit } from "./ManualSection/Edit";
 import saveHook from "./ManualSection/saveHook";
 import GuiaRemisionSelect from "../GuiaRemisionSelect";
+import AppInput from "../../../../../components/ui/AppInput";
+import AppButton from "../../../../../components/ui/AppButton";
+const Snackbar = require("react-native-snackbar");
 
 const ManualSection = ({
-    ticketPesaje, 
-    setVisible, 
-    loadTicket, 
+    ticketPesaje,
+    setVisible,
+    loadTicket,
     isEdit,
-    currentGuiaRemision, 
-    hasGuiasRemision, 
-    setCurrentGuiaRemision, 
+    currentGuiaRemision,
+    hasGuiasRemision,
+    setCurrentGuiaRemision,
     setNextGuiaRemision,
     peso_solo_paletas,
     guiasRemision
 } : any ) => {
-    const [taraValue, setTaraValue] = React.useState("0");
     const [taraKg, setTaraKg] = React.useState("0");
     const [loadingTara, setLoadingTara] = React.useState(false);
-    // const { loadTicket, ticketPesaje } = useContext(TicketContext);
 
     const {save} = saveHook({setLoadingTara, setVisible, ticketPesaje, loadTicket})
 
     useEffect(() => {
         if(peso_solo_paletas) {
-            setTaraValue(peso_solo_paletas)
             setTaraKg(peso_solo_paletas)
         }
     }, [peso_solo_paletas])
@@ -46,7 +42,7 @@ const ManualSection = ({
                 action: {
                     text: 'Cerrar',
                     textColor: 'red',
-                    onPress: () => { /* Do something. */ },
+                    onPress: () => {},
                 },
             });
         }
@@ -54,33 +50,45 @@ const ManualSection = ({
 
     return (
         <>
-            {
-                hasGuiasRemision 
-                    && <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between',  alignItems: 'center', marginVertical: 20 }}>
-                        <Text style={{ fontWeight: 'bold' }}>Se registrará para:</Text>
-                        <GuiaRemisionSelect
-                            guiasRemision={guiasRemision}
-                            guia_remision_codigo={currentGuiaRemision.codigo}
-                            onSelect={(guia:any) => {
-                                setCurrentGuiaRemision(guia)
-                            }}
-                        />
-                    </View>
-            }
-            {
-                !isEdit ? <View>
-                    <TextInput mode="outlined" label="Peso (Kg)" keyboardType="numeric" value={taraKg} onChangeText={val => setTaraKg(val)} />
-                    <Button loading={loadingTara} disabled={loadingTara} style={{ marginTop: 10 }} mode="contained" 
-                        onPress={() => saveTara(parseFloat(taraKg))}
-                        // onPress={() => console.log('asdadadasdadasd')}
-                    >
-                        Guardar
-                    </Button>
+            {hasGuiasRemision ? (
+                <View style={styles.assignmentRow}>
+                    <Text style={styles.assignmentLabel}>Se registrará para:</Text>
+                    <GuiaRemisionSelect
+                        guiasRemision={guiasRemision}
+                        guia_remision_codigo={currentGuiaRemision.codigo}
+                        onSelect={(guia:any) => {
+                            setCurrentGuiaRemision(guia)
+                        }}
+                    />
                 </View>
-                : <Edit taraInicial={peso_solo_paletas} loading={loadingTara} onSaveHandler={(tara) => saveTara(tara)} />
-            }
+            ) : null}
+            {!isEdit ? (
+                <View>
+                    <AppInput label="Peso (Kg)" keyboardType="numeric" value={taraKg} onChangeText={val => setTaraKg(val)} />
+                    <AppButton loading={loadingTara} disabled={loadingTara} style={{ marginTop: 12 }} onPress={() => saveTara(parseFloat(taraKg))}>
+                        Guardar
+                    </AppButton>
+                </View>
+            ) : (
+                <Edit taraInicial={peso_solo_paletas} loading={loadingTara} onSaveHandler={(tara: number) => saveTara(tara)} />
+            )}
         </>
     )
 }
+
+const styles = StyleSheet.create({
+    assignmentRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 16,
+        gap: 12,
+    },
+    assignmentLabel: {
+        color: "#111827",
+        fontSize: 13,
+        fontWeight: "600",
+    },
+});
 
 export default ManualSection;

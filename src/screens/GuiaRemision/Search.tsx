@@ -1,17 +1,17 @@
-import { Appbar, Text, Searchbar, Button, Icon, IconButton } from "react-native-paper"
-import { ScrollView, View, ImageBackground } from "react-native"
+import { ScrollView, View, Text, TextInput, StyleSheet } from "react-native"
 import React, { useContext, useEffect } from "react";
 import SimpleCard from "../../components/Ticket/SimpleCard";
 import SimpleCardGuiaRemision from "./components/SimpleCard";
 import api from "../../utils/axios";
-import Snackbar from "react-native-snackbar";
 import { TicketContext } from "../TicketPesaje/Show/provider/TicketProvider";
-import Bg from '../../../assets/img/bg/7.jpg';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import AppIconButton from "../../components/ui/AppIconButton";
+const Snackbar = require("react-native-snackbar");
 
 const Search = ({navigation, route}:any) => {
     const { ticketId } = route.params || { id: null };
-    const {assignReload} = useContext(TicketContext);
+    const {assignReload} = useContext(TicketContext) as any;
     const insets = useSafeAreaInsets();
 
     const [searchQuery, setSearchQuery] = React.useState('');
@@ -61,30 +61,36 @@ const Search = ({navigation, route}:any) => {
 
     return (
         <View style={[{ flex: 1, backgroundColor: "#F7f7f7" }, { paddingTop: insets.top }]}>
-            <Appbar.Header>
-                <Appbar.BackAction onPress={() => {navigation.goBack()}} />
-                <Appbar.Content title="Buscar guía de remisión" />
-            </Appbar.Header>
+            <View style={styles.header}>
+                <View style={styles.headerRow}>
+                    <AppIconButton icon="chevron-left" onPress={() => {navigation.goBack()}} />
+                    <Text style={styles.headerTitle}>Buscar guía de remisión</Text>
+                </View>
+            </View>
             <ScrollView
                 style={{ flex: 1, backgroundColor: '#F7f7f7' }}
                 contentContainerStyle={{ paddingBottom: 60 + insets.bottom }}
+                showsVerticalScrollIndicator={false}
             >
-                <ImageBackground source={Bg} style={{ padding: 10}}>
+                <View style={{ padding: 12 }}>
                     <SimpleCard id={ticketId} />
-                </ImageBackground>
-                <View style={{ padding: 10 }}>
-                    <Text style={{ marginTop: 2, color: 'grey', fontSize: 12 }}>
+                </View>
+                <View style={{ paddingHorizontal: 12 }}>
+                    <Text style={{ marginTop: 2, color: '#6B7280', fontSize: 12 }}>
                         Busca por el código de guía o la placa del vehículo
                     </Text>
-                    <View style={{ display: 'flex' }}>
-                        <Searchbar
-                            loading={loading}
+                    <View style={styles.searchField}>
+                        <MaterialCommunityIcons name="magnify" size={18} color="#6B7280" />
+                        <TextInput
                             placeholder="Buscar por código o placa"
+                            placeholderTextColor="#9CA3AF"
                             onChangeText={onChangeSearch}
                             value={searchQuery}
+                            style={styles.searchInput}
                         />
+                        {loading ? <MaterialCommunityIcons name="loading" size={18} color="#111827" /> : null}
                     </View>
-                    <View style={{ paddingHorizontal: 10, paddingVertical: 10 }}>
+                    <View style={{ paddingVertical: 10 }}>
                         {
                             guiasRemision.map((guia: any) => <SimpleCardGuiaRemision key={guia.id} ticketId={ticketId} guiaRemision={guia} />)
                         }
@@ -95,5 +101,44 @@ const Search = ({navigation, route}:any) => {
 
     )
 }
+
+const styles = StyleSheet.create({
+    header: {
+        minHeight: 68,
+        backgroundColor: "#FFFFFF",
+        borderBottomWidth: 1,
+        borderBottomColor: "#E5E7EB",
+        justifyContent: "center",
+        paddingHorizontal: 12,
+    },
+    headerRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+    },
+    headerTitle: {
+        color: "#111827",
+        fontSize: 18,
+        fontWeight: "800",
+    },
+    searchField: {
+        minHeight: 48,
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: "#D1D5DB",
+        backgroundColor: "#FFFFFF",
+        paddingHorizontal: 14,
+        marginTop: 10,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+    },
+    searchInput: {
+        flex: 1,
+        color: "#111827",
+        fontSize: 14,
+        paddingVertical: 10,
+    },
+});
 
 export default Search

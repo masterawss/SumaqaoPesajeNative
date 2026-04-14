@@ -1,13 +1,13 @@
 import React from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import Snackbar from "react-native-snackbar";
 
 import api from "../../../utils/axios";
 import AppButton from "../../../components/ui/AppButton";
+const Snackbar = require("react-native-snackbar");
 
 const BtnCreate = ({ type = "ingreso" }) => {
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
     const [loading, setLoading] = React.useState(false);
 
     const create = async () => {

@@ -1,15 +1,10 @@
-import { ActivityIndicator, Modal, Portal, RadioButton, Text } from "react-native-paper";
-import { Dimensions, Image, ScrollView, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { useContext, useEffect, useState } from "react";
+
 import api from "../../utils/axios";
 import { TicketContext } from "../../screens/TicketPesaje/Show/provider/TicketProvider";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Snackbar from "react-native-snackbar";
 import { numberFormat } from "../../utils/numberFormat";
-import AppInput from "../ui/AppInput";
-import AppButton from "../ui/AppButton";
-
-const deviceHeight = Dimensions.get("window").height;
+import AppSurface from "../ui/AppSurface";
 
 export interface TicketPesajeSimpleCard {
     id: number;
@@ -22,65 +17,22 @@ export interface TicketPesajeSimpleCard {
     total_grr_sacos: number;
     total_nro_sacos: number;
     guias_remision_count: number;
-
-    // opcionales, por si el mismo componente se usa en edición o detalle resumido
     nro_sacos?: number | null;
     saco_color_id?: number | null;
-}
-
-interface SacoColor {
-    id: number;
-    descripcion: string;
+    peso_solo_paletas?: number | null;
 }
 
 interface SimpleCardProps {
     id?: number | null;
     ticket?: TicketPesajeSimpleCard | null;
-    canEdit?: boolean;
 }
 
-const SimpleCard = ({ id = null, ticket = null, canEdit = false }: SimpleCardProps) => {
-    const ticketContext = useContext(TicketContext);
+const SimpleCard = ({ id = null, ticket = null }: SimpleCardProps) => {
+    const ticketContext = useContext(TicketContext) as any;
 
     const [ticketData, setTicketData] = useState<TicketPesajeSimpleCard | null>(null);
     const [hasError, setHasError] = useState(false);
     const [loading, setLoading] = useState(false);
-
-    const [visible, setVisible] = useState(false);
-    const [saveLoading, setSaveLoading] = useState(false);
-    const [nroSacos, setNroSacos] = useState<string | null>(null);
-    const [sacoColorId, setSacoColorId] = useState(0);
-    const [sacosColor, setSacosColor] = useState<SacoColor[]>([]);
-
-    useEffect(() => {
-        if (canEdit) {
-            api.get("/sacos_color")
-                .then((response) => {
-                    setSacosColor(response.data.sacos_color);
-                })
-                .catch((error) => {
-                    console.log(error.response);
-                });
-        }
-    }, [canEdit]);
-
-    useEffect(() => {
-        if (ticketContext.ticketPesaje) {
-            if (ticketContext.ticketPesaje.nro_sacos > 0) {
-                setNroSacos(ticketContext.ticketPesaje.nro_sacos.toString());
-                setSacoColorId(ticketContext.ticketPesaje.saco_color_id);
-            } else {
-                setNroSacos(null);
-            }
-        }
-    }, [ticketContext.ticketPesaje]);
-
-    const containerStyle = {
-        height: deviceHeight - deviceHeight * 0.3,
-        padding: 20,
-        margin: 20,
-        backgroundColor: "white",
-    };
 
     useEffect(() => {
         if (id) {
@@ -105,176 +57,174 @@ const SimpleCard = ({ id = null, ticket = null, canEdit = false }: SimpleCardPro
         }
     }, [id, ticket, ticketContext.ticketPesaje]);
 
-    const save = async () => {
-        if (!ticketData) return;
-
-        if (!nroSacos || Number(nroSacos) <= 0 || !sacoColorId) {
-            Snackbar.show({
-                text: "Ingrese los datos correctamente",
-                duration: Snackbar.LENGTH_INDEFINITE,
-                action: {
-                    text: "Cerrar",
-                    textColor: "red",
-                    onPress: () => {},
-                },
-            });
-            return;
-        }
-
-        setSaveLoading(true);
-
-        try {
-            const user = await AsyncStorage.getItem("user");
-
-            await api.post("/ticket_pesaje/update/" + ticketData.id, {
-                nro_sacos: nroSacos,
-                saco_color_id: sacoColorId,
-                updated_user_id: JSON.parse(user || "{}")?.id,
-            });
-
-            setVisible(false);
-            ticketContext.loadTicket();
-        } catch (error: any) {
-            console.log(error.response);
-            Snackbar.show({
-                text: "No se pudo registrar los sacos",
-                duration: Snackbar.LENGTH_INDEFINITE,
-                action: {
-                    text: "Cerrar",
-                    textColor: "red",
-                    onPress: () => {},
-                },
-            });
-        } finally {
-            setSaveLoading(false);
-        }
-    };
-
-    const totalSacos = ticketData?.is_exportacion
-        ? ticketData?.total_grr_sacos
-        : ticketData?.total_nro_sacos;
+    const totalSacos = ticketData?.is_exportacion ? ticketData?.total_grr_sacos : ticketData?.total_nro_sacos;
+    const grrValue = ticketData?.guias_remision_count ?? 0;
+    const taraValue = ticketData?.peso_solo_paletas ?? 0;
+    const placaValue = ticketData?.placa_tracto?.trim() ?? "";
+    const hasGrr = Number(grrValue) > 0;
+    const hasTara = Number(taraValue) > 0;
+    const hasPlaca = placaValue.length > 0;
 
     return (
-        <View style={{ paddingVertical: 10, backgroundColor: "white", borderRadius: 10 }}>
-            {loading && !hasError && (
-                <Text style={{ textAlign: "center", color: "grey", fontWeight: "bold", marginTop: 20 }}>
-                    <ActivityIndicator size="small" />
-                </Text>
-            )}
-
-            {ticketContext.loading && !ticketContext.hasError && (
-                <View>
-                    <Text style={{ textAlign: "center" }}>
-                        <ActivityIndicator size="small" />
-                    </Text>
+        <AppSurface style={styles.card}>
+            {loading && !hasError ? (
+                <View style={styles.stateBox}>
+                    <ActivityIndicator size="small" color="#111827" />
                 </View>
-            )}
+            ) : null}
 
-            {!ticketContext.loading && !ticketContext.hasError && ticketData && (
-                <View
-                    style={{
-                        display: "flex",
-                        width: "100%",
-                        flexDirection: "row",
-                        paddingHorizontal: 10,
-                        alignItems: "center",
-                    }}
-                >
-                    <Image
-                        source={{ uri: ticketData.main_image_url || undefined }}
-                        style={{ height: 100, width: "30%", backgroundColor: "grey", borderRadius: 10 }}
-                    />
-                    <View style={{ width: "70%", paddingLeft: 10 }}>
-                        <View
-                            style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text style={{ fontWeight: "bold" }}>{ticketData.codigo}</Text>
-                            <Text style={{ color: "grey" }}>{ticketData.fecha_desc}</Text>
+            {ticketContext.loading && !ticketContext.hasError ? (
+                <View style={styles.stateBox}>
+                    <ActivityIndicator size="small" color="#111827" />
+                </View>
+            ) : null}
+
+            {!ticketContext.loading && !ticketContext.hasError && ticketData ? (
+                <View style={styles.content}>
+                    <View style={styles.header}>
+                        <View style={styles.titleBlock}>
+                            <Text style={styles.code}>{ticketData.codigo}</Text>
+                            <Text style={styles.date}>{ticketData.fecha_desc}</Text>
+                        </View>
+                        <View style={[styles.statusChip, ticketData.is_saved ? styles.statusSaved : styles.statusPending]}>
+                            <Text style={styles.statusText}>{ticketData.is_saved ? "Guardado" : "Sin guardar"}</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.metricsRow}>
+                        <View style={styles.metricItem}>
+                            <Text style={styles.metricLabel}>GRR</Text>
+                            {hasGrr ? (
+                                <Text style={styles.metricValue}>{numberFormat(grrValue)}</Text>
+                            ) : (
+                                <View style={styles.warningBadge}>
+                                    <Text style={styles.warningBadgeText}>Sin GRR</Text>
+                                </View>
+                            )}
                         </View>
 
-                        <View style={{ marginVertical: 8 }}>
-                            <Text>
-                                {ticketData.guias_remision_count} G.R.R. • {numberFormat(totalSacos ?? 0)} sacos
-                            </Text>
+                        <View style={styles.metricItem}>
+                            <Text style={styles.metricLabel}>Sacos</Text>
+                            <Text style={styles.metricValue}>{numberFormat(totalSacos ?? 0)}</Text>
                         </View>
 
-                        <View
-                            style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text style={{ color: "grey" }}>{ticketData.placa_tracto ?? "-"}</Text>
-                            <View
-                                style={{
-                                    borderRadius: 40,
-                                    backgroundColor: ticketData.is_saved ? "teal" : "orange",
-                                    paddingHorizontal: 10,
-                                    paddingVertical: 4,
-                                }}
-                            >
-                                <Text style={{ color: "white", fontSize: 12 }}>
-                                    {ticketData.is_saved ? "Guardado" : "Sin guardar"}
-                                </Text>
-                            </View>
+                        <View style={styles.metricItem}>
+                            <Text style={styles.metricLabel}>Tara</Text>
+                            {hasTara ? (
+                                <Text style={styles.metricValue}>{numberFormat(taraValue)} Kg</Text>
+                            ) : (
+                                <View style={styles.warningBadge}>
+                                    <Text style={styles.warningBadgeText}>Sin tara</Text>
+                                </View>
+                            )}
+                        </View>
+
+                        <View style={styles.metricItem}>
+                            <Text style={styles.metricLabel}>Placa</Text>
+                            {hasPlaca ? (
+                                <Text style={styles.metricValue} numberOfLines={1}>{placaValue}</Text>
+                            ) : (
+                                <View style={styles.warningBadge}>
+                                    <Text style={styles.warningBadgeText}>Sin placa</Text>
+                                </View>
+                            )}
                         </View>
                     </View>
                 </View>
-            )}
-
-            {canEdit && (
-                <Portal>
-                    <Modal
-                        visible={visible}
-                        onDismiss={() => setVisible(false)}
-                        contentContainerStyle={containerStyle}
-                    >
-                        <ScrollView>
-                            <View style={{ marginBottom: 20 }}>
-                                {sacosColor.map((item) => (
-                                    <View
-                                        key={item.id}
-                                        style={{ flexDirection: "row", alignItems: "center" }}
-                                    >
-                                        <RadioButton
-                                            value={item.descripcion}
-                                            status={sacoColorId === item.id ? "checked" : "unchecked"}
-                                            onPress={() => setSacoColorId(item.id)}
-                                        />
-                                        <Text>{item.descripcion}</Text>
-                                    </View>
-                                ))}
-                            </View>
-
-                            <AppInput
-                                label="Cantidad de sacos"
-                                keyboardType="numeric"
-                                value={nroSacos}
-                                onChangeText={(val) => setNroSacos(val)}
-                                placeholder={!nroSacos ? "0" : ""}
-                            />
-
-                            <AppButton
-                                style={{ marginTop: 10 }}
-                                loading={saveLoading}
-                                disabled={saveLoading}
-                                onPress={save}
-                            >
-                                Guardar
-                            </AppButton>
-                        </ScrollView>
-                    </Modal>
-                </Portal>
-            )}
-        </View>
+            ) : null}
+        </AppSurface>
     );
 };
+
+    const styles = StyleSheet.create({
+    card: {
+        paddingVertical: 8,
+        paddingHorizontal: 10,
+    },
+    stateBox: {
+        alignItems: "center",
+        justifyContent: "center",
+        paddingVertical: 10,
+    },
+    content: {
+        gap: 8,
+    },
+    header: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 8,
+    },
+    titleBlock: {
+        minWidth: 0,
+        flex: 1,
+    },
+    code: {
+        color: "#111827",
+        fontSize: 17,
+        fontWeight: "800",
+        lineHeight: 19,
+    },
+    date: {
+        color: "#9CA3AF",
+        fontSize: 12,
+        marginTop: 1,
+    },
+    statusChip: {
+        borderRadius: 999,
+        paddingHorizontal: 7,
+        paddingVertical: 3,
+        alignSelf: "flex-start",
+    },
+    statusSaved: {
+        backgroundColor: "#D1FAE5",
+    },
+    statusPending: {
+        backgroundColor: "#FDE68A",
+    },
+    statusText: {
+        color: "#111827",
+        fontSize: 10,
+        fontWeight: "800",
+    },
+    metricsRow: {
+        flexDirection: "row",
+        alignItems: "stretch",
+        gap: 8,
+        paddingTop: 8,
+        borderTopWidth: 1,
+        borderTopColor: "#E5E7EB",
+    },
+    metricItem: {
+        flex: 1,
+        minWidth: 0,
+        gap: 4,
+    },
+    metricLabel: {
+        color: "#9CA3AF",
+        fontSize: 10,
+        fontWeight: "700",
+        textTransform: "uppercase",
+        letterSpacing: 0.4,
+    },
+    metricValue: {
+        color: "#111827",
+        fontSize: 13,
+        fontWeight: "800",
+        lineHeight: 16,
+    },
+    warningBadge: {
+        alignSelf: "flex-start",
+        backgroundColor: "#FEF3C7",
+        borderRadius: 999,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+    },
+    warningBadgeText: {
+        color: "#92400E",
+        fontSize: 10,
+        fontWeight: "700",
+    },
+});
 
 export default SimpleCard;

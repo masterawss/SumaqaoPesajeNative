@@ -8,12 +8,15 @@ import {
     Pressable,
     StyleSheet,
     View,
+    Text,
 } from "react-native";
-import { Appbar, IconButton, Text } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import AppButton from "../../components/ui/AppButton";
 import AppInput from "../../components/ui/AppInput";
+import AppIconButton from "../../components/ui/AppIconButton";
+import AppModalSheet from "../../components/ui/AppModalSheet";
 import {
     BalanzaItem,
     getStoredActiveBalanzaAddress,
@@ -178,10 +181,12 @@ const Index = ({ navigation }: any) => {
 
     return (
         <View style={[styles.screen, { paddingTop: insets.top }]}>
-            <Appbar.Header style={styles.appbar} elevated={false}>
-                <Appbar.BackAction onPress={() => navigation.goBack()} />
-                <Appbar.Content title="Balanzas" />
-            </Appbar.Header>
+            <View style={styles.appbar}>
+                <View style={styles.appbarLeft}>
+                    <AppIconButton icon="chevron-left" onPress={() => navigation.goBack()} />
+                    <Text style={styles.appbarTitle}>Balanzas</Text>
+                </View>
+            </View>
 
             <View style={styles.toolbar}>
                 <View style={styles.toolbarText}>
@@ -249,12 +254,12 @@ const Index = ({ navigation }: any) => {
                                 hitSlop={10}
                                 style={styles.deleteAction}
                             >
-                                <IconButton
+                                <AppIconButton
                                     icon="delete-outline"
                                     loading={isDeleting}
                                     size={20}
                                     disabled={isDeleting}
-                                    iconColor="#EF4444"
+                                    color="#EF4444"
                                     style={styles.deleteIcon}
                                 />
                             </Pressable>
@@ -263,55 +268,38 @@ const Index = ({ navigation }: any) => {
                 }}
             />
 
-            <Modal
-                transparent
+            <AppModalSheet
                 visible={modalVisible}
-                animationType="fade"
-                onRequestClose={closeModal}
+                onClose={closeModal}
+                title="Nueva balanza"
+                subtitle="Guarda el título y el address que vas a usar en Bluetooth."
             >
-                <Pressable style={styles.backdrop} onPress={closeModal}>
-                    <Pressable
-                        style={[styles.sheet, { paddingBottom: 16 + insets.bottom }]}
-                        onPress={(event) => event.stopPropagation()}
-                    >
-                        <View style={styles.sheetHandle} />
-                        <Text style={styles.sheetTitle}>Nueva balanza</Text>
-                        <Text style={styles.sheetSubtitle}>
-                            Guarda el título y el address que vas a usar en Bluetooth.
-                        </Text>
+                <View style={styles.form}>
+                    <AppInput
+                        label="Título"
+                        value={title}
+                        onChangeText={setTitle}
+                        placeholder="Balanza principal"
+                    />
+                    <AppInput
+                        label="Address"
+                        value={address}
+                        onChangeText={(value) => setAddress(value.toUpperCase())}
+                        placeholder="00:08:F4:02:BC:F9"
+                        autoCapitalize="characters"
+                        autoCorrect={false}
+                    />
 
-                        <KeyboardAvoidingView
-                            behavior={Platform.OS === "ios" ? "padding" : undefined}
-                        >
-                            <View style={styles.form}>
-                                <AppInput
-                                    label="Título"
-                                    value={title}
-                                    onChangeText={setTitle}
-                                    placeholder="Balanza principal"
-                                />
-                                <AppInput
-                                    label="Address"
-                                    value={address}
-                                    onChangeText={(value) => setAddress(value.toUpperCase())}
-                                    placeholder="00:08:F4:02:BC:F9"
-                                    autoCapitalize="characters"
-                                    autoCorrect={false}
-                                />
-
-                                <View style={styles.sheetActions}>
-                                    <AppButton compact variant="secondary" onPress={closeModal}>
-                                        Cancelar
-                                    </AppButton>
-                                    <AppButton compact onPress={saveBalanza} loading={saving} disabled={saving}>
-                                        Guardar
-                                    </AppButton>
-                                </View>
-                            </View>
-                        </KeyboardAvoidingView>
-                    </Pressable>
-                </Pressable>
-            </Modal>
+                    <View style={styles.sheetActions}>
+                        <AppButton compact variant="secondary" onPress={closeModal}>
+                            Cancelar
+                        </AppButton>
+                        <AppButton compact onPress={saveBalanza} loading={saving} disabled={saving}>
+                            Guardar
+                        </AppButton>
+                    </View>
+                </View>
+            </AppModalSheet>
         </View>
     );
 };
@@ -325,7 +313,19 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF",
         borderBottomWidth: 1,
         borderBottomColor: "rgba(17, 24, 39, 0.06)",
-        elevation: 0,
+        minHeight: 64,
+        paddingHorizontal: 12,
+        justifyContent: "center",
+    },
+    appbarLeft: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+    },
+    appbarTitle: {
+        color: "#111827",
+        fontSize: 18,
+        fontWeight: "800",
     },
     toolbar: {
         paddingHorizontal: 12,
@@ -438,39 +438,7 @@ const styles = StyleSheet.create({
         marginLeft: -4,
     },
     deleteIcon: {
-        margin: 0,
-    },
-    backdrop: {
-        flex: 1,
-        backgroundColor: "rgba(15, 23, 42, 0.45)",
-        justifyContent: "flex-end",
-    },
-    sheet: {
-        backgroundColor: "#FFFFFF",
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
-        paddingHorizontal: 16,
-        paddingTop: 10,
-    },
-    sheetHandle: {
-        alignSelf: "center",
-        width: 42,
-        height: 4,
-        borderRadius: 999,
-        backgroundColor: "rgba(148, 163, 184, 0.55)",
-        marginBottom: 14,
-    },
-    sheetTitle: {
-        color: "#111827",
-        fontSize: 18,
-        fontWeight: "800",
-    },
-    sheetSubtitle: {
-        color: "#6B7280",
-        fontSize: 13,
-        lineHeight: 18,
-        marginTop: 6,
-        marginBottom: 16,
+        marginTop: 2,
     },
     form: {
         gap: 12,

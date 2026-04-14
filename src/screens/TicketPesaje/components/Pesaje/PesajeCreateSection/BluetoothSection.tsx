@@ -1,13 +1,16 @@
 import React, { useCallback, useContext, useEffect, useMemo } from "react";
-import { Button, Icon, Text } from "react-native-paper";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Switch, Text, View } from "react-native";
+import Sound from 'react-native-sound';
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
 import savePesoHook from "./hook/savePesoHook";
 import { BalanzaBluetoothContext } from "../../../context/BalanzaBluetoothProvider";
 import DesactivadoSection from "../../../../../components/Bluetooth/DesactivadoSection";
 import NotFoundSection from "../../../../../components/Bluetooth/NotFoundSection";
-import Sound from 'react-native-sound';
 import { TicketContext } from "../../../Show/provider/TicketProvider";
 import GuiaRemisionSelect from "../GuiaRemisionSelect";
+import AppButton from "../../../../../components/ui/AppButton";
+import AppSurface from "../../../../../components/ui/AppSurface";
 
 const tiempoEstable = 1;
 
@@ -15,11 +18,6 @@ const BluetoothSection = () => {
     const {currentGuiaRemision, setNextGuiaRemision, setCurrentGuiaRemision} = useContext(TicketContext);
     const [isSaved, setIsSaved] = React.useState(false);
     const [canSave, setCanSave] = React.useState(false);
-    // const [peso, setPeso] = React.useState<number>(0);
-    // const randomPeso = () => {
-    //     setPeso(Math.random() * 100);
-    // }
-    // const {bluetoothEnabled, loading, device, connectToDevice, checkBluetoothEnabled} = useContext(BalanzaBluetoothContext);
     const {bluetoothEnabled, loading, device, peso, connectToDevice, checkBluetoothEnabled, activeBalanza} = useContext(BalanzaBluetoothContext);
 
     const {loading: loadingSave, saveData} = savePesoHook()
@@ -28,7 +26,7 @@ const BluetoothSection = () => {
     const save = useCallback(() => {
         setCronometro(-1);
         saveData({
-            peso, 
+            peso,
             by_bluetooth: true,
             guia_remision_id: currentGuiaRemision?.id
         }, () => {
@@ -40,7 +38,7 @@ const BluetoothSection = () => {
     }, [currentGuiaRemision?.id, peso, saveData, setNextGuiaRemision]);
 
     useEffect(() => {
-        setPesoEstable(peso); // Actualiza el valor de pesoEstable cuando el peso cambia
+        setPesoEstable(peso);
     }, [peso]);
 
     const [cronometro, setCronometro] = React.useState(-1);
@@ -49,7 +47,6 @@ const BluetoothSection = () => {
           setCronometro((prevCronometro) => prevCronometro - 1);
         }, 1000);
 
-        // Reinicia el cronómetro cuando el peso cambia
         if (pesoEstable < peso-0.2 || pesoEstable > peso+0.2) {
           setCronometro(tiempoEstable);
           setIsSaved(false);
@@ -110,64 +107,136 @@ const BluetoothSection = () => {
     }, [isSaved, cronometro])
 
     return <>
-        <View style={{ marginBottom: 16 }}>
-            <Text style={{ color: 'grey', fontSize: 12 }}>Balanza seleccionada</Text>
-            <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                {activeBalanza?.title ?? 'Sin balanza seleccionada'}
-            </Text>
-            {
-                activeBalanza?.address
-                    ? <Text style={{ color: 'grey' }}>{activeBalanza.address}</Text>
-                    : null
-            }
+        <View style={styles.balanceInfo}>
+            <View style={styles.balanceRow}>
+                <Text style={styles.infoTitle} numberOfLines={1}>{activeBalanza?.title ?? 'Sin balanza seleccionada'}</Text>
+                {activeBalanza?.address ? <Text style={styles.infoText} numberOfLines={1}>{activeBalanza.address}</Text> : null}
+            </View>
         </View>
-        {
-            loading && <Text><ActivityIndicator size="small" /> Cargando ...</Text>
-        }
-        {
-            !bluetoothEnabled && <DesactivadoSection loading={loading} checkBluetoothEnabled={checkBluetoothEnabled} />
-        }
-        {
-            bluetoothEnabled && !device && <NotFoundSection connectToDevice={connectToDevice} />
-        }
-        {
-            currentGuiaRemision
-            ? <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20, marginBottom: 20 }}>
-                <Text>
-                    Se registrará para:
-                </Text>
+        {loading ? <View style={styles.loadingRow}><ActivityIndicator size="small" color="#111827" /><Text style={styles.infoText}>Cargando...</Text></View> : null}
+        {!bluetoothEnabled ? <DesactivadoSection loading={loading} checkBluetoothEnabled={checkBluetoothEnabled} /> : null}
+        {bluetoothEnabled && !device ? <NotFoundSection connectToDevice={connectToDevice} /> : null}
+        {currentGuiaRemision ? (
+            <View style={styles.assignmentRow}>
+                <Text style={styles.assignmentLabel}>Se registrará para:</Text>
                 <GuiaRemisionSelect
-                    guia_remision_codigo={currentGuiaRemision.codigo} 
+                    guia_remision_codigo={currentGuiaRemision.codigo}
                     onSelect={(guia: any) => {
                         setCurrentGuiaRemision(guia);
                     }}
                 />
             </View>
-            : <Text>
-                Se registrará sin GRR
-            </Text>
-        }
-        {
-            !!device && <>
-                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <View style={{ display: 'flex', flexDirection: 'row' }}>
-                        <Icon source="bluetooth" size={30} />
-                        <Text style={{ marginLeft: 10, fontWeight: 'bold', fontSize: 20 }}>{peso} Kg</Text>
-                    </View>
-                </View>
-                <View style={{ marginTop: 15 }}>
-                    <Button disabled={isSaved || peso === 0} mode="contained" onPress={save} loading={loadingSave}>
+        ) : (
+            <Text style={styles.assignmentEmpty}>Se registrará sin GRR</Text>
+        )}
+        {!!device ? (
+            <>
+                <View style={styles.resultRow}>
+                    <AppSurface style={styles.weightCard}>
+                        <View style={styles.weightRow}>
+                            <MaterialCommunityIcons name="bluetooth" size={20} color="#111827" />
+                            <View style={styles.weightTextBlock}>
+                                <Text style={styles.weightLabel}>Peso actual</Text>
+                                <Text style={styles.weightValue}>{peso} Kg</Text>
+                            </View>
+                        </View>
+                    </AppSurface>
+                    <AppButton style={styles.saveButton} disabled={isSaved || peso === 0} onPress={save} loading={loadingSave}>
                         {buttonText}
-                    </Button>
-                    <View>
-                        {
-                            cronometro > 0 && cronometro < tiempoEstable && <Text style={{ color: 'grey', fontSize: 12 }}>* Puedes hacer click para guardar el valor</Text>
-                        }
-                    </View>
+                    </AppButton>
                 </View>
-            </> 
-        }
+                {cronometro > 0 && cronometro < tiempoEstable ? (
+                    <Text style={styles.helpText}>Puedes pulsar para guardar el valor estable.</Text>
+                ) : null}
+            </>
+        ) : null}
     </>
 }
+
+const styles = StyleSheet.create({
+    balanceInfo: {
+        marginBottom: 8,
+    },
+    balanceRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 10,
+        minHeight: 24,
+    },
+    infoTitle: {
+        color: "#111827",
+        flex: 1,
+        fontSize: 14,
+        fontWeight: "800",
+    },
+    infoText: {
+        color: "#6B7280",
+        fontSize: 12,
+        flexShrink: 0,
+    },
+    loadingRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+        marginBottom: 10,
+    },
+    assignmentRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginVertical: 10,
+        gap: 8,
+    },
+    assignmentLabel: {
+        color: "#111827",
+        fontSize: 12,
+        fontWeight: "600",
+    },
+    assignmentEmpty: {
+        color: "#6B7280",
+        fontSize: 12,
+        marginBottom: 10,
+    },
+    resultRow: {
+        flexDirection: "row",
+        alignItems: "stretch",
+        gap: 8,
+        marginTop: 2,
+    },
+    weightCard: {
+        flex: 1,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+    },
+    weightRow: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    weightTextBlock: {
+        flex: 1,
+        marginLeft: 8,
+    },
+    weightLabel: {
+        color: "#6B7280",
+        fontSize: 11,
+        fontWeight: "700",
+        textTransform: "uppercase",
+    },
+    weightValue: {
+        color: "#111827",
+        fontSize: 19,
+        fontWeight: "800",
+    },
+    saveButton: {
+        alignSelf: "stretch",
+        paddingHorizontal: 12,
+    },
+    helpText: {
+        color: "#6B7280",
+        fontSize: 12,
+        marginTop: 6,
+    },
+});
 
 export default BluetoothSection;

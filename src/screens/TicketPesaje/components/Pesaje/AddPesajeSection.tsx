@@ -1,31 +1,22 @@
 import React, { useEffect } from "react";
-import {Dimensions, Image, View} from "react-native";
-import { Button, Modal, Portal, Text } from "react-native-paper";
-import BalanceImg from '../../../../../assets/img/balance.png';
+import { Image, StyleSheet, Text, View } from "react-native";
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
+
+import BalanceImg from '../../../../../assets/img/balance.png';
 import { requestBluetoothPermissions } from "../../../../utils/androidBluetoothPermissions";
-
-const deviceHeight = Dimensions.get('window').height
-
+import AppButton from "../../../../components/ui/AppButton";
+import AppModalSheet from "../../../../components/ui/AppModalSheet";
 
 const AddPesajeSection = ({onSaved = (data: number) => {}}) => {
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState(false);
     const [visible, setVisible] = React.useState(false);
     const [peso, setPeso] = React.useState(0);
-    const showModal = () => setVisible(true);
-    const hideModal = () => setVisible(false);
-    const containerStyle = {
-        height: deviceHeight - (deviceHeight * 0.3),
-        padding: 20,
-        margin: 20,
-        backgroundColor: 'white',
-    };
 
     const save = () => {
         console.log('save')
         onSaved(1)
-        hideModal()
+        setVisible(false)
     }
 
     useEffect(() => {
@@ -44,20 +35,15 @@ const AddPesajeSection = ({onSaved = (data: number) => {}}) => {
             return;
         }
 
-          
         try {
             const address = '00:08:F4:02:BC:F9';
-            // const device = await RNBluetoothClassic.getConnectedDevice(address);
             const paired = await RNBluetoothClassic.getBondedDevices();
             const device = paired.find(d => d.address === address)
             if (!device) {
                 throw new Error('No se encontró la balanza vinculada.')
             }
-            console.log('DEVIVE', device)
             const con = await device.connect({})
             console.log('CON', con)
-            // // const read = await device.read()
-            // // console.log('READ', read)
             device.onDataReceived((data) => {
                 console.log(data)
                 setPeso(data.data as unknown as number)
@@ -73,40 +59,57 @@ const AddPesajeSection = ({onSaved = (data: number) => {}}) => {
 
     return (
         <>
-            <Button style={{ position: 'absolute', bottom:0, right:0, margin: 10 }} mode="contained"
-                onPress={showModal}
-            >
+            <AppButton style={{ position: 'absolute', bottom:0, right:0, margin: 10 }} onPress={() => setVisible(true)}>
                 Agregar pesaje
-            </Button>
-            <Portal>
-                <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
-                    <View style={{ alignItems: 'center' }}>
-                        {
-                            loading && <Text>Cargando...</Text>
-                        }
-                        {
-                            error && <Text>Error al conectar con la balanza</Text>
-                        }
-                        {
-                            !loading && !error && <>
-                                <Text style={{ color: 'grey', fontSize: 30, marginTop: 50, fontWeight: 'bold', textAlign: 'center' }}>
-                                    {peso}
-                                </Text>
-                                <Image source={BalanceImg} style={{ width: 150, height: 90, marginHorizontal: 'auto' }} resizeMode="contain" />
-                                <Text style={{ color: '#d1d1d1' }}> Datos obtenidos de la balanza eléctrica</Text>
-                                <Button style={{ marginTop: 50, width: '100%' }} mode="outlined" onPress={save}>
-                                    Registrar manualmente
-                                </Button>
-                                <Button style={{ marginTop: 20,  width: '100%' }} mode="contained" onPress={save}>
-                                    Guardar
-                                </Button>
-                            </>
-                        }
-                    </View>
-                </Modal>
-            </Portal>
+            </AppButton>
+            <AppModalSheet visible={visible} onClose={() => setVisible(false)} title="Agregar pesaje" scrollable={false}>
+                <View style={styles.content}>
+                    {loading ? <Text style={styles.helper}>Cargando...</Text> : null}
+                    {error ? <Text style={styles.helper}>Error al conectar con la balanza</Text> : null}
+                    {!loading && !error ? (
+                        <>
+                            <Text style={styles.weight}>{peso}</Text>
+                            <Image source={BalanceImg} style={styles.image} resizeMode="contain" />
+                            <Text style={styles.caption}>Datos obtenidos de la balanza eléctrica</Text>
+                            <AppButton style={{ marginTop: 28, width: '100%' }} variant="secondary" onPress={save}>
+                                Registrar manualmente
+                            </AppButton>
+                            <AppButton style={{ marginTop: 12, width: '100%' }} onPress={save}>
+                                Guardar
+                            </AppButton>
+                        </>
+                    ) : null}
+                </View>
+            </AppModalSheet>
         </>
     )
 }
+
+const styles = StyleSheet.create({
+    content: {
+        alignItems: "center",
+        paddingBottom: 8,
+    },
+    helper: {
+        color: "#6B7280",
+        fontSize: 14,
+    },
+    weight: {
+        color: "#111827",
+        fontSize: 30,
+        marginTop: 30,
+        fontWeight: "800",
+        textAlign: "center",
+    },
+    image: {
+        width: 150,
+        height: 90,
+        marginTop: 12,
+    },
+    caption: {
+        color: "#9CA3AF",
+        marginTop: 10,
+    },
+});
 
 export default AddPesajeSection;

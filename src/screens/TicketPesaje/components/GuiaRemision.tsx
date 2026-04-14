@@ -1,68 +1,88 @@
-import { Button, Text } from "react-native-paper"
-import { useCallback, useContext, useMemo, useRef, useState } from "react";
-import {View, StyleSheet, ScrollView} from 'react-native';
+import { Text, View, StyleSheet } from "react-native";
+import { useContext } from "react";
+import { useNavigation } from "@react-navigation/native";
+
 import SimpleCard from "../../GuiaRemision/components/SimpleCard";
 import { TicketContext } from "../Show/provider/TicketProvider";
-import { useNavigation } from "@react-navigation/native";
 import { numberFormat } from "../../../utils/numberFormat";
+import AppButton from "../../../components/ui/AppButton";
+import AppSurface from "../../../components/ui/AppSurface";
 
 const GuiaRemision = () => {
-    const [open, setOpen] = useState(false);
-    const { loading, hasError, loadTicket, ticketPesaje, deleteTicket } = useContext(TicketContext);
-    const navigation = useNavigation();
-    return <ScrollView>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-            <View style={{ marginBottom: 5 }}>
-                <Text style={{ marginVertical: 5, fontWeight: 'bold', color: 'grey', fontSize: 15    }}>Lista de guías de remisión</Text>
-            </View>
-                <Button mode="contained"
+    const { ticketPesaje } = useContext(TicketContext) as any;
+    const navigation = useNavigation<any>();
+
+    return (
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <View>
+                    <Text style={styles.title}>Guías de remisión</Text>
+                    <Text style={styles.subtitle}>Relación y métricas del ticket actual</Text>
+                </View>
+                <AppButton
+                    compact
                     onPress={() => navigation.navigate('guia_remision.search', {ticketId: ticketPesaje.id})}
                 >
                     Agregar guía
-                </Button>
-        </View>
-        <View style={{ display: 'flex', paddingHorizontal: 5, marginVertical: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
-            <View style={{ width: '49%', borderRadius: 10, backgroundColor: 'white', padding: 10, 
-                shadowColor: "#000",
-                shadowOffset: {
-                    width: 0,
-                    height: 1,
-                },
-                shadowOpacity: 0.22,
-                shadowRadius: 2.22,
-                elevation: 3, 
-            }}>
-                <Text style={{ color: 'grey', fontSize: 20, fontWeight: 'bold' }}>
-                    {numberFormat(ticketPesaje.total_grr_peso_neto_enviado)} kg
-                </Text>
-                <Text>
-                    Total peso neto
-                </Text>
+                </AppButton>
             </View>
-            <View style={{ width: '49%', borderRadius: 10, backgroundColor: 'white', padding: 10, 
-                shadowColor: "#000",
-                shadowOffset: {
-                    width: 0,
-                    height: 1,
-                },
-                shadowOpacity: 0.22,
-                shadowRadius: 2.22,
-                elevation: 3, 
-            }}>
-                <Text style={{ color: 'grey', fontSize: 20, fontWeight: 'bold' }}>
-                    {numberFormat(ticketPesaje.total_grr_sacos)}
-                </Text>
-                <Text>
-                    Total de sacos
-                </Text>
+
+            <View style={styles.metrics}>
+                <AppSurface style={styles.metricCard}>
+                    <Text style={styles.metricValue}>{numberFormat(ticketPesaje.total_grr_peso_neto_enviado)} kg</Text>
+                    <Text style={styles.metricLabel}>Total peso neto</Text>
+                </AppSurface>
+                <AppSurface style={styles.metricCard}>
+                    <Text style={styles.metricValue}>{numberFormat(ticketPesaje.total_grr_sacos)}</Text>
+                    <Text style={styles.metricLabel}>Total de sacos</Text>
+                </AppSurface>
             </View>
+
+            {ticketPesaje.guias_remision.map((guia_remision: any) => (
+                <SimpleCard key={guia_remision.id} guiaRemision={guia_remision} ticketId={ticketPesaje.id} isInTicket />
+            ))}
         </View>
-        {
-            ticketPesaje.guias_remision.map((guia_remision: any) => <View key={guia_remision.id} style={{ marginVertical: 10, marginHorizontal: 5 }}>
-                <SimpleCard guiaRemision={guia_remision} ticketId={ticketPesaje.id} isInTicket={true} />
-            </View>)
-        }
-    </ScrollView>
-}
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        gap: 10,
+    },
+    header: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: 10,
+    },
+    title: {
+        color: "#111827",
+        fontSize: 15,
+        fontWeight: "800",
+    },
+    subtitle: {
+        color: "#6B7280",
+        fontSize: 11,
+        marginTop: 0,
+    },
+    metrics: {
+        flexDirection: "row",
+        gap: 8,
+    },
+    metricCard: {
+        flex: 1,
+        padding: 12,
+    },
+    metricValue: {
+        color: "#111827",
+        fontSize: 18,
+        fontWeight: "800",
+    },
+    metricLabel: {
+        color: "#6B7280",
+        fontSize: 11,
+        marginTop: 2,
+    },
+});
 
 export default GuiaRemision;

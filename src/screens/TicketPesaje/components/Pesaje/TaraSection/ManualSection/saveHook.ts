@@ -1,8 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../../../../../../utils/axios";
-import { useContext } from "react";
-import { TicketContext } from "../../../../Show/provider/TicketProvider";
-import Snackbar from "react-native-snackbar";
+const Snackbar = require("react-native-snackbar");
 
 interface ISaveProps {
     tara: number,

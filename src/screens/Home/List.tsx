@@ -9,8 +9,8 @@ import {
     FlatList,
 } from "react-native";
 import DatePicker from "react-native-date-picker";
-import { Icon } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import SimpleCard from "../../components/Ticket/SimpleCard";
 import ErrorSection from "../../components/ErrorSection";
@@ -180,8 +180,8 @@ const Index = ({ navigation, type = "ingreso" }: any) => {
         if (loading || hasError) return null;
 
         return (
-            <View style={styles.emptyBox}>
-                <Icon source="tray" size={30} color="#94A3B8" />
+                <View style={styles.emptyBox}>
+                <MaterialCommunityIcons name="tray" size={30} color="#94A3B8" />
                 <Text style={styles.emptyTitle}>No hay tickets</Text>
                 <Text style={styles.emptyText}>
                     Prueba con otra fecha o crea un nuevo registro.
@@ -200,7 +200,7 @@ const Index = ({ navigation, type = "ingreso" }: any) => {
             </View>
 
                 <Pressable onPress={() => setOpen(true)} style={styles.dateButton}>
-                    <Icon source="magnify" size={16} color="#6B7280" />
+                    <MaterialCommunityIcons name="magnify" size={16} color="#6B7280" />
                     <Text style={styles.dateText}>{dateStr}</Text>
                 </Pressable>
             </View>

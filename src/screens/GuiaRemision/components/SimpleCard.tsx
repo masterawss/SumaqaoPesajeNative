@@ -1,18 +1,23 @@
-import { Alert, TouchableOpacity, View } from 'react-native';
-import { Divider, IconButton, Text, Button, Portal, Modal, TextInput } from 'react-native-paper';
-import api from '../../../utils/axios';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useContext, useEffect, useState } from 'react';
-import Snackbar from 'react-native-snackbar';
+
+import api from '../../../utils/axios';
 import { TicketContext } from '../../TicketPesaje/Show/provider/TicketProvider';
 import { numberFormat } from '../../../utils/numberFormat';
+import AppButton from '../../../components/ui/AppButton';
+import AppDivider from '../../../components/ui/AppDivider';
+import AppInput from '../../../components/ui/AppInput';
+import AppModalSheet from '../../../components/ui/AppModalSheet';
+import AppSurface from '../../../components/ui/AppSurface';
+const Snackbar = require("react-native-snackbar");
 
 const SimpleCard = ({guiaRemision: gr, ticketId, isInTicket = false}: any) => {
-    const ticketContext = useContext(TicketContext);
+    const ticketContext = useContext(TicketContext) as any;
 
     const [loading, setLoading] = useState(false);
-    const [hasError, setHasError] = useState(false);
     const [added, setAdded] = useState(false);
     const [guiaRemision, setGuiaRemision] = useState(gr);
+
     useEffect(() => {
         if(guiaRemision.ticket_pesaje_id === ticketId){
             setAdded(true);
@@ -20,7 +25,6 @@ const SimpleCard = ({guiaRemision: gr, ticketId, isInTicket = false}: any) => {
             setAdded(false);
         }
     }, []);
-
 
     const deleteGuiaRemision = () => {
         Alert.alert('Quitar guia de ingreso', '¿Está seguro que desea quitar la guía de ingreso?', [
@@ -36,7 +40,6 @@ const SimpleCard = ({guiaRemision: gr, ticketId, isInTicket = false}: any) => {
 
     const deleteGuiaRemisionConfirmed = () => {
         setLoading(true);
-        setHasError(false);
         api.delete('/pesaje_guia_remision/'+guiaRemision.id).then((response) => {
             console.log(response.data);
             if(isInTicket){
@@ -52,18 +55,16 @@ const SimpleCard = ({guiaRemision: gr, ticketId, isInTicket = false}: any) => {
                 action: {
                   text: 'Cerrar',
                   textColor: 'red',
-                  onPress: () => { /* Do something. */ },
+                  onPress: () => {},
                 },
               });
         }).finally(() => {
             setLoading(false);
-            setHasError(true);
         });
     }
 
     const addGuiaRemision = () => {
         setLoading(true);
-        setHasError(false);
         api.post('/pesaje_guia_remision/store', {
             ticket_pesaje_id: ticketId,
             guia_remision_id: guiaRemision.id
@@ -76,7 +77,7 @@ const SimpleCard = ({guiaRemision: gr, ticketId, isInTicket = false}: any) => {
                 action: {
                   text: 'Cerrar',
                   textColor: 'green',
-                  onPress: () => { /* Do something. */ },
+                  onPress: () => {},
                 },
               });
         }).catch((error) => {
@@ -88,7 +89,7 @@ const SimpleCard = ({guiaRemision: gr, ticketId, isInTicket = false}: any) => {
                     action: {
                       text: 'Cerrar',
                       textColor: 'red',
-                      onPress: () => { /* Do something. */ },
+                      onPress: () => {},
                     },
                   });
             }
@@ -100,16 +101,14 @@ const SimpleCard = ({guiaRemision: gr, ticketId, isInTicket = false}: any) => {
     const [visible, setVisible] = useState(false);
     const [nroSacos, setNroSacos] = useState(guiaRemision.nro_sacos);
     const [nroSacos2, setNroSacos2] = useState(guiaRemision.nro_sacos2);
-    const showModal = () => setVisible(true);
-    const hideModal = () => setVisible(false);
+
     const updateGuiaRemision = () => {
-        hideModal();
+        setVisible(false);
         api.put('/guia_remision/update/'+guiaRemision.id, {
             nro_sacos: nroSacos,
             nro_sacos2: nroSacos2,
         }).then((response) => {
             console.log("RECIBIDO", response.data);
-            // setAdded(true);
             setGuiaRemision({
                 ...guiaRemision,
                 nro_sacos: nroSacos,
@@ -121,7 +120,7 @@ const SimpleCard = ({guiaRemision: gr, ticketId, isInTicket = false}: any) => {
                 action: {
                   text: 'Cerrar',
                   textColor: 'green',
-                  onPress: () => { /* Do something. */ },
+                  onPress: () => {},
                 },
               });
         }).catch((error) => {
@@ -133,7 +132,7 @@ const SimpleCard = ({guiaRemision: gr, ticketId, isInTicket = false}: any) => {
                     action: {
                       text: 'Cerrar',
                       textColor: 'red',
-                      onPress: () => { /* Do something. */ },
+                      onPress: () => {},
                     },
                   });
             }
@@ -142,126 +141,161 @@ const SimpleCard = ({guiaRemision: gr, ticketId, isInTicket = false}: any) => {
         });
     }
 
-    const style= {
-        textTitle: {
-            fontWeight: 'bold',
-            fontSize: 15,
-            color: 'grey'
-        },
-    }
-
     return (
-        <View style={{
-            borderRadius: 10,
-            marginBottom: 10,
-            backgroundColor: "#fff",
-            shadowColor: "#000",
-            shadowOffset: {
-                width: 0,
-                height: 1,
-            },
-            shadowOpacity: 0.22,
-            shadowRadius: 2.22,
-            elevation: 3, 
-        }}>
-        <View style={{ display: 'flex', paddingHorizontal: 10, paddingTop: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <View>
-                    <Text style={{ fontWeight: 'bold', fontSize: 15 }}>{guiaRemision.codigo}</Text>
-                    <View style={{ borderRadius: 10, paddingVertical: 4, paddingHorizontal: 10, 
-                        backgroundColor: guiaRemision.is_exportacion ? '#5dd9ab' : '#dbab7d' }}
-                    >
-                        <Text style={{ color: 'white', fontSize: 12, textAlign: 'center' }}>
+        <AppSurface style={styles.card}>
+            <View style={styles.header}>
+                <View style={{ flex: 1 }}>
+                    <Text style={styles.code}>{guiaRemision.codigo}</Text>
+                    <View style={[styles.typeChip, guiaRemision.is_exportacion ? styles.typeExport : styles.typeIngreso]}>
+                        <Text style={styles.typeChipText}>
                             {guiaRemision.is_exportacion ? 'Exportación' : 'Ingreso'}
                         </Text>
                     </View>
                 </View>
-                {
-                    added
-                    ? <Button
-                        style={{ marginTop: -5 }}
+                {added ? (
+                    <AppButton
+                        compact
+                        variant="secondary"
+                        icon="delete-outline"
                         disabled={loading}
-                        icon={'delete'}
-                        textColor='grey'
-                        size={20}
                         onPress={deleteGuiaRemision}
                     >
                         Quitar
-                    </Button>
-                    : <Button
-                        style={{ marginTop: -5 }}
-                        disabled={loading}
+                    </AppButton>
+                ) : (
+                    <AppButton
+                        compact
+                        variant="secondary"
                         icon="plus"
-                        iconColor='grey'
-                        size={20}
+                        disabled={loading}
                         onPress={addGuiaRemision}
                     >
                         Agregar
-                    </Button>
-                }
-        </View>
-        <Divider style={{ marginTop: 10, backgroundColor: 'grey' }} />
-        <View style={{ padding: 10 }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <View style={{ flex: 1 }}>
-                    <Text style={style.textTitle}>Fecha emisión</Text>
-                    <Text>{guiaRemision.fecha_desc}</Text>
+                    </AppButton>
+                )}
+            </View>
+            <AppDivider style={{ marginTop: 12, marginBottom: 12 }} />
+            <View style={styles.grid}>
+                <View style={styles.col}>
+                    <Text style={styles.label}>Fecha emisión</Text>
+                    <Text style={styles.value}>{guiaRemision.fecha_desc}</Text>
                 </View>
-                <View style={{ flex: 1 }}>
-                    <Text style={style.textTitle}>Placas</Text>
-                    <Text>{guiaRemision.placa}</Text>
+                <View style={styles.col}>
+                    <Text style={styles.label}>Placas</Text>
+                    <Text style={styles.value}>{guiaRemision.placa}</Text>
                 </View>
             </View>
-            <View style={{ marginTop: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
-                {
-                    !guiaRemision.is_exportacion &&
-                    <View style={{ flex: 1 }}>
-                        <Text style={style.textTitle}>Sacos en guía</Text>
-                        <Text>{numberFormat(guiaRemision.total_sacos)}</Text>
+            <View style={[styles.grid, { marginTop: 12 }]}>
+                {!guiaRemision.is_exportacion ? (
+                    <View style={styles.col}>
+                        <Text style={styles.label}>Sacos en guía</Text>
+                        <Text style={styles.value}>{numberFormat(guiaRemision.total_sacos)}</Text>
                     </View>
-                }
-                <View style={{ flex: 1 }}>
-                    <Text style={style.textTitle}>Peso neto</Text>
-                    <Text>{numberFormat(guiaRemision.peso_neto_enviado)}</Text>
+                ) : null}
+                <View style={styles.col}>
+                    <Text style={styles.label}>Peso neto</Text>
+                    <Text style={styles.value}>{numberFormat(guiaRemision.peso_neto_enviado)}</Text>
                 </View>
             </View>
-            {
-                guiaRemision.sku && <Text style={{ marginTop: 10, }}>{guiaRemision.sku}</Text>
-            }
-        </View>
-        {
-            guiaRemision.is_exportacion && <>
-                <Divider style={{  backgroundColor: 'grey' }} />
-                <View style={{ padding: 10 }}>
-                    <View style={{ marginTop: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <View style={{ flex: 1 }}>
-                            <Text style={style.textTitle}>Nro de sacos</Text>
-                            <Text>{numberFormat(guiaRemision.nro_sacos)}</Text>
+            {guiaRemision.sku ? <Text style={styles.sku}>{guiaRemision.sku}</Text> : null}
+            {guiaRemision.is_exportacion ? (
+                <>
+                    <AppDivider style={{ marginVertical: 12 }} />
+                    <View style={styles.grid}>
+                        <View style={styles.col}>
+                            <Text style={styles.label}>Nro de sacos</Text>
+                            <Text style={styles.value}>{numberFormat(guiaRemision.nro_sacos)}</Text>
                         </View>
-                        {/* <View style={{ flex: 1 }}>
-                            <Text style={style.textTitle}>Nro de sacos 2</Text>
-                            <Text>{numberFormat(guiaRemision.nro_sacos2)}</Text>
-                        </View> */}
+                        <View style={styles.editCol}>
+                            <AppButton compact onPress={() => setVisible(true)}>
+                                Actualizar
+                            </AppButton>
+                        </View>
                     </View>
-                    <Button mode='contained' style={{ marginTop: 10 }} onPress={() => showModal()}>
-                        Actualizar
-                    </Button>
-                </View>
-            </>
-        }
-        <Portal>
-            <Modal visible={visible} onDismiss={hideModal} 
-                contentContainerStyle={{ backgroundColor: 'white', height: 'auto', bottom: 0, position: 'absolute', width: '100%', borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
+                </>
+            ) : null}
+            <AppModalSheet
+                visible={visible}
+                onClose={() => setVisible(false)}
+                title="Editar nro de sacos"
+                subtitle="Actualiza el número de sacos asociado a esta guía."
             >
-                <View style={{ padding:10 }} >
-                    <Text style={{ fontSize: 17, fontWeight: 'bold', textAlign: 'center', marginVertical: 10 }}>Editar nro de sacos para ticket de pesaje</Text>
-                    <TextInput label="Nro de sacos" value={nroSacos} onChangeText={setNroSacos} keyboardType='numeric' />
-                    {/* <TextInput label="Nro de sacos 2" value={nroSacos2} onChangeText={setNroSacos2} keyboardType='numeric' /> */}
-                    <Button style={{ marginTop: 20 }} mode="contained" onPress={updateGuiaRemision}>
+                <View style={styles.sheetContent}>
+                    <AppInput label="Nro de sacos" value={String(nroSacos ?? "")} onChangeText={setNroSacos} keyboardType='numeric' />
+                    <AppButton style={{ marginTop: 12 }} onPress={updateGuiaRemision}>
                         Cambiar
-                    </Button>
+                    </AppButton>
                 </View>
-            </Modal>
-        </Portal>
-    </View>)
+            </AppModalSheet>
+        </AppSurface>
+    )
 }
+
+const styles = StyleSheet.create({
+    card: {
+        padding: 12,
+        marginBottom: 8,
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 10,
+    },
+    code: {
+        color: '#111827',
+        fontSize: 15,
+        fontWeight: '800',
+    },
+    typeChip: {
+        alignSelf: 'flex-start',
+        marginTop: 6,
+        borderRadius: 999,
+        paddingVertical: 4,
+        paddingHorizontal: 9,
+    },
+    typeExport: {
+        backgroundColor: '#D1FAE5',
+    },
+    typeIngreso: {
+        backgroundColor: '#FDE68A',
+    },
+    typeChipText: {
+        color: '#111827',
+        fontSize: 11,
+        fontWeight: '800',
+    },
+    grid: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: 10,
+    },
+    col: {
+        flex: 1,
+    },
+    editCol: {
+        justifyContent: 'flex-end',
+        alignItems: 'flex-end',
+    },
+    label: {
+        color: '#6B7280',
+        fontSize: 11,
+        fontWeight: '700',
+        textTransform: 'uppercase',
+    },
+    value: {
+        color: '#111827',
+        fontSize: 13,
+        marginTop: 2,
+    },
+    sku: {
+        color: '#374151',
+        fontSize: 12,
+        marginTop: 8,
+    },
+    sheetContent: {
+        paddingBottom: 8,
+    },
+});
+
 export default SimpleCard;

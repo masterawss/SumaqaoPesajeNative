@@ -1,12 +1,11 @@
 import React, { createContext, useCallback, useEffect, useMemo } from 'react';
 import api from '../../../../utils/axios';
-import {View, Alert} from 'react-native';
+import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Text } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Snackbar from 'react-native-snackbar';
+const Snackbar = require('react-native-snackbar');
 
-export const TicketContext = createContext({
+export const TicketContext = createContext<any>({
     ticketId: null,
     setId: (id: any) => {},
     ticketPesaje: null,
@@ -33,7 +32,7 @@ export default ({children}:any) => {
     const [loadingSimple, setLoadingSimple] = React.useState(false);
     const [currentGuiaRemision, setCurrentGuiaRemision] = React.useState<any>()
 
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
 
     const setId = (id: any) => setTicketId(id);
     const assignReload = (val:boolean) => setReload(val);

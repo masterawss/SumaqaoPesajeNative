@@ -14,6 +14,12 @@ const BalanzaBluetoothProvider = ({children}: {children: ReactNode}) => {
     const [activeBalanza, setActiveBalanza] = React.useState<any>(null);
     const [ready, setReady] = React.useState(false);
 
+    const loadActiveBalanza = useCallback(async () => {
+        const balanza = await getStoredActiveBalanza();
+        setActiveBalanza(balanza);
+        return balanza;
+    }, []);
+
     useEffect(() => {
         loadActiveBalanza().finally(() => {
             setReady(true);
@@ -25,12 +31,6 @@ const BalanzaBluetoothProvider = ({children}: {children: ReactNode}) => {
             checkBluetoothEnabled();
         }
     }, [ready]);
-
-    const loadActiveBalanza = useCallback(async () => {
-        const balanza = await getStoredActiveBalanza();
-        setActiveBalanza(balanza);
-        return balanza;
-    }, []);
 
     const connectToDevice = useCallback(async () => {
         if (!activeBalanza?.address) {

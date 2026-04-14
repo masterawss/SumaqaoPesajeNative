@@ -1,14 +1,16 @@
 import React, { useContext } from "react";
-import { ActivityIndicator, Alert, TouchableOpacity, View } from "react-native"
-import { Button, Icon, IconButton, MD3Colors, Modal, Portal, RadioButton, Text } from "react-native-paper"
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { TicketContext } from "../../Show/provider/TicketProvider";
 import api from "../../../../utils/axios";
-import Snackbar from "react-native-snackbar";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import GuiaRemisionSelect from "./GuiaRemisionSelect";
+import AppIconButton from "../../../../components/ui/AppIconButton";
+import AppSurface from "../../../../components/ui/AppSurface";
+const Snackbar = require("react-native-snackbar");
 
 const SimpleCard = ({detalle, nro}: any) => {
-    const { loading, hasError, loadTicket, ticketPesaje, deleteTicket } = useContext(TicketContext);
+    const { loadTicket } = useContext(TicketContext) as any;
     const [loadingDelete, setLoadingDelete] = React.useState(false);
 
     const deleteData = () => {
@@ -41,7 +43,7 @@ const SimpleCard = ({detalle, nro}: any) => {
                 action: {
                   text: 'Cerrar',
                   textColor: 'red',
-                  onPress: () => { /* Do something. */ },
+                  onPress: () => {},
                 },
               });
         }).finally(() => {
@@ -49,7 +51,7 @@ const SimpleCard = ({detalle, nro}: any) => {
         });
     }
 
-    const changeGuiaRemision = async (guia_remision) => {
+    const changeGuiaRemision = async (guia_remision: any) => {
         api.put('/ticket_pesaje_detalle/update/'+detalle.id, {
             guia_remision_id: guia_remision.id
         }).then((response) => {
@@ -63,46 +65,75 @@ const SimpleCard = ({detalle, nro}: any) => {
                 action: {
                   text: 'Cerrar',
                   textColor: 'red',
-                  onPress: () => { /* Do something. */ },
+                  onPress: () => {},
                 },
             });
         });
     }
+
     return (
-        <View style={{
-            borderRadius: 10, marginVertical: 4,
-            display: 'flex', flexDirection: 'row',
-            backgroundColor: "#f5f5f5",
-        }}>
-            <View style={{ backgroundColor: '#7da82c', padding: 15, borderTopLeftRadius: 10, borderBottomLeftRadius: 10 }}>
-                <Text style={{ color: 'white', fontSize: 15 }}>{nro}</Text>
+        <AppSurface style={styles.card}>
+            <View style={styles.indexBadge}>
+                <Text style={styles.indexText}>{nro}</Text>
             </View>
-            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '85%' }}>
-                <View style={{  marginLeft: 20, }}>
-                    <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                        {detalle.peso_bruto} kg
-                    </Text>
-                    <GuiaRemisionSelect guia_remision_codigo={detalle.g_r_cod} 
+            <View style={styles.body}>
+                <View style={{ flex: 1 }}>
+                    <Text style={styles.weight}>{detalle.peso_bruto} kg</Text>
+                    <GuiaRemisionSelect
+                        guia_remision_codigo={detalle.g_r_cod}
                         onSelect={(guia: any) => {
                             changeGuiaRemision(guia);
                         }}
                     />
                 </View>
-                {
-                    loadingDelete ? <Text><ActivityIndicator color="grey" /></Text>
-                    : <IconButton
-                        disabled={loadingDelete}
-                        icon="delete"
-                        iconColor='grey'
+                {loadingDelete ? (
+                    <ActivityIndicator size="small" color="#6B7280" />
+                ) : (
+                    <AppIconButton
+                        icon="delete-outline"
+                        color="#6B7280"
                         size={20}
                         onPress={deleteData}
                     />
-                }
+                )}
             </View>
-
-            
-        </View>
+        </AppSurface>
     )
 }
+
+const styles = StyleSheet.create({
+    card: {
+        padding: 12,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 12,
+    },
+    indexBadge: {
+        width: 34,
+        height: 34,
+        borderRadius: 999,
+        backgroundColor: "#111827",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    indexText: {
+        color: "#FFFFFF",
+        fontSize: 13,
+        fontWeight: "800",
+    },
+    body: {
+        flex: 1,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 12,
+    },
+    weight: {
+        color: "#111827",
+        fontSize: 16,
+        fontWeight: "800",
+        marginBottom: 6,
+    },
+});
 
 export default SimpleCard;
