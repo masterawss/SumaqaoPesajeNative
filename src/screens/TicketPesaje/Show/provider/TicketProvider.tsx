@@ -3,7 +3,7 @@ import api from '../../../../utils/axios';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const Snackbar = require('react-native-snackbar');
+import { Snackbar } from "../../../../utils/snackbar";
 
 export const TicketContext = createContext<any>({
     ticketId: null,
@@ -57,42 +57,46 @@ export default ({children}:any) => {
         // }
     }, [ticketPesaje, currentGuiaRemision])
 
-    const loadTicket = (withLoader = false) => {
+    const loadTicket = useCallback(async (withLoader = false) => {
         if(withLoader){
             setLoading(true);
         }else{
             setLoadingSimple(true);
         }
         setHasError(false);
-        api.get('/ticket_pesaje/'+ticketId).then((response) => {
-            // console.log(response.data);
+        try {
+            const response = await api.get('/ticket_pesaje/'+ticketId);
             setTicketPesaje(response.data.ticket_pesaje);
-        }).catch((error) => {
+            return response.data.ticket_pesaje;
+        } catch (error: any) {
             console.log(error.response);
             setHasError(true);
-        }).finally(() => {
+            return null;
+        } finally {
             setLoadingSimple(false);
             setLoading(false);
-        });
-    }
+        }
+    }, [ticketId])
 
     const setNextGuiaRemision = useCallback(() => {
-        // if(ticketPesaje.is_exportacion){
-        //     setCurrentGuiaRemision(null);
-        // }
-        // Validar si existe guias de remision
-        if(!ticketPesaje?.guias_remision || ticketPesaje?.guias_remision?.length === 0){
+        const guiasRemision = ticketPesaje?.guias_remision ?? [];
+        if(guiasRemision.length === 0){
             return;
         }
 
-        // Obtener la posicion actual de la guía según el currentGuiaRemision.codigo
-        const index = ticketPesaje.guias_remision.findIndex((g:any) => g.codigo === currentGuiaRemision.codigo);
-        if(index < ticketPesaje.guias_remision.length - 1){
-            setCurrentGuiaRemision(ticketPesaje.guias_remision[index + 1]);
-            console.log('Se cambió de guía', currentGuiaRemision.codigo)
-        }else{
-            setCurrentGuiaRemision(ticketPesaje.guias_remision[0]);
+        if(!currentGuiaRemision?.codigo){
+            setCurrentGuiaRemision(guiasRemision[0]);
+            return;
         }
+
+        const index = guiasRemision.findIndex((g:any) => g.codigo === currentGuiaRemision.codigo);
+        if(index < 0 || index >= guiasRemision.length - 1){
+            setCurrentGuiaRemision(guiasRemision[0]);
+            return;
+        }
+
+        setCurrentGuiaRemision(guiasRemision[index + 1]);
+        console.log('Se cambió de guía', currentGuiaRemision.codigo)
     }, [ticketPesaje, currentGuiaRemision])
 
     const hasGuiasRemision = useMemo(() => {

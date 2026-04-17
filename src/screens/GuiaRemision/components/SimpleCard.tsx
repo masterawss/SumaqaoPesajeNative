@@ -9,7 +9,7 @@ import AppDivider from '../../../components/ui/AppDivider';
 import AppInput from '../../../components/ui/AppInput';
 import AppModalSheet from '../../../components/ui/AppModalSheet';
 import AppSurface from '../../../components/ui/AppSurface';
-const Snackbar = require("react-native-snackbar");
+import { Snackbar } from "../../../utils/snackbar";
 
 const SimpleCard = ({guiaRemision: gr, ticketId, isInTicket = false}: any) => {
     const ticketContext = useContext(TicketContext) as any;

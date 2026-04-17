@@ -7,7 +7,7 @@ import { TicketContext } from "../TicketPesaje/Show/provider/TicketProvider";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import AppIconButton from "../../components/ui/AppIconButton";
-const Snackbar = require("react-native-snackbar");
+import { Snackbar } from "../../utils/snackbar";
 
 const Search = ({navigation, route}:any) => {
     const { ticketId } = route.params || { id: null };

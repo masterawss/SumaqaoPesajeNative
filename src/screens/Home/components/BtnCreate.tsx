@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import api from "../../../utils/axios";
 import AppButton from "../../../components/ui/AppButton";
-const Snackbar = require("react-native-snackbar");
+import { Snackbar } from "../../../utils/snackbar";
 
 const BtnCreate = ({ type = "ingreso" }) => {
     const navigation = useNavigation<any>();

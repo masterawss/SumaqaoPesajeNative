@@ -10,11 +10,13 @@ import AppRadio from "../../../../components/ui/AppRadio";
 const GuiaRemisionSelect = ({
     guia_remision_codigo,
     onSelect,
-    guiasRemision
+    guiasRemision,
+    compact = false,
 }:{
     guia_remision_codigo: string,
     onSelect: Function,
-    guiasRemision?: any[]
+    guiasRemision?: any[],
+    compact?: boolean,
 }) => {
     const [visible, setVisible] = React.useState(false);
     const {ticketPesaje} = useContext(TicketContext) as any;
@@ -29,9 +31,15 @@ const GuiaRemisionSelect = ({
     }
 
     return <>
-        <Pressable style={styles.trigger} onPress={() => setVisible(true)}>
-            <Text style={styles.triggerText}>G.R.R: {guia_remision_codigo || "Sin GRR"}</Text>
-            <MaterialCommunityIcons name="chevron-down" size={18} color="#6B7280" />
+        <Pressable style={[styles.trigger, compact && styles.triggerCompact]} onPress={() => setVisible(true)}>
+            <Text numberOfLines={1} style={[styles.triggerText, compact && styles.triggerTextCompact]}>
+                G.R.R: {guia_remision_codigo || "Sin GRR"}
+            </Text>
+            <MaterialCommunityIcons
+                name="chevron-down"
+                size={compact ? 16 : 18}
+                color="#6B7280"
+            />
         </Pressable>
 
         <AppModalSheet
@@ -62,6 +70,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         alignSelf: "flex-start",
+        maxWidth: "100%",
         paddingVertical: 5,
         paddingHorizontal: 10,
         borderRadius: 999,
@@ -69,11 +78,20 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#E5E7EB",
     },
+    triggerCompact: {
+        paddingVertical: 4,
+        paddingHorizontal: 8,
+    },
     triggerText: {
         color: "#374151",
         fontSize: 13,
         fontWeight: "600",
         marginRight: 6,
+        flexShrink: 1,
+    },
+    triggerTextCompact: {
+        fontSize: 12,
+        marginRight: 4,
     },
     options: {
         marginBottom: 4,

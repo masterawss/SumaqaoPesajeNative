@@ -12,7 +12,7 @@ import GuiaRemisionSelect from "../GuiaRemisionSelect";
 import AppButton from "../../../../../components/ui/AppButton";
 import AppSurface from "../../../../../components/ui/AppSurface";
 
-const tiempoEstable = 1;
+const tiempoEstable = 3;
 
 const BluetoothSection = () => {
     const {currentGuiaRemision, setNextGuiaRemision, setCurrentGuiaRemision} = useContext(TicketContext);
@@ -23,18 +23,22 @@ const BluetoothSection = () => {
     const {loading: loadingSave, saveData} = savePesoHook()
     const [pesoEstable, setPesoEstable] = React.useState<number>(0);
 
-    const save = useCallback(() => {
+    const save = useCallback(async () => {
         setCronometro(-1);
-        saveData({
+        const wasSaved = await saveData({
             peso,
             by_bluetooth: true,
             guia_remision_id: currentGuiaRemision?.id
-        }, () => {
-            setCanSave(false);
-            setIsSaved(true);
-            playSound('finish')
-            setNextGuiaRemision()
         })
+
+        if (!wasSaved) {
+            return;
+        }
+
+        setCanSave(false);
+        setIsSaved(true);
+        playSound('finish')
+        setNextGuiaRemision()
     }, [currentGuiaRemision?.id, peso, saveData, setNextGuiaRemision]);
 
     useEffect(() => {
@@ -98,7 +102,7 @@ const BluetoothSection = () => {
         let nextText = ''
         if(isSaved){
             nextText = 'Guardado'
-        }else if(cronometro < tiempoEstable && cronometro >= 0){
+        }else if(cronometro <= tiempoEstable && cronometro >= 0){
             nextText = `Guardar en ${cronometro}`
         }else{
             nextText = 'Guardar'
@@ -145,7 +149,7 @@ const BluetoothSection = () => {
                         {buttonText}
                     </AppButton>
                 </View>
-                {cronometro > 0 && cronometro < tiempoEstable ? (
+                {cronometro > 0 && cronometro <= tiempoEstable ? (
                     <Text style={styles.helpText}>Puedes pulsar para guardar el valor estable.</Text>
                 ) : null}
             </>

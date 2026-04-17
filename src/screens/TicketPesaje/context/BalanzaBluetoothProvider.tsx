@@ -2,9 +2,8 @@ import React, { ReactNode, createContext, useCallback, useEffect } from "react";
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
 import { requestBluetoothPermissions } from "../../../utils/androidBluetoothPermissions";
 import { getStoredActiveBalanza } from "../../../utils/balanzasStorage";
-
 export const BalanzaBluetoothContext = createContext<any | null>(null);
-const Snackbar = require("react-native-snackbar");
+import { Snackbar } from "../../../utils/snackbar";
 
 const BalanzaBluetoothProvider = ({children}: {children: ReactNode}) => {
     const [loading, setLoading] = React.useState(false);

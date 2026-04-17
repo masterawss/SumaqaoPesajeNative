@@ -10,7 +10,7 @@ import AppInput from "../../../../components/ui/AppInput";
 import AppModalSheet from "../../../../components/ui/AppModalSheet";
 import AppRadio from "../../../../components/ui/AppRadio";
 import AppSurface from "../../../../components/ui/AppSurface";
-const Snackbar = require("react-native-snackbar");
+import { Snackbar } from "../../../../utils/snackbar";
 
 const SimpleCard = ({col = 1, nroItem}: any) => {
     const { ticketPesaje, loadTicket } = useContext(TicketContext) as any;

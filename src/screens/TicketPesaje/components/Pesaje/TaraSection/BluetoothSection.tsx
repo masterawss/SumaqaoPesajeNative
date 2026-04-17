@@ -10,8 +10,7 @@ import GuiaRemisionSelect from "../GuiaRemisionSelect";
 import AppRadio from "../../../../../components/ui/AppRadio";
 import AppButton from "../../../../../components/ui/AppButton";
 import AppSurface from "../../../../../components/ui/AppSurface";
-
-const Snackbar = require("react-native-snackbar");
+import { Snackbar } from "../../../../../utils/snackbar";
 
 const BluetoothSection = ({ setVisible, ticketPesaje, loadTicket,
     guiasRemision,

@@ -6,21 +6,26 @@ import { TicketContext } from "../../../Show/provider/TicketProvider";
 import GuiaRemisionSelect from "../GuiaRemisionSelect";
 import AppInput from "../../../../../components/ui/AppInput";
 import AppButton from "../../../../../components/ui/AppButton";
-const Snackbar = require("react-native-snackbar");
+import { Snackbar } from "../../../../../utils/snackbar";
 
 const ManualSection = () => {
-    const [peso, setPeso] = React.useState<any>(null)
+    const [peso, setPeso] = React.useState('')
     const {loading, saveData} = savePesoHook()
     const {currentGuiaRemision, setNextGuiaRemision, setCurrentGuiaRemision} = useContext(TicketContext) as any;
 
     const save = async () => {
-        if(peso && peso > 0){
-            await saveData({
+        if(peso && Number(peso) > 0){
+            const wasSaved = await saveData({
                 peso,
                 by_bluetooth: false,
                 guia_remision_id: currentGuiaRemision?.id
             })
-            setPeso(null)
+
+            if (!wasSaved) {
+                return;
+            }
+
+            setPeso('')
             setNextGuiaRemision()
         }else{
             Snackbar.show({
@@ -54,7 +59,7 @@ const ManualSection = () => {
                 <AppInput
                     placeholder="Peso (Kg)"
                     keyboardType="numeric"
-                    value={peso}
+                    value={peso ?? ''}
                     onChangeText={val => setPeso(val)}
                 />
             </View>

@@ -6,8 +6,7 @@ import { TicketContext } from "../../Show/provider/TicketProvider";
 import api from "../../../../utils/axios";
 import GuiaRemisionSelect from "./GuiaRemisionSelect";
 import AppIconButton from "../../../../components/ui/AppIconButton";
-import AppSurface from "../../../../components/ui/AppSurface";
-const Snackbar = require("react-native-snackbar");
+import { Snackbar } from "../../../../utils/snackbar";
 
 const SimpleCard = ({detalle, nro}: any) => {
     const { loadTicket } = useContext(TicketContext) as any;
@@ -72,14 +71,15 @@ const SimpleCard = ({detalle, nro}: any) => {
     }
 
     return (
-        <AppSurface style={styles.card}>
+        <View style={styles.card}>
             <View style={styles.indexBadge}>
                 <Text style={styles.indexText}>{nro}</Text>
             </View>
             <View style={styles.body}>
-                <View style={{ flex: 1 }}>
+                <View style={styles.mainContent}>
                     <Text style={styles.weight}>{detalle.peso_bruto} kg</Text>
                     <GuiaRemisionSelect
+                        compact
                         guia_remision_codigo={detalle.g_r_cod}
                         onSelect={(guia: any) => {
                             changeGuiaRemision(guia);
@@ -97,20 +97,22 @@ const SimpleCard = ({detalle, nro}: any) => {
                     />
                 )}
             </View>
-        </AppSurface>
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
     card: {
-        padding: 12,
+        paddingVertical: 8,
+        paddingLeft: 8,
+        paddingRight: 6,
         flexDirection: "row",
         alignItems: "center",
-        gap: 12,
+        gap: 8,
     },
     indexBadge: {
-        width: 34,
-        height: 34,
+        width: 28,
+        height: 28,
         borderRadius: 999,
         backgroundColor: "#111827",
         alignItems: "center",
@@ -118,7 +120,7 @@ const styles = StyleSheet.create({
     },
     indexText: {
         color: "#FFFFFF",
-        fontSize: 13,
+        fontSize: 12,
         fontWeight: "800",
     },
     body: {
@@ -126,13 +128,21 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        gap: 12,
+        gap: 8,
+        minWidth: 0,
+    },
+    mainContent: {
+        flex: 1,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+        minWidth: 0,
     },
     weight: {
         color: "#111827",
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: "800",
-        marginBottom: 6,
+        flexShrink: 0,
     },
 });
 

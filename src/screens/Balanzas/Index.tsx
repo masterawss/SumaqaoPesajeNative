@@ -25,9 +25,9 @@ import {
     saveStoredActiveBalanzaAddress,
     saveStoredBalanzas,
 } from "../../utils/balanzasStorage";
+import { Snackbar } from "../../utils/snackbar";
 
 const addressRegex = /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/;
-const Snackbar = require("react-native-snackbar");
 
 const resolveActiveAddress = (balanzas: BalanzaItem[], preferredAddress: string | null) => {
     if (preferredAddress && balanzas.some((item) => item.address === preferredAddress)) {
