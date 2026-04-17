@@ -9,7 +9,7 @@ import AppSurface from "../../../../components/ui/AppSurface";
 import AppIconButton from "../../../../components/ui/AppIconButton";
 import AppModalSheet from "../../../../components/ui/AppModalSheet";
 
-const TaraSection = () => {
+const TaraSection = ({ compact = false }: { compact?: boolean }) => {
     const [visible, setVisible] = React.useState(false);
     const {
         loading,
@@ -35,62 +35,52 @@ const TaraSection = () => {
         return parseFloat(peso_solo_paletas) > 0
     }, [peso_solo_paletas])
 
+    const summary = (
+        <>
+            {loading ? (
+                <View style={compact ? styles.compactStateRow : styles.stateRow}>
+                    <ActivityIndicator size="small" color="#111827" />
+                    <Text style={styles.stateText}>Cargando...</Text>
+                </View>
+            ) : null}
+            {hasError ? (
+                <View style={compact ? styles.compactErrorRow : styles.errorRow}>
+                    <Text style={styles.stateText}>Ha ocurrido un error</Text>
+                    <AppIconButton icon="refresh" color="#6B7280" size={20} onPress={loadTicket} />
+                </View>
+            ) : null}
+            {!loading && !hasError ? (
+                <View style={compact ? styles.compactSummary : styles.singleRow}>
+                    <View style={compact ? styles.compactTextWrap : undefined}>
+                        <Text style={compact ? styles.compactLabel : styles.singleLabel}>Tara en paletas</Text>
+                        <View style={compact ? styles.compactValueRow : styles.singleValueWrap}>
+                            {Number(peso_solo_paletas) > 0 ? (
+                                compact ? (
+                                    <Text style={styles.compactValue}>{peso_solo_paletas} Kg</Text>
+                                ) : (
+                                    <>
+                                        <Text style={styles.singleValue}>{peso_solo_paletas}</Text>
+                                        <Text style={styles.singleUnit}>Kg</Text>
+                                    </>
+                                )
+                            ) : compact ? (
+                                <Text style={styles.compactValue}>0 Kg</Text>
+                            ) : (
+                                <View style={styles.warningBadge}>
+                                    <Text style={styles.warningBadgeText}>Sin registro</Text>
+                                </View>
+                            )}
+                        </View>
+                    </View>
+                    <AppIconButton icon="pencil" variant="soft" color="#6B7280" size={compact ? 20 : 18} onPress={() => setVisible(true)} />
+                </View>
+            ) : null}
+        </>
+    );
+
     return (
         <>
-            <AppSurface style={styles.card}>
-                {loading ? (
-                    <View style={styles.stateRow}>
-                        <ActivityIndicator size="small" color="#111827" />
-                        <Text style={styles.stateText}>Cargando...</Text>
-                    </View>
-                ) : null}
-                {hasError ? (
-                    <View style={styles.errorRow}>
-                        <Text style={styles.stateText}>Ha ocurrido un error</Text>
-                        <AppIconButton icon="refresh" color="#6B7280" size={20} onPress={loadTicket} />
-                    </View>
-                ) : null}
-                {!loading && !hasError ? (
-                    <>
-                        {!hasGuiasRemision ? (
-                            <View style={styles.singleRow}>
-                                <Text style={styles.singleLabel}>Tara en paletas</Text>
-                                <View style={styles.singleValueWrap}>
-                                    {Number(peso_solo_paletas) > 0 ? (
-                                        <>
-                                            <Text style={styles.singleValue}>{peso_solo_paletas}</Text>
-                                            <Text style={styles.singleUnit}>Kg</Text>
-                                        </>
-                                    ) : (
-                                        <View style={styles.warningBadge}>
-                                            <Text style={styles.warningBadgeText}>Sin registro</Text>
-                                        </View>
-                                    )}
-                                    <AppIconButton icon="pencil" variant="soft" color="#6B7280" size={18} onPress={() => setVisible(true)} />
-                                </View>
-                            </View>
-                        ) : null}
-                        {hasGuiasRemision ? (
-                            <View style={styles.header}>
-                                <View style={styles.headerText}>
-                                    <Text style={styles.title}>Taras</Text>
-                                </View>
-                                <AppIconButton icon="pencil" variant="soft" color="#6B7280" size={20} onPress={() => setVisible(true)} />
-                            </View>
-                        ) : null}
-                        {hasGuiasRemision ? (
-                            <View style={styles.list}>
-                                {ticketPesaje?.guias_remision?.map((guia: any, index: number) => (
-                                    <View key={index} style={styles.listItem}>
-                                        <Text style={styles.listCode}>{guia.codigo}</Text>
-                                        <Text style={styles.listValue}>{guia.ticket_pesaje_tara} Kg</Text>
-                                    </View>
-                                ))}
-                            </View>
-                        ) : null}
-                    </>
-                ) : null}
-            </AppSurface>
+            {compact ? summary : <AppSurface style={styles.card}>{summary}</AppSurface>}
 
             <AppModalSheet
                 visible={visible}
@@ -155,10 +145,22 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
     },
+    compactErrorRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        gap: 6,
+    },
     stateText: {
         color: "#6B7280",
         fontSize: 14,
         fontWeight: "600",
+    },
+    compactStateRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        gap: 6,
     },
     header: {
         flexDirection: "row",
@@ -195,6 +197,31 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
         gap: 6,
         flexShrink: 0,
+    },
+    compactSummary: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        gap: 4,
+    },
+    compactTextWrap: {
+        alignItems: "flex-end",
+    },
+    compactLabel: {
+        color: "#6B7280",
+        fontSize: 11,
+        fontWeight: "700",
+    },
+    compactValueRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-end",
+    },
+    compactValue: {
+        color: "#111827",
+        fontSize: 18,
+        fontWeight: "800",
+        lineHeight: 20,
     },
     singleValue: {
         color: "#111827",

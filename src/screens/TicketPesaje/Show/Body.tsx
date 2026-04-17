@@ -48,7 +48,7 @@ const Body = () => {
 const styles = StyleSheet.create({
     scroll: {
         flex: 1,
-        backgroundColor: "#F4F6F9",
+        backgroundColor: "transparent",
     },
     content: {
         padding: 10,

@@ -7,7 +7,7 @@ import { Snackbar } from "../../../../utils/snackbar";
 
 export const TicketContext = createContext<any>({
     ticketId: null,
-    setId: (id: any) => {},
+    setId: (_id: any) => {},
     ticketPesaje: null,
     loadingSimple: false,
     loading: false,
@@ -16,10 +16,10 @@ export const TicketContext = createContext<any>({
     loadTicket: () => {},
     deleteTicket: () => {},
     saveTicket: () => {},
-    assignReload: (v:boolean) => {},
+    assignReload: (_v:boolean) => {},
     setNextGuiaRemision: () => {},
     currentGuiaRemision: null,
-    setCurrentGuiaRemision: (guia: any) => {},
+    setCurrentGuiaRemision: (_guia: any) => {},
     hasGuiasRemision: false,
 });
 
@@ -34,14 +34,8 @@ export default ({children}:any) => {
 
     const navigation = useNavigation<any>();
 
-    const setId = (id: any) => setTicketId(id);
-    const assignReload = (val:boolean) => setReload(val);
-
-    useEffect(() => {
-        if(ticketId){
-            loadTicket(true)
-        }
-    }, [ticketId])
+    const setId = useCallback((id: any) => setTicketId(id), []);
+    const assignReload = useCallback((val:boolean) => setReload(val), []);
 
     useEffect(() => {
         if(ticketPesaje
@@ -77,6 +71,12 @@ export default ({children}:any) => {
             setLoading(false);
         }
     }, [ticketId])
+
+    useEffect(() => {
+        if(ticketId){
+            loadTicket(true)
+        }
+    }, [ticketId, loadTicket])
 
     const setNextGuiaRemision = useCallback(() => {
         const guiasRemision = ticketPesaje?.guias_remision ?? [];
@@ -134,7 +134,7 @@ export default ({children}:any) => {
                 },
             });
           navigation.navigate('home');
-      }).catch((error) => {
+      }).catch(() => {
         Snackbar.show({
             text: 'No se pudo eliminar el ticket',
             duration: Snackbar.LENGTH_INDEFINITE,

@@ -21,6 +21,12 @@ const TabsSection = () => {
                     active={tab === "guia_remision"}
                     onPress={() => setTab("guia_remision")}
                 />
+                <AppTabChip
+                    label="Pesaje"
+                    icon="scale-bathroom"
+                    active={tab === "pesaje"}
+                    onPress={() => setTab("pesaje")}
+                />
                 {!ticketPesaje.is_exportacion ? (
                     <AppTabChip
                         label="Sacos"
@@ -29,12 +35,6 @@ const TabsSection = () => {
                         onPress={() => setTab("saco")}
                     />
                 ) : null}
-                <AppTabChip
-                    label="Pesaje"
-                    icon="scale-bathroom"
-                    active={tab === "pesaje"}
-                    onPress={() => setTab("pesaje")}
-                />
                 <AppTabChip
                     label="Resumen"
                     icon="file-document-outline"

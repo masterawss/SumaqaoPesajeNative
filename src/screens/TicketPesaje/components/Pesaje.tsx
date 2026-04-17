@@ -47,11 +47,13 @@ const Pesaje = () => {
     return (
         <BalanzaBluetoothProvider>
             <View style={styles.container}>
-                <TaraSection />
                 <PesajeCreateSection />
                 <View style={styles.listHeader}>
-                    <Text style={styles.title}>Lista de pesaje</Text>
-                    <Text style={styles.subtitle}>Registros agrupados por guía.</Text>
+                    <View style={styles.listHeaderText}>
+                        <Text style={styles.title}>Listado de pesajes</Text>
+                        <Text style={styles.subtitle}>Agrupado por GRR.</Text>
+                    </View>
+                    <TaraSection compact />
                 </View>
                 <AppSurface style={styles.listSurface}>
                     {ticketPesajeGroupKeys.map((key, groupIndex) => (
@@ -80,6 +82,14 @@ const styles = StyleSheet.create({
     },
     listHeader: {
         marginTop: 4,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 12,
+    },
+    listHeaderText: {
+        flex: 1,
+        minWidth: 0,
     },
     title: {
         color: "#111827",
